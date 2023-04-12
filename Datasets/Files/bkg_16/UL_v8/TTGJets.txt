@@ -1,0 +1,13 @@
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/F3020BAB-F82C-F94C-A93F-1E46692F5A86.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/280000/A6841451-4BA1-6449-8E35-8AC24314769C.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/280000/8DE99325-78F3-404F-BD5E-B5718CE02CE3.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/F4552803-E134-F14C-9D30-154EF089F5C7.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/70000/B03758B2-3DF7-B642-8521-B9BB1EF9E3EC.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/280000/A64060A2-A31F-3B43-A7CA-9F0E4AAA351F.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/B6AAAE42-412C-D442-B631-ECC549A01B80.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/6C45F2C8-942B-1342-8CB6-1602B0B22A22.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/A446E2F9-FCF7-8A49-99DF-9020328BBACA.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/BC5B7FAA-A596-DE4E-9E85-1AA9C50EDD34.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/C9602673-74C6-F943-BC7A-A8574BD70049.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/270000/F2DC6510-1A99-E446-8824-54CEAFDC13FB.root
+/store/mc/RunIISummer20UL16NanoAODv2/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v15-v1/280000/0EBB1FAE-5FDC-3C42-8089-19580464258E.root

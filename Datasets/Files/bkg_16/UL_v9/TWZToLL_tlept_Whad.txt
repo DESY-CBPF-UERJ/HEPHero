@@ -1,0 +1,2 @@
+/store/mc/RunIISummer20UL16NanoAODv9/TWZToLL_tlept_Whad_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/2520000/8267C1A8-F6A9-A441-B80C-3D06B6734886.root
+/store/mc/RunIISummer20UL16NanoAODv9/TWZToLL_tlept_Whad_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/2520000/1A4D0221-7695-6149-9F09-4CDF2270DDC6.root

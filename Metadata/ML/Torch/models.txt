@@ -1,0 +1,11 @@
+DeepCSV
+16 - NN_2_20_elu_adam_bce_1000_0p01
+17 - NN_3_20_elu_adam_bce_1000_0p01
+18 - NN_2_20_elu_adam_bce_1000_0p01
+APV_16 - NN_2_20_elu_adam_bce_1000_0p01
+
+DeepJet
+16 - NN_3_20_elu_adam_bce_1000_0p01
+17 - NN_2_20_elu_adam_bce_1000_0p01
+18 - NN_4_20_elu_adam_bce_1000_0p01
+APV_16 - NN_2_20_elu_adam_bce_1000_0p01

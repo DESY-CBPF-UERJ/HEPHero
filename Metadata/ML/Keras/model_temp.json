@@ -1,0 +1,176 @@
+{
+  "architecture": {
+    "backend": "tensorflow",
+    "class_name": "Functional",
+    "config": {
+      "input_layers": [
+        [
+          "input_1",
+          0,
+          0
+        ]
+      ],
+      "layers": [
+        {
+          "class_name": "InputLayer",
+          "config": {
+            "batch_input_shape": [
+              null,
+              7
+            ],
+            "dtype": "float32",
+            "name": "input_1",
+            "ragged": false,
+            "sparse": false
+          },
+          "inbound_nodes": [],
+          "name": "input_1"
+        },
+        {
+          "class_name": "Dense",
+          "config": {
+            "activation": "elu",
+            "activity_regularizer": null,
+            "bias_constraint": null,
+            "bias_initializer": {
+              "class_name": "Zeros",
+              "config": {}
+            },
+            "bias_regularizer": null,
+            "dtype": "float32",
+            "kernel_constraint": null,
+            "kernel_initializer": {
+              "class_name": "VarianceScaling",
+              "config": {
+                "distribution": "uniform",
+                "mode": "fan_avg",
+                "scale": 1.0,
+                "seed": null
+              }
+            },
+            "kernel_regularizer": null,
+            "name": "dense_1",
+            "trainable": true,
+            "units": 45,
+            "use_bias": true
+          },
+          "inbound_nodes": [
+            [
+              [
+                "input_1",
+                0,
+                0,
+                {}
+              ]
+            ]
+          ],
+          "name": "dense_1"
+        },
+        {
+          "class_name": "Dense",
+          "config": {
+            "activation": "softmax",
+            "activity_regularizer": null,
+            "bias_constraint": null,
+            "bias_initializer": {
+              "class_name": "Zeros",
+              "config": {}
+            },
+            "bias_regularizer": null,
+            "dtype": "float32",
+            "kernel_constraint": null,
+            "kernel_initializer": {
+              "class_name": "VarianceScaling",
+              "config": {
+                "distribution": "uniform",
+                "mode": "fan_avg",
+                "scale": 1.0,
+                "seed": null
+              }
+            },
+            "kernel_regularizer": null,
+            "name": "class",
+            "trainable": true,
+            "units": 2,
+            "use_bias": true
+          },
+          "inbound_nodes": [
+            [
+              [
+                "dense_1",
+                0,
+                0,
+                {}
+              ]
+            ]
+          ],
+          "name": "class"
+        }
+      ],
+      "name": "model_1",
+      "output_layers": [
+        [
+          "class",
+          0,
+          0
+        ]
+      ]
+    },
+    "keras_version": "2.4.0"
+  },
+  "hash": "b06340af67cb20413f66e2a01cde549787e10334f7351c4f9a267af07c656f84",
+  "image_data_format": "channels_last",
+  "input_shapes": [
+    [
+      7
+    ]
+  ],
+  "output_shapes": [
+    [
+      2
+    ]
+  ],
+  "tests": [
+    {
+      "inputs": [
+        {
+          "shape": [
+            7
+          ],
+          "values": [
+            "qHpFPy3qNb8XK4S+8zlrv2DLDb8ZsAW+sdiFvw=="
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "shape": [
+            2
+          ],
+          "values": [
+            "7pfBPgk0Hz8="
+          ]
+        }
+      ]
+    }
+  ],
+  "trainable_params": {
+    "class": {
+      "bias": [
+        "G7mCPRu5gr0="
+      ],
+      "weights": [
+        "Wogyvc2Nhr7N7Iq+6wBNPuWveb00MXy+ZJAQvi5ca72LmNU9p52fvduUrT48MTM9rfEfvoP0PT430Tk+W0ugPR0Uyr4REpU+hDCUPQcFsD0j+WY+x++dvl05Mz5npoY+V8HXPYspgz2cpSO+rv2LPlF1Yj72W8k99G0SvnqBuz4NmLc9oH0yvqJk2z3SalW+i8iDvhe7wT6Xzbc9VekHvfA7Bj7hz4++r0Z8PokKLr4tKtI+SvzRvgDQwz3lbKm+431EvkL1fTvaF9o+Iha7vm2NZb726/w9wepUPnDBJT5nJoK+Gt2DvecORT70CHQ+7s1RvkxFOL5q8Ys+DFLHvn3sPj5awyy+xD/mvdWejb5P3T8+ZIKrPRUgRr5oRN8+d7CbPaS3/7sFAWg+fChLvpL83b75zSW+MuWzPmyQIz5AXs48S92vvm+BB7ucy0i9NSd7PqQYfr5sE8g+0iWAvTVxFT5YE28+"
+      ]
+    },
+    "dense_1": {
+      "bias": [
+        "SjnFPNV13bzMBJI8rPFFvBIq+DxGRyc9969Zve1FrDzJacW70cqnuyuosT0N6S28x66auhzEybxaZKA8eFzkvHyKrjzOgT08I7G7ugPBKTyChhc9gP+sPf0ksD2YD4k9gJ1XvMmo9D3cwo69celAu1FKzrx7rqi86JFmvKEuqT08juI8WdTFPOZbZTyNgwK8qEapO0TOkT36x4y8O1woPUyQMT1nBzU8soVKPVd4SD3ZPJi7"
+      ],
+      "weights": [
+        "UuaJvkuVBj36ujS+3pGZvr+Tbz0yToU9sK7mvJFNOj4x4JU+cTZqvsLiZT7U2l++IwKJvmls0D1DHww+kY0TPuQZUb78apG+cEGWus7mBD4hmEm+sVb5PbOWaj4QtZ0+buwcPpTq1j0GA6W+QGaSvvX1Rj0NIIQ+hNOtvZXXTL6834g+ZqSevOKkjj5Icoo+0QOevQv0Tr7B00m+8UKXPqQtWb4yO44+hHuxPmvYdb6Icpg+IM40vfMzqb4IskY+D3LkvegxGD4RAV2+40aNPvWNgT7sr6M9VfGdvezmhLwPlxI+XTqZvuI0ib7olxc9ufiHvjsakT1+6rI+iFatu4uPJr4CYH8+5pKpPlmKW77PF2C+Rct6PnghgT2Cvks+76qTvqTbjb1dXpg+GcGfPg2F0z05hce99flavkP4e70au7K95hs1PDdeUT7DQLq+4IpnPvtAtD13VC0+MmaWvmhL2zePwOc9ys4TvUDZXL6351k+1JyEPsbJfjxP5pe+IMEpvQkOmrvTZVY+XaApvlY6Dj0jKmk+rsaavsGnoL3YnXK+Ii2HPPt137y1QVM+3dxSPjdEm740rlu+n5t8vgDHSj7dWYy+GpV4Pmj5wb73pW2+pN9dPs2xCb4ZW5e+q6lQPj4Glb62Fac9RXmxvookuz3q09A+xb66vYQhtL6fSDY+rU+IPstJHb7LLUy+2LeUvo37sb5Grs09k+z+PYqDcb5D+0I+n7IOvn/zV74bMGY+Fe35vQ/df74Rz5w+WkUMvqnRZb6eRh8+Io1dPvv4sj4CWZi+yl/Jvef9FbwEFdY8OJmxPtYqaz6mJ9y9Nwo+PpvWob41b0O+5LTVvayDWT3Eop68GXyYPjM5iL4+svm96f8wPhFlp71w3oM++UMMPo3jqj5L48i8fv3RPWKIYj63upC+WWuovq0qjz7atyg9oD+dvdO7er7VAWK+UgOqPodzRL5a0rI+H587vT8BBjsTkqM+KW0vvrO9uL0bVAa9T214vrRO5D5pGDC+",
+        "HhOxvTHIUD0mpBg+IPgJvsuCvDzv2BK+ZJIVvs1Hhr4VPju+05uTPhKkTD5wARY+sdAhvlrrlj4tA3M8RWy9PZbKe76O/hM+OZo7PorWPj5AiUS+ngJoPaGPsj5JxQ++lU7/uZmrhD7sS9G+uPWRPsj/tT72DZm8krZLved15z2ReIM9ox9VvbMqr76lsze+ztpFvTj8pj5uDNS9Bq9LPhq1QD0wKt6+MnyKPnIqlb25xIm+EDfevfIAkr5dDYA+erdEvo9XJT2jW5Q9hHDJvvf3Hj6x+wE+7ZCYPtu0SD4BT+06E40ROnAC8D1zIS0+lbM0Pi72HD5PPA0+U8dTPvAiODzkkqA+ef6qPtY2ij4Nxqu+n2XDvZYWxj22yb49H4K8PhEXPb7PXY89ufF6vYSV7726wJq+vVyIvjiOmr1qQwO8rsWnvOh/h76jEYC+BMKIPSLGrT58Jo6+MpUzvmtkIT52zna+xfuHPkEuab6lnEi+AbjAvbSoRz3qd4E+8DFnPf7/Hb4CiQC+aT7uPJLJWT4M4aw+xSJFPWdWdr5qLt+9mqKEvktfDr56zgy+aqOWPm1f1DtatXw++qlhPtwbkz41F/Q9o0c4PYmXCb6riDI+6oY/vd+nvr3CYz2+fXQFPlBOiD3hTKG+"
+      ]
+    }
+  }
+}

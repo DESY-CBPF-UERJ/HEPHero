@@ -1,0 +1,6 @@
+Data-taking     Year    HIPM    Luminosity[pb-1]    Uncertainty[%]
+2016_preVFP     16      1       19521.2283          1.2 
+2016_postVFP    16      0       16812.1517          1.2
+2017            17      0       41479.6805          2.3
+2018            18      0       59832.4753          2.5
+> > > > https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM

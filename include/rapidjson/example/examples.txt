@@ -1,0 +1,43 @@
+
+    // 1. Parse a JSON string into DOM.
+    const char* json = "{\"project\":\"rapidjson\",\"stars\":10.2}";
+    rapidjson::Document d;
+    d.Parse(json);
+
+    // 2. Modify it by DOM.
+    rapidjson::Value& s = d["stars"];
+    //s.SetInt(s.GetInt() + 1);
+    cout << "json working: " << s.GetFloat() << endl;
+    
+    
+    FILE *fp = fopen("input.json", "r"); 
+    char buf[0XFFFF];
+ 
+    //FileReadStream(FILE *fp, char *buffer, std::size_t bufferSize)
+    rapidjson::FileReadStream input(fp, buf, sizeof(buf));
+    rapidjson::Document document;
+    document.ParseStream(input);
+    fclose(fp);
+
+    rapidjson::Value& anna = document["Anna"];
+    rapidjson::Value& age = document["Ben"]["age"];
+    cout << setprecision(15);
+	cout << "Anna: " << anna.GetFloat() << endl;
+    cout << "Ben/age: " << age.GetInt() << endl;
+    cout << "Ben/age: " << document["Ben"]["prof"].GetString() << endl;
+    
+    
+    rapidjson::Value& barb = document["Barb"]["numbers"];
+    assert(barb.IsArray());
+    for (int i = 0; i < barb.Size(); i++) {
+        cout << barb[i]["n1"].GetFloat() << endl;
+    }
+    
+    string key = "Anna";
+    if( document.HasMember(key.c_str()) ){
+        rapidjson::Value& anne = document[key.c_str()];
+        cout << "Has member" << endl;
+    }else{
+        cout << "It doesn't has member" << endl;
+    }
+    

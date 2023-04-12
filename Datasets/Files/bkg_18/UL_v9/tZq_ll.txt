@@ -1,0 +1,14 @@
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/578AA8C4-5301-4843-9AE8-A389A95F07CC.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/1EFCD6BE-816C-4A47-B751-97BCF47E8B29.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/D6C39E22-7F00-CA46-8631-C651FEAC1740.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/94BFA690-E70E-C24B-BBC6-EF30CAD4F797.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/A158A08F-F5AF-2D42-B982-EF1784024E12.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/835A69BE-1147-474D-8015-89B134EE8DC2.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/5867358B-24FC-D94B-9D41-F25C8718DB8C.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/8FE20B43-F021-D24C-8B8F-8E7269BF0D17.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/68A038E9-D0D4-C94C-998A-B34BB3BBD0B5.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/D540490B-5700-3343-85E5-77D7EC5314C4.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/4305F97E-674F-5B42-B7A3-00D27D801A2C.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/32A1E9FA-2E94-864A-8873-9E629EAD3D1B.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/1B6AA322-1BBF-934A-BCA5-9D3C9D9F547A.root
+/store/mc/RunIISummer20UL18NanoAODv9/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2540000/C3C6DD99-80B8-3848-980C-3614B0DF72C7.root

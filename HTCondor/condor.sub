@@ -1,0 +1,8 @@
+executable            = condor.sh
+Proxy_path            = /afs/cern.ch/work/g/gcorreia/private/x509up
+arguments             = $(ProcId) $(Proxy_path) /home/gilson/cernbox/HEP_Project/CMS_LLGDV/HEPHero
+output                = jobs_log/run_$(ClusterId)_$(ProcId).out
+error                 = jobs_log/run_$(ClusterId)_$(ProcId).err
+log                   = run_$(ClusterId).log
++JobFlavour = "workday"
+queue 3

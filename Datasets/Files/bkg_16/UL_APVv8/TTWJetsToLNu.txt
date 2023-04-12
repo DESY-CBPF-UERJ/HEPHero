@@ -1,0 +1,6 @@
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/100000/D9001343-0A22-C948-B136-0E71A27E02BA.root
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/100000/48A860BD-B0C3-E843-A314-A5579F5C3890.root
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/100000/A7B251F7-6440-A343-A809-C386F3B7628F.root
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/230000/A7D56F4A-3C1B-D949-8A85-6B4A51EB1F81.root
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/230000/DA4EE2CE-9606-DF41-AD50-C66863FD8A25.root
+/store/mc/RunIISummer20UL16NanoAODAPVv2/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/250000/C1659CCD-9057-1443-AB68-2C142306DDD7.root

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  hephero_cvmfs:
+    container_name: hephero_cvmfs
+    image: cvmfs/service:2.8.0-1
+    privileged: true
+    cap_add: ['SYS_ADMIN']
+    devices:
+      - "/dev/fuse"
+    volumes:
+      - /cvmfs:/cvmfs:shared
+      - /var/lib/cvmfs:/var/lib/cvmfs:shared
+    environment:
+      - CVMFS_CLIENT_PROFILE=single
+      - CVMFS_REPOSITORIES=sft.cern.ch
+      - CVMFS_QUOTA_LIMIT=25000
