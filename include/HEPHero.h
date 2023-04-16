@@ -39,6 +39,14 @@
 #include "btageffanalyzer.h"
 #include "sf_trigger.h"
 //#include "jet_resolution_corrector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/ReaderAsciiHepMC2.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/Units.h"
+#include "HepMC3/GenRunInfo.h"
+#include "HepMC3/WriterDOT.h"
+#include "HepMC3/Relatives.h"
 #include <highfive/H5File.hpp>
 #include <boost/multi_array.hpp>
 #include "RoccoR.h"
@@ -62,11 +70,6 @@ class HEPHero {
         bool RunObjects();
         void PreObjects();
         
-        void SetupTest();
-        bool TestRegion();
-        void TestSelection();
-        void TestSystematic();
-        void FinishTest();
         // INSERT YOUR SELECTION HERE
         
     //=================================================================================================================
@@ -74,7 +77,7 @@ class HEPHero {
     //=================================================================================================================
     private:
         
-        //=====HEPTools============================================================================
+        //=====HEP Tools===========================================================================
         void makeHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2, double zAxisOffset = 1. ); 
         void makeHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2 );
         void makeSysHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2, double zAxisOffset = 1. );
@@ -94,6 +97,14 @@ class HEPHero {
         void HDF_insert( string varname, vector<double>* variable );
         void HDF_fill();
         void HDF_write();
+        
+        
+        //=====GEN Tools===========================================================================
+        void calculate_gen_variables();
+        void plot_events(vector<int> events);
+        void WriteGenCutflowInfo();
+        //void VerticalSys();
+        //void Weight_corrections();
         
         
         //=====CMS Tools===========================================================================
@@ -166,6 +177,7 @@ class HEPHero {
         int                         _NumberEntries;
         int                         _EventPosition;
         string                      _SELECTION;
+        string                      _ANALYSIS;
         string                      _datasetName;
         string                      _Files;
         int                         _FilesID;
@@ -343,6 +355,63 @@ class HEPHero {
         bool get_TT1LXS_sfs;
         bool get_TT2LXS_sfs;
         bool get_DYXS_sfs;
+        
+        //HEPHeroGEN
+        //HepMC3::ReaderAscii *_ascii_file;
+        HepMC3::ReaderAsciiHepMC2   *_ascii_file;
+        HepMC3::GenEvent            _evt;
+        bool                        _has_xsec;
+        bool                        _has_pdf;
+        int                         _N_PS_weights;
+        string                      _momentum_unit;
+        string                      _length_unit;
+        HepMC3::WriterDOT           *_dot_writer;
+        
+        //---------------------------------------------------------------------------------------------------
+        // Generator Variables
+        //---------------------------------------------------------------------------------------------------
+        double GEN_HT;
+        double GEN_MET_pt;
+        double GEN_MET_phi;
+        double GEN_MHT_pt;
+        double GEN_MHT_phi;
+        
+        //----DATASET--------------------------------------
+        //string dataset_group;    
+        
+        //----VERTICAL SYSTEMATICS-------------------------
+        //int RegionID;
+        vector<int> parameters_id;
+        
+        
+        //---------------------------------------------------------------------------------------------------
+        // HepMC Variables
+        //---------------------------------------------------------------------------------------------------
+        int     event_number;
+        int     N_mpi;
+        double  event_scale;
+        double  alpha_QCD;
+        double  alpha_QED;
+        int     signal_process_id;
+        int momentum_unit_id;
+        int length_unit_id;
+        vector<double> weights_value;
+        vector<string> weights_name;
+        
+        // PDF
+        int id1;
+        int id2;
+        int pdf_id1;
+        int pdf_id2;
+        double x1;
+        double x2;
+        double scalePDF;
+        double pdf1;
+        double pdf2;
+        
+        // CROSS-SECTION
+        double cross_section;
+        double cross_section_unc;
         
         
     //=================================================================================================================

@@ -28,6 +28,7 @@ HEPHero::HEPHero( char *configFileName ) {
         configFile >> key >> ws >> value;
         if( configFile.eof() ) break;
         if( key == "Selection"                  )   _SELECTION = value;
+        if( key == "Analysis"                   )   _ANALYSIS = value;
         if( key == "Outpath"                    )   _outputDirectory = value;
         if( key == "InputFile"                  )   _inputFileNames.push_back( value ); 
         if( key == "InputTree"                  )   _inputTreeName = value; 
@@ -130,48 +131,79 @@ HEPHero::HEPHero( char *configFileName ) {
     
     
     //======GET DATASET INFORMATION================================================================
-    dataset_year = _datasetName.substr(_datasetName.length()-2,2);
-    if( _datasetName.substr(0,4) == "Data" ){
-        dataset_group = "Data";
-        dataset_era = _datasetName.substr(_datasetName.length()-4,1);
-        if( _datasetName.substr(5,9) == "DoubleEle" ){
-            dataset_sample = "DoubleEle";
-        }else if( _datasetName.substr(5,9) == "SingleEle" ){
-            dataset_sample = "SingleEle";
-        }else if( _datasetName.substr(5,8) == "DoubleMu" ){
-            dataset_sample = "DoubleMu";
-        }else if( _datasetName.substr(5,8) == "SingleMu" ){
-            dataset_sample = "SingleMu";
-        }else if( _datasetName.substr(5,5) == "EleMu" ){
-            dataset_sample = "EleMu";
-        }else if( _datasetName.substr(5,9) == "Electrons" ){
-            dataset_sample = "Electrons";
-        }else if( _datasetName.substr(5,3) == "MET" ){
-            dataset_sample = "MET";
+    if( _ANALYSIS == "GEN" ){
+        // HEPHeroGEN
+        if( _datasetName.substr(0,2) == "H7" ){
+            dataset_group = "H7";
         }
+        _DatasetID = atoi(DatasetID.c_str());
+        cout << "group: " << dataset_group << endl;
+        
+        
+        string sfile = _inputFileNames[0];
+        string sdelimiter = "/";
+        size_t spos = sfile.rfind(sdelimiter);
+        string sfile_start = sfile.substr(0, spos);
+        spos = sfile_start.rfind(sdelimiter);
+        string sparam = sfile_start.erase(0, spos + sdelimiter.length());
+        
+        string pdelimiter = "_";
+        int max_nparam = 100;
+        int nparam = 0;
+        do{
+            size_t ppos = sparam.find(pdelimiter);
+            if( ppos < sparam.npos ){
+                parameters_id.push_back(atoi(sparam.substr(0, ppos).c_str()));
+                sparam = sparam.erase(0, ppos + pdelimiter.length());
+            }else{
+                parameters_id.push_back(atoi(sparam.c_str()));
+                break;
+            }
+            nparam += 1;
+        }while( nparam < max_nparam );
     }else{
-        dataset_era = "No";
-        dataset_sample = "No";
-        if( _datasetName.substr(0,6) == "Signal" ){
-            dataset_group = "Signal";
+        dataset_year = _datasetName.substr(_datasetName.length()-2,2);
+        if( _datasetName.substr(0,4) == "Data" ){
+            dataset_group = "Data";
+            dataset_era = _datasetName.substr(_datasetName.length()-4,1);
+            if( _datasetName.substr(5,9) == "DoubleEle" ){
+                dataset_sample = "DoubleEle";
+            }else if( _datasetName.substr(5,9) == "SingleEle" ){
+                dataset_sample = "SingleEle";
+            }else if( _datasetName.substr(5,8) == "DoubleMu" ){
+                dataset_sample = "DoubleMu";
+            }else if( _datasetName.substr(5,8) == "SingleMu" ){
+                dataset_sample = "SingleMu";
+            }else if( _datasetName.substr(5,5) == "EleMu" ){
+                dataset_sample = "EleMu";
+            }else if( _datasetName.substr(5,9) == "Electrons" ){
+                dataset_sample = "Electrons";
+            }else if( _datasetName.substr(5,3) == "MET" ){
+                dataset_sample = "MET";
+            }
         }else{
-            dataset_group = "Bkg";
+            dataset_era = "No";
+            dataset_sample = "No";
+            if( _datasetName.substr(0,6) == "Signal" ){
+                dataset_group = "Signal";
+            }else{
+                dataset_group = "Bkg";
+            }
         }
+        
+        if( DatasetID.substr(6,1) == "1" ){
+            dataset_HIPM = true;
+        }else{
+            dataset_HIPM = false;
+        }
+        _DatasetID = atoi(DatasetID.c_str());
+        
+        cout << "group: " << dataset_group << endl;
+        cout << "year: " << dataset_year << endl;
+        cout << "HIPM: " << dataset_HIPM << endl;
+        cout << "era: " << dataset_era << endl; 
+        cout << "sample: " << dataset_sample << endl;
     }
-    
-    if( DatasetID.substr(6,1) == "1" ){
-        dataset_HIPM = true;
-    }else{
-        dataset_HIPM = false;
-    }
-    _DatasetID = atoi(DatasetID.c_str());
-    
-    cout << "group: " << dataset_group << endl;
-    cout << "year: " << dataset_year << endl;
-    cout << "HIPM: " << dataset_HIPM << endl;
-    cout << "era: " << dataset_era << endl; 
-    cout << "sample: " << dataset_sample << endl;
-    
     
     string s = _Files;
     string delimiter = "_";
@@ -186,18 +218,30 @@ HEPHero::HEPHero( char *configFileName ) {
     mkdir(_outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     string sysDirectory = _outputDirectory + "/Systematics"; 
     mkdir(sysDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    if( _ANALYSIS == "GEN" ){
+        string dotDirectory = _outputDirectory + "/Views"; 
+        mkdir(dotDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+    
         
     //======ADD THE INPUT TREES TO THE TCHAINS=====================================================
-    gErrorIgnoreLevel = kError;
-    _inputTree = new TChain(_inputTreeName.c_str());
-    for( vector<string>::iterator itr = _inputFileNames.begin(); itr != _inputFileNames.end(); ++itr ) {
-        
-        string inputFileName;
-        if( _Machines == "CERN" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
-        if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);    
-        if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
-        _inputTree -> Add( inputFileName.c_str() ); 
+    if( _ANALYSIS != "GEN" ){
+        gErrorIgnoreLevel = kError;
+        _inputTree = new TChain(_inputTreeName.c_str());
+        for( vector<string>::iterator itr = _inputFileNames.begin(); itr != _inputFileNames.end(); ++itr ) {
+            
+            string inputFileName;
+            if( _Machines == "CERN" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
+            if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);    
+            if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
+            _inputTree -> Add( inputFileName.c_str() ); 
+        }
     }
+    
+    
+    //======ADD ASCII FILE=========================================================================
+    // HEPHeroGEN
+    if( _ANALYSIS == "GEN" ) _ascii_file = new HepMC3::ReaderAsciiHepMC2(_inputFileNames.at(0));
     
         
     //======CREATE OUTPUT FILE AND TREE============================================================
@@ -231,327 +275,327 @@ bool HEPHero::Init() {
     //======SET HISTOGRAMS STYLE===================================================================
     setStyle(1.0,true,0.15);
     
-    
-    //======SET THE BRANCH ADDRESSES===============================================================
-    _inputTree->SetBranchAddress("run", &run );
-    _inputTree->SetBranchAddress("luminosityBlock", &luminosityBlock );
-    _inputTree->SetBranchAddress("event", &event );
-    
-    /*
-    _inputTree->SetBranchAddress("nFatJet", &nFatJet );
-    _inputTree->SetBranchAddress("nFsrPhoton", &nFsrPhoton );
-    _inputTree->SetBranchAddress("nGenJetAK8", &nGenJetAK8 );
-    
-    _inputTree->SetBranchAddress("nSubGenJetAK8", &nSubGenJetAK8 );
-    _inputTree->SetBranchAddress("nGenVisTau", &nGenVisTau );
-    _inputTree->SetBranchAddress("nLHEPdfWeight", &nLHEPdfWeight );
-    _inputTree->SetBranchAddress("nLHEReweightingWeight", &nLHEReweightingWeight );
-    _inputTree->SetBranchAddress("nLHEScaleWeight", &nLHEScaleWeight );
-    _inputTree->SetBranchAddress("nPSWeight", &nPSWeight );
-    _inputTree->SetBranchAddress("nIsoTrack", &nIsoTrack );
-    _inputTree->SetBranchAddress("nLHEPart", &nLHEPart );
-    _inputTree->SetBranchAddress("nPhoton", &nPhoton );
-    _inputTree->SetBranchAddress("nGenDressedLepton", &nGenDressedLepton );
-    _inputTree->SetBranchAddress("nGenIsolatedPhoton", &nGenIsolatedPhoton );
-    _inputTree->SetBranchAddress("nSoftActivityJet", &nSoftActivityJet );
-    _inputTree->SetBranchAddress("nSubJet", &nSubJet );
-    _inputTree->SetBranchAddress("nTau", &nTau );
-    _inputTree->SetBranchAddress("nTrigObj", &nTrigObj );
-    _inputTree->SetBranchAddress("nOtherPV", &nOtherPV );
-    _inputTree->SetBranchAddress("nSV", &nSV );
-   */
-    
-    _inputTree->SetBranchAddress("fixedGridRhoFastjetAll", &fixedGridRhoFastjetAll );
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("nElectron", &nElectron );
-    _inputTree->SetBranchAddress("Electron_pt", &Electron_pt );
-    _inputTree->SetBranchAddress("Electron_eta", &Electron_eta );
-    _inputTree->SetBranchAddress("Electron_phi", &Electron_phi );
-    _inputTree->SetBranchAddress("Electron_charge", &Electron_charge );
-    _inputTree->SetBranchAddress("Electron_mass", &Electron_mass );
-    _inputTree->SetBranchAddress("Electron_pdgId", &Electron_pdgId );
-    _inputTree->SetBranchAddress("Electron_miniPFRelIso_all", &Electron_miniPFRelIso_all );
-    _inputTree->SetBranchAddress("Electron_miniPFRelIso_chg", &Electron_miniPFRelIso_chg );
-    _inputTree->SetBranchAddress("Electron_jetRelIso", &Electron_jetRelIso );
-    _inputTree->SetBranchAddress("Electron_jetIdx", &Electron_jetIdx );
-    _inputTree->SetBranchAddress("Electron_isPFcand", &Electron_isPFcand );
-    _inputTree->SetBranchAddress("Electron_dxy", &Electron_dxy );
-    _inputTree->SetBranchAddress("Electron_dxyErr", &Electron_dxyErr );
-    _inputTree->SetBranchAddress("Electron_dz", &Electron_dz );
-    _inputTree->SetBranchAddress("Electron_dzErr", &Electron_dzErr );
-    _inputTree->SetBranchAddress("Electron_deltaEtaSC", &Electron_deltaEtaSC );
-    
-    _inputTree->SetBranchAddress("Electron_cutBased", &Electron_cutBased );
-    _inputTree->SetBranchAddress("Electron_cutBased_HEEP", &Electron_cutBased_HEEP );
-    //_inputTree->SetBranchAddress("Electron_cutBased_Fall17_V1", &Electron_cutBased_Fall17_V1 );
-    //_inputTree->SetBranchAddress("Electron_mvaFall17V1Iso", &Electron_mvaFall17V1Iso );
-    //_inputTree->SetBranchAddress("Electron_mvaFall17V1noIso", &Electron_mvaFall17V1noIso );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso", &Electron_mvaFall17V2Iso );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso", &Electron_mvaFall17V2noIso );
-    _inputTree->SetBranchAddress("Electron_pfRelIso03_all", &Electron_pfRelIso03_all );
-    _inputTree->SetBranchAddress("Electron_pfRelIso03_chg", &Electron_pfRelIso03_chg );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WP80", &Electron_mvaFall17V2Iso_WP80 );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WP90", &Electron_mvaFall17V2Iso_WP90 );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WPL", &Electron_mvaFall17V2Iso_WPL );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso_WP80", &Electron_mvaFall17V2noIso_WP80 );
-    _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso_WP90", &Electron_mvaFall17V2noIso_WP90 );
-
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("nMuon", &nMuon );
-    _inputTree->SetBranchAddress("Muon_pt", &Muon_pt );
-    _inputTree->SetBranchAddress("Muon_eta", &Muon_eta );
-    _inputTree->SetBranchAddress("Muon_phi", &Muon_phi );
-    _inputTree->SetBranchAddress("Muon_charge", &Muon_charge );
-    _inputTree->SetBranchAddress("Muon_mass", &Muon_mass );
-    _inputTree->SetBranchAddress("Muon_pdgId", &Muon_pdgId );
-    _inputTree->SetBranchAddress("Muon_miniPFRelIso_all", &Muon_miniPFRelIso_all );
-    _inputTree->SetBranchAddress("Muon_miniPFRelIso_chg", &Muon_miniPFRelIso_chg );
-    _inputTree->SetBranchAddress("Muon_jetRelIso", &Muon_jetRelIso );
-    _inputTree->SetBranchAddress("Muon_jetIdx", &Muon_jetIdx );
-    _inputTree->SetBranchAddress("Muon_isPFcand", &Muon_isPFcand );
-    _inputTree->SetBranchAddress("Muon_isGlobal", &Muon_isGlobal );
-    _inputTree->SetBranchAddress("Muon_isTracker", &Muon_isTracker );
-    _inputTree->SetBranchAddress("Muon_dxy", &Muon_dxy );
-    _inputTree->SetBranchAddress("Muon_dxyErr", &Muon_dxyErr );
-    _inputTree->SetBranchAddress("Muon_dz", &Muon_dz );
-    _inputTree->SetBranchAddress("Muon_dzErr", &Muon_dzErr );
-    _inputTree->SetBranchAddress("Muon_nTrackerLayers", &Muon_nTrackerLayers );
-    
-    _inputTree->SetBranchAddress("Muon_looseId", &Muon_looseId );
-    _inputTree->SetBranchAddress("Muon_mediumId", &Muon_mediumId );
-    _inputTree->SetBranchAddress("Muon_tightId", &Muon_tightId );
-    _inputTree->SetBranchAddress("Muon_multiIsoId", &Muon_multiIsoId );
-    _inputTree->SetBranchAddress("Muon_softId", &Muon_softId );
-    _inputTree->SetBranchAddress("Muon_tkIsoId", &Muon_tkIsoId );
-    _inputTree->SetBranchAddress("Muon_tkRelIso", &Muon_tkRelIso );
-    _inputTree->SetBranchAddress("Muon_pfRelIso04_all", &Muon_pfRelIso04_all );
-    _inputTree->SetBranchAddress("Muon_pfRelIso03_all", &Muon_pfRelIso03_all );
-    _inputTree->SetBranchAddress("Muon_pfRelIso03_chg", &Muon_pfRelIso03_chg );
-    _inputTree->SetBranchAddress("Muon_pfIsoId", &Muon_pfIsoId );
-    _inputTree->SetBranchAddress("Muon_highPtId", &Muon_highPtId );
-    
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("nCorrT1METJet", &nCorrT1METJet );
-    _inputTree->SetBranchAddress("CorrT1METJet_area", &CorrT1METJet_area );
-    _inputTree->SetBranchAddress("CorrT1METJet_eta", &CorrT1METJet_eta );
-    _inputTree->SetBranchAddress("CorrT1METJet_muonSubtrFactor", &CorrT1METJet_muonSubtrFactor );
-    _inputTree->SetBranchAddress("CorrT1METJet_phi", &CorrT1METJet_phi );
-    _inputTree->SetBranchAddress("CorrT1METJet_rawPt", &CorrT1METJet_rawPt );
-    
-    _inputTree->SetBranchAddress("nJet", &nJet );
-    _inputTree->SetBranchAddress("Jet_pt", &Jet_pt );
-    _inputTree->SetBranchAddress("Jet_eta", &Jet_eta );
-    _inputTree->SetBranchAddress("Jet_phi", &Jet_phi );
-    _inputTree->SetBranchAddress("Jet_area", &Jet_area );
-    _inputTree->SetBranchAddress("Jet_mass", &Jet_mass );
-    _inputTree->SetBranchAddress("Jet_jetId", &Jet_jetId );
-    _inputTree->SetBranchAddress("Jet_chEmEF", &Jet_chEmEF );
-    _inputTree->SetBranchAddress("Jet_chHEF", &Jet_chHEF );
-    _inputTree->SetBranchAddress("Jet_neEmEF", &Jet_neEmEF );
-    _inputTree->SetBranchAddress("Jet_neHEF", &Jet_neHEF );
-    _inputTree->SetBranchAddress("Jet_btagDeepB", &Jet_btagDeepB );
-    _inputTree->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB );
-    _inputTree->SetBranchAddress("Jet_puIdDisc", &Jet_puIdDisc );
-    _inputTree->SetBranchAddress("Jet_puId", &Jet_puId );
-    _inputTree->SetBranchAddress("Jet_qgl", &Jet_qgl );
-    _inputTree->SetBranchAddress("Jet_nConstituents", &Jet_nConstituents );
-    _inputTree->SetBranchAddress("Jet_nElectrons", &Jet_nElectrons );
-    _inputTree->SetBranchAddress("Jet_nMuons", &Jet_nMuons );
-    _inputTree->SetBranchAddress("Jet_rawFactor", &Jet_rawFactor );
-    _inputTree->SetBranchAddress("Jet_muonSubtrFactor", &Jet_muonSubtrFactor );
-    
-
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("MET_phi", &MET_phi );
-    _inputTree->SetBranchAddress("MET_pt", &MET_pt );
-    _inputTree->SetBranchAddress("MET_MetUnclustEnUpDeltaX", &MET_MetUnclustEnUpDeltaX );
-    _inputTree->SetBranchAddress("MET_MetUnclustEnUpDeltaY", &MET_MetUnclustEnUpDeltaY );    
-    _inputTree->SetBranchAddress("MET_covXX", &MET_covXX );
-    _inputTree->SetBranchAddress("MET_covXY", &MET_covXY );
-    _inputTree->SetBranchAddress("MET_covYY", &MET_covYY );
-    _inputTree->SetBranchAddress("MET_significance", &MET_significance );
-
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("PV_ndof", &PV_ndof );
-    _inputTree->SetBranchAddress("PV_x", &PV_x );
-    _inputTree->SetBranchAddress("PV_y", &PV_y );
-    _inputTree->SetBranchAddress("PV_z", &PV_z );
-    _inputTree->SetBranchAddress("PV_chi2", &PV_chi2 );
-    _inputTree->SetBranchAddress("PV_score", &PV_score );
-    _inputTree->SetBranchAddress("PV_npvs", &PV_npvs );
-    _inputTree->SetBranchAddress("PV_npvsGood", &PV_npvsGood );
-    
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("nSV", &nSV );
-    _inputTree->SetBranchAddress("SV_dlen", &SV_dlen );
-    _inputTree->SetBranchAddress("SV_dlenSig", &SV_dlenSig );
-    _inputTree->SetBranchAddress("SV_dxy", &SV_dxy );
-    _inputTree->SetBranchAddress("SV_dxySig", &SV_dxySig );
-    _inputTree->SetBranchAddress("SV_pAngle", &SV_pAngle );
-    _inputTree->SetBranchAddress("SV_chi2", &SV_chi2 );
-    _inputTree->SetBranchAddress("SV_eta", &SV_eta );
-    _inputTree->SetBranchAddress("SV_mass", &SV_mass );
-    _inputTree->SetBranchAddress("SV_ndof", &SV_ndof );
-    _inputTree->SetBranchAddress("SV_phi", &SV_phi );
-    _inputTree->SetBranchAddress("SV_pt", &SV_pt );
-    _inputTree->SetBranchAddress("SV_x", &SV_x );
-    _inputTree->SetBranchAddress("SV_y", &SV_y );
-    _inputTree->SetBranchAddress("SV_z", &SV_z );
-    //_inputTree->SetBranchAddress("SV_ntracks", &SV_ntracks ); // not found in data 2016
-    
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("nIsoTrack", &nIsoTrack );
-    _inputTree->SetBranchAddress("IsoTrack_dxy", &IsoTrack_dxy );
-    _inputTree->SetBranchAddress("IsoTrack_dz", &IsoTrack_dz );
-    _inputTree->SetBranchAddress("IsoTrack_eta", &IsoTrack_eta );
-    _inputTree->SetBranchAddress("IsoTrack_pfRelIso03_all", &IsoTrack_pfRelIso03_all );
-    _inputTree->SetBranchAddress("IsoTrack_pfRelIso03_chg", &IsoTrack_pfRelIso03_chg );
-    _inputTree->SetBranchAddress("IsoTrack_phi", &IsoTrack_phi );
-    _inputTree->SetBranchAddress("IsoTrack_pt", &IsoTrack_pt );
-    _inputTree->SetBranchAddress("IsoTrack_miniPFRelIso_all", &IsoTrack_miniPFRelIso_all );
-    _inputTree->SetBranchAddress("IsoTrack_miniPFRelIso_chg", &IsoTrack_miniPFRelIso_chg );
-    _inputTree->SetBranchAddress("IsoTrack_fromPV", &IsoTrack_fromPV );
-    _inputTree->SetBranchAddress("IsoTrack_pdgId", &IsoTrack_pdgId );
-    _inputTree->SetBranchAddress("IsoTrack_isHighPurityTrack", &IsoTrack_isHighPurityTrack );
-    _inputTree->SetBranchAddress("IsoTrack_isPFcand", &IsoTrack_isPFcand );
-    _inputTree->SetBranchAddress("IsoTrack_isFromLostTrack", &IsoTrack_isFromLostTrack );
-    
-
-    //-----------------------------------------------------------------------------------------------------------------------
-    _inputTree->SetBranchAddress("Flag_goodVertices", &Flag_goodVertices );
-    _inputTree->SetBranchAddress("Flag_globalSuperTightHalo2016Filter", &Flag_globalSuperTightHalo2016Filter );
-    _inputTree->SetBranchAddress("Flag_HBHENoiseFilter", &Flag_HBHENoiseFilter );
-    _inputTree->SetBranchAddress("Flag_HBHENoiseIsoFilter", &Flag_HBHENoiseIsoFilter );
-    _inputTree->SetBranchAddress("Flag_EcalDeadCellTriggerPrimitiveFilter", &Flag_EcalDeadCellTriggerPrimitiveFilter );
-    _inputTree->SetBranchAddress("Flag_BadPFMuonFilter", &Flag_BadPFMuonFilter );
-    _inputTree->SetBranchAddress("Flag_ecalBadCalibFilter", &Flag_ecalBadCalibFilter );
-    _inputTree->SetBranchAddress("Flag_eeBadScFilter", &Flag_eeBadScFilter );
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    if( dataset_year == "16" ){
-        _inputTree->SetBranchAddress("HLT_Ele27_WPTight_Gsf", &HLT_Ele27_WPTight_Gsf );
-        _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
-        _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
-        //_inputTree->SetBranchAddress("HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL", &HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL );
-        _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 );
-        _inputTree->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24 );
-        _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
-        //_inputTree->SetBranchAddress("HLT_Mu30_TkMu11", &HLT_Mu30_TkMu11 );
-        _inputTree->SetBranchAddress("HLT_PFMET300", &HLT_PFMET300 );
-        _inputTree->SetBranchAddress("HLT_MET200", &HLT_MET200 );
-        _inputTree->SetBranchAddress("HLT_PFHT300_PFMET110", &HLT_PFHT300_PFMET110 );
-        _inputTree->SetBranchAddress("HLT_PFMET170_HBHECleaned", &HLT_PFMET170_HBHECleaned );
-        _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight );
-        _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight );
-        if( (dataset_group == "Data") && (dataset_era == "H") ){
-            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ );
-            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ );
-            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ );
-            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
-        }else{
-            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL );
-            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL );
-            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL );
-            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL );
-        }
-    }else if( dataset_year == "17" ){
-        _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
-        _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
-        _inputTree->SetBranchAddress("HLT_Ele35_WPTight_Gsf", &HLT_Ele35_WPTight_Gsf );
-        _inputTree->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27 );
-        _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
-        _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
-        _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL );
-        _inputTree->SetBranchAddress("HLT_DoubleEle33_CaloIdL_MW", &HLT_DoubleEle33_CaloIdL_MW ); 
-        _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 ); 
-        _inputTree->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight_PFHT60", &HLT_PFMET120_PFMHT120_IDTight_PFHT60 ); 
-        _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 ); 
-        _inputTree->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight );
-    }else if( dataset_year == "18" ){
-        _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
-        _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL ); 
-        _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 ); 
-        _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
-        _inputTree->SetBranchAddress("HLT_Ele32_WPTight_Gsf", &HLT_Ele32_WPTight_Gsf );
-        _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
-        _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL ); 
-        _inputTree->SetBranchAddress("HLT_DoubleEle25_CaloIdL_MW", &HLT_DoubleEle25_CaloIdL_MW ); 
-        _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 ); 
-        _inputTree->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned ); 
-        _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight_PFHT60", &HLT_PFMET120_PFMHT120_IDTight_PFHT60 ); 
-        _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 ); 
-        _inputTree->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight ); 
-        _inputTree->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight );
-    }
-    
-    //-----------------------------------------------------------------------------------------------------------------------
-    if( dataset_group != "Data" ) {
-        _inputTree->SetBranchAddress("genWeight", &genWeight );
+    if( _ANALYSIS != "GEN" ){
+        //======SET THE BRANCH ADDRESSES===============================================================
+        _inputTree->SetBranchAddress("run", &run );
+        _inputTree->SetBranchAddress("luminosityBlock", &luminosityBlock );
+        _inputTree->SetBranchAddress("event", &event );
         
-        _inputTree->SetBranchAddress("Electron_genPartIdx", &Electron_genPartIdx );
-        _inputTree->SetBranchAddress("Muon_genPartIdx", &Muon_genPartIdx );
-        _inputTree->SetBranchAddress("Jet_genJetIdx", &Jet_genJetIdx );
-        _inputTree->SetBranchAddress("Jet_hadronFlavour", &Jet_hadronFlavour );
+        /*
+        _inputTree->SetBranchAddress("nFatJet", &nFatJet );
+        _inputTree->SetBranchAddress("nFsrPhoton", &nFsrPhoton );
+        _inputTree->SetBranchAddress("nGenJetAK8", &nGenJetAK8 );
         
-        _inputTree->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt );
-        _inputTree->SetBranchAddress("Pileup_nPU", &Pileup_nPU );
-        
-        _inputTree->SetBranchAddress("nGenJet", &nGenJet );
-        _inputTree->SetBranchAddress("GenJet_eta", &GenJet_eta );
-        _inputTree->SetBranchAddress("GenJet_phi", &GenJet_phi );
-        _inputTree->SetBranchAddress("GenJet_pt", &GenJet_pt );
-        _inputTree->SetBranchAddress("GenJet_partonFlavour", &GenJet_partonFlavour );
-        
-        _inputTree->SetBranchAddress("GenMET_phi", &GenMET_phi );
-        _inputTree->SetBranchAddress("GenMET_pt", &GenMET_pt );
-        
-        _inputTree->SetBranchAddress("nGenPart", &nGenPart );
-        _inputTree->SetBranchAddress("GenPart_eta", &GenPart_eta );
-        _inputTree->SetBranchAddress("GenPart_mass", &GenPart_mass );
-        _inputTree->SetBranchAddress("GenPart_phi", &GenPart_phi );
-        _inputTree->SetBranchAddress("GenPart_pt", &GenPart_pt );
-        _inputTree->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother );
-        _inputTree->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId );
-        _inputTree->SetBranchAddress("GenPart_status", &GenPart_status );
-        _inputTree->SetBranchAddress("GenPart_statusFlags", &GenPart_statusFlags );
-        
-        _inputTree->SetBranchAddress("LHEWeight_originalXWGTUP", &LHEWeight_originalXWGTUP );
+        _inputTree->SetBranchAddress("nSubGenJetAK8", &nSubGenJetAK8 );
+        _inputTree->SetBranchAddress("nGenVisTau", &nGenVisTau );
         _inputTree->SetBranchAddress("nLHEPdfWeight", &nLHEPdfWeight );
-        _inputTree->SetBranchAddress("LHEPdfWeight", &LHEPdfWeight );
-        _inputTree->SetBranchAddress("nLHEScaleWeight", &nLHEScaleWeight );
-        _inputTree->SetBranchAddress("LHEScaleWeight", &LHEScaleWeight );
-        _inputTree->SetBranchAddress("nPSWeight", &nPSWeight );
-        _inputTree->SetBranchAddress("PSWeight", &PSWeight );
         _inputTree->SetBranchAddress("nLHEReweightingWeight", &nLHEReweightingWeight );
-        _inputTree->SetBranchAddress("LHEReweightingWeight", &LHEReweightingWeight );
+        _inputTree->SetBranchAddress("nLHEScaleWeight", &nLHEScaleWeight );
+        _inputTree->SetBranchAddress("nPSWeight", &nPSWeight );
+        _inputTree->SetBranchAddress("nIsoTrack", &nIsoTrack );
+        _inputTree->SetBranchAddress("nLHEPart", &nLHEPart );
+        _inputTree->SetBranchAddress("nPhoton", &nPhoton );
+        _inputTree->SetBranchAddress("nGenDressedLepton", &nGenDressedLepton );
+        _inputTree->SetBranchAddress("nGenIsolatedPhoton", &nGenIsolatedPhoton );
+        _inputTree->SetBranchAddress("nSoftActivityJet", &nSoftActivityJet );
+        _inputTree->SetBranchAddress("nSubJet", &nSubJet );
+        _inputTree->SetBranchAddress("nTau", &nTau );
+        _inputTree->SetBranchAddress("nTrigObj", &nTrigObj );
+        _inputTree->SetBranchAddress("nOtherPV", &nOtherPV );
+        _inputTree->SetBranchAddress("nSV", &nSV );
+    */
         
-        _inputTree->SetBranchAddress("LHE_HT", &LHE_HT );
-        _inputTree->SetBranchAddress("LHE_Vpt", &LHE_Vpt );
-        _inputTree->SetBranchAddress("LHE_Njets", &LHE_Njets );
+        _inputTree->SetBranchAddress("fixedGridRhoFastjetAll", &fixedGridRhoFastjetAll );
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nElectron", &nElectron );
+        _inputTree->SetBranchAddress("Electron_pt", &Electron_pt );
+        _inputTree->SetBranchAddress("Electron_eta", &Electron_eta );
+        _inputTree->SetBranchAddress("Electron_phi", &Electron_phi );
+        _inputTree->SetBranchAddress("Electron_charge", &Electron_charge );
+        _inputTree->SetBranchAddress("Electron_mass", &Electron_mass );
+        _inputTree->SetBranchAddress("Electron_pdgId", &Electron_pdgId );
+        _inputTree->SetBranchAddress("Electron_miniPFRelIso_all", &Electron_miniPFRelIso_all );
+        _inputTree->SetBranchAddress("Electron_miniPFRelIso_chg", &Electron_miniPFRelIso_chg );
+        _inputTree->SetBranchAddress("Electron_jetRelIso", &Electron_jetRelIso );
+        _inputTree->SetBranchAddress("Electron_jetIdx", &Electron_jetIdx );
+        _inputTree->SetBranchAddress("Electron_isPFcand", &Electron_isPFcand );
+        _inputTree->SetBranchAddress("Electron_dxy", &Electron_dxy );
+        _inputTree->SetBranchAddress("Electron_dxyErr", &Electron_dxyErr );
+        _inputTree->SetBranchAddress("Electron_dz", &Electron_dz );
+        _inputTree->SetBranchAddress("Electron_dzErr", &Electron_dzErr );
+        _inputTree->SetBranchAddress("Electron_deltaEtaSC", &Electron_deltaEtaSC );
+        
+        _inputTree->SetBranchAddress("Electron_cutBased", &Electron_cutBased );
+        _inputTree->SetBranchAddress("Electron_cutBased_HEEP", &Electron_cutBased_HEEP );
+        //_inputTree->SetBranchAddress("Electron_cutBased_Fall17_V1", &Electron_cutBased_Fall17_V1 );
+        //_inputTree->SetBranchAddress("Electron_mvaFall17V1Iso", &Electron_mvaFall17V1Iso );
+        //_inputTree->SetBranchAddress("Electron_mvaFall17V1noIso", &Electron_mvaFall17V1noIso );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso", &Electron_mvaFall17V2Iso );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso", &Electron_mvaFall17V2noIso );
+        _inputTree->SetBranchAddress("Electron_pfRelIso03_all", &Electron_pfRelIso03_all );
+        _inputTree->SetBranchAddress("Electron_pfRelIso03_chg", &Electron_pfRelIso03_chg );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WP80", &Electron_mvaFall17V2Iso_WP80 );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WP90", &Electron_mvaFall17V2Iso_WP90 );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2Iso_WPL", &Electron_mvaFall17V2Iso_WPL );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso_WP80", &Electron_mvaFall17V2noIso_WP80 );
+        _inputTree->SetBranchAddress("Electron_mvaFall17V2noIso_WP90", &Electron_mvaFall17V2noIso_WP90 );
 
-        _inputTree->SetBranchAddress("L1PreFiringWeight_Dn", &L1PreFiringWeight_Dn );
-        _inputTree->SetBranchAddress("L1PreFiringWeight_Nom", &L1PreFiringWeight_Nom );
-        _inputTree->SetBranchAddress("L1PreFiringWeight_Up", &L1PreFiringWeight_Up );
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nMuon", &nMuon );
+        _inputTree->SetBranchAddress("Muon_pt", &Muon_pt );
+        _inputTree->SetBranchAddress("Muon_eta", &Muon_eta );
+        _inputTree->SetBranchAddress("Muon_phi", &Muon_phi );
+        _inputTree->SetBranchAddress("Muon_charge", &Muon_charge );
+        _inputTree->SetBranchAddress("Muon_mass", &Muon_mass );
+        _inputTree->SetBranchAddress("Muon_pdgId", &Muon_pdgId );
+        _inputTree->SetBranchAddress("Muon_miniPFRelIso_all", &Muon_miniPFRelIso_all );
+        _inputTree->SetBranchAddress("Muon_miniPFRelIso_chg", &Muon_miniPFRelIso_chg );
+        _inputTree->SetBranchAddress("Muon_jetRelIso", &Muon_jetRelIso );
+        _inputTree->SetBranchAddress("Muon_jetIdx", &Muon_jetIdx );
+        _inputTree->SetBranchAddress("Muon_isPFcand", &Muon_isPFcand );
+        _inputTree->SetBranchAddress("Muon_isGlobal", &Muon_isGlobal );
+        _inputTree->SetBranchAddress("Muon_isTracker", &Muon_isTracker );
+        _inputTree->SetBranchAddress("Muon_dxy", &Muon_dxy );
+        _inputTree->SetBranchAddress("Muon_dxyErr", &Muon_dxyErr );
+        _inputTree->SetBranchAddress("Muon_dz", &Muon_dz );
+        _inputTree->SetBranchAddress("Muon_dzErr", &Muon_dzErr );
+        _inputTree->SetBranchAddress("Muon_nTrackerLayers", &Muon_nTrackerLayers );
+        
+        _inputTree->SetBranchAddress("Muon_looseId", &Muon_looseId );
+        _inputTree->SetBranchAddress("Muon_mediumId", &Muon_mediumId );
+        _inputTree->SetBranchAddress("Muon_tightId", &Muon_tightId );
+        _inputTree->SetBranchAddress("Muon_multiIsoId", &Muon_multiIsoId );
+        _inputTree->SetBranchAddress("Muon_softId", &Muon_softId );
+        _inputTree->SetBranchAddress("Muon_tkIsoId", &Muon_tkIsoId );
+        _inputTree->SetBranchAddress("Muon_tkRelIso", &Muon_tkRelIso );
+        _inputTree->SetBranchAddress("Muon_pfRelIso04_all", &Muon_pfRelIso04_all );
+        _inputTree->SetBranchAddress("Muon_pfRelIso03_all", &Muon_pfRelIso03_all );
+        _inputTree->SetBranchAddress("Muon_pfRelIso03_chg", &Muon_pfRelIso03_chg );
+        _inputTree->SetBranchAddress("Muon_pfIsoId", &Muon_pfIsoId );
+        _inputTree->SetBranchAddress("Muon_highPtId", &Muon_highPtId );
+        
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nCorrT1METJet", &nCorrT1METJet );
+        _inputTree->SetBranchAddress("CorrT1METJet_area", &CorrT1METJet_area );
+        _inputTree->SetBranchAddress("CorrT1METJet_eta", &CorrT1METJet_eta );
+        _inputTree->SetBranchAddress("CorrT1METJet_muonSubtrFactor", &CorrT1METJet_muonSubtrFactor );
+        _inputTree->SetBranchAddress("CorrT1METJet_phi", &CorrT1METJet_phi );
+        _inputTree->SetBranchAddress("CorrT1METJet_rawPt", &CorrT1METJet_rawPt );
+        
+        _inputTree->SetBranchAddress("nJet", &nJet );
+        _inputTree->SetBranchAddress("Jet_pt", &Jet_pt );
+        _inputTree->SetBranchAddress("Jet_eta", &Jet_eta );
+        _inputTree->SetBranchAddress("Jet_phi", &Jet_phi );
+        _inputTree->SetBranchAddress("Jet_area", &Jet_area );
+        _inputTree->SetBranchAddress("Jet_mass", &Jet_mass );
+        _inputTree->SetBranchAddress("Jet_jetId", &Jet_jetId );
+        _inputTree->SetBranchAddress("Jet_chEmEF", &Jet_chEmEF );
+        _inputTree->SetBranchAddress("Jet_chHEF", &Jet_chHEF );
+        _inputTree->SetBranchAddress("Jet_neEmEF", &Jet_neEmEF );
+        _inputTree->SetBranchAddress("Jet_neHEF", &Jet_neHEF );
+        _inputTree->SetBranchAddress("Jet_btagDeepB", &Jet_btagDeepB );
+        _inputTree->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB );
+        _inputTree->SetBranchAddress("Jet_puIdDisc", &Jet_puIdDisc );
+        _inputTree->SetBranchAddress("Jet_puId", &Jet_puId );
+        _inputTree->SetBranchAddress("Jet_qgl", &Jet_qgl );
+        _inputTree->SetBranchAddress("Jet_nConstituents", &Jet_nConstituents );
+        _inputTree->SetBranchAddress("Jet_nElectrons", &Jet_nElectrons );
+        _inputTree->SetBranchAddress("Jet_nMuons", &Jet_nMuons );
+        _inputTree->SetBranchAddress("Jet_rawFactor", &Jet_rawFactor );
+        _inputTree->SetBranchAddress("Jet_muonSubtrFactor", &Jet_muonSubtrFactor );
+        
+
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("MET_phi", &MET_phi );
+        _inputTree->SetBranchAddress("MET_pt", &MET_pt );
+        _inputTree->SetBranchAddress("MET_MetUnclustEnUpDeltaX", &MET_MetUnclustEnUpDeltaX );
+        _inputTree->SetBranchAddress("MET_MetUnclustEnUpDeltaY", &MET_MetUnclustEnUpDeltaY );    
+        _inputTree->SetBranchAddress("MET_covXX", &MET_covXX );
+        _inputTree->SetBranchAddress("MET_covXY", &MET_covXY );
+        _inputTree->SetBranchAddress("MET_covYY", &MET_covYY );
+        _inputTree->SetBranchAddress("MET_significance", &MET_significance );
+
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("PV_ndof", &PV_ndof );
+        _inputTree->SetBranchAddress("PV_x", &PV_x );
+        _inputTree->SetBranchAddress("PV_y", &PV_y );
+        _inputTree->SetBranchAddress("PV_z", &PV_z );
+        _inputTree->SetBranchAddress("PV_chi2", &PV_chi2 );
+        _inputTree->SetBranchAddress("PV_score", &PV_score );
+        _inputTree->SetBranchAddress("PV_npvs", &PV_npvs );
+        _inputTree->SetBranchAddress("PV_npvsGood", &PV_npvsGood );
+        
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nSV", &nSV );
+        _inputTree->SetBranchAddress("SV_dlen", &SV_dlen );
+        _inputTree->SetBranchAddress("SV_dlenSig", &SV_dlenSig );
+        _inputTree->SetBranchAddress("SV_dxy", &SV_dxy );
+        _inputTree->SetBranchAddress("SV_dxySig", &SV_dxySig );
+        _inputTree->SetBranchAddress("SV_pAngle", &SV_pAngle );
+        _inputTree->SetBranchAddress("SV_chi2", &SV_chi2 );
+        _inputTree->SetBranchAddress("SV_eta", &SV_eta );
+        _inputTree->SetBranchAddress("SV_mass", &SV_mass );
+        _inputTree->SetBranchAddress("SV_ndof", &SV_ndof );
+        _inputTree->SetBranchAddress("SV_phi", &SV_phi );
+        _inputTree->SetBranchAddress("SV_pt", &SV_pt );
+        _inputTree->SetBranchAddress("SV_x", &SV_x );
+        _inputTree->SetBranchAddress("SV_y", &SV_y );
+        _inputTree->SetBranchAddress("SV_z", &SV_z );
+        //_inputTree->SetBranchAddress("SV_ntracks", &SV_ntracks ); // not found in data 2016
+        
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nIsoTrack", &nIsoTrack );
+        _inputTree->SetBranchAddress("IsoTrack_dxy", &IsoTrack_dxy );
+        _inputTree->SetBranchAddress("IsoTrack_dz", &IsoTrack_dz );
+        _inputTree->SetBranchAddress("IsoTrack_eta", &IsoTrack_eta );
+        _inputTree->SetBranchAddress("IsoTrack_pfRelIso03_all", &IsoTrack_pfRelIso03_all );
+        _inputTree->SetBranchAddress("IsoTrack_pfRelIso03_chg", &IsoTrack_pfRelIso03_chg );
+        _inputTree->SetBranchAddress("IsoTrack_phi", &IsoTrack_phi );
+        _inputTree->SetBranchAddress("IsoTrack_pt", &IsoTrack_pt );
+        _inputTree->SetBranchAddress("IsoTrack_miniPFRelIso_all", &IsoTrack_miniPFRelIso_all );
+        _inputTree->SetBranchAddress("IsoTrack_miniPFRelIso_chg", &IsoTrack_miniPFRelIso_chg );
+        _inputTree->SetBranchAddress("IsoTrack_fromPV", &IsoTrack_fromPV );
+        _inputTree->SetBranchAddress("IsoTrack_pdgId", &IsoTrack_pdgId );
+        _inputTree->SetBranchAddress("IsoTrack_isHighPurityTrack", &IsoTrack_isHighPurityTrack );
+        _inputTree->SetBranchAddress("IsoTrack_isPFcand", &IsoTrack_isPFcand );
+        _inputTree->SetBranchAddress("IsoTrack_isFromLostTrack", &IsoTrack_isFromLostTrack );
+        
+
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("Flag_goodVertices", &Flag_goodVertices );
+        _inputTree->SetBranchAddress("Flag_globalSuperTightHalo2016Filter", &Flag_globalSuperTightHalo2016Filter );
+        _inputTree->SetBranchAddress("Flag_HBHENoiseFilter", &Flag_HBHENoiseFilter );
+        _inputTree->SetBranchAddress("Flag_HBHENoiseIsoFilter", &Flag_HBHENoiseIsoFilter );
+        _inputTree->SetBranchAddress("Flag_EcalDeadCellTriggerPrimitiveFilter", &Flag_EcalDeadCellTriggerPrimitiveFilter );
+        _inputTree->SetBranchAddress("Flag_BadPFMuonFilter", &Flag_BadPFMuonFilter );
+        _inputTree->SetBranchAddress("Flag_ecalBadCalibFilter", &Flag_ecalBadCalibFilter );
+        _inputTree->SetBranchAddress("Flag_eeBadScFilter", &Flag_eeBadScFilter );
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        if( dataset_year == "16" ){
+            _inputTree->SetBranchAddress("HLT_Ele27_WPTight_Gsf", &HLT_Ele27_WPTight_Gsf );
+            _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
+            _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
+            //_inputTree->SetBranchAddress("HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL", &HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL );
+            _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 );
+            _inputTree->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24 );
+            _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            //_inputTree->SetBranchAddress("HLT_Mu30_TkMu11", &HLT_Mu30_TkMu11 );
+            _inputTree->SetBranchAddress("HLT_PFMET300", &HLT_PFMET300 );
+            _inputTree->SetBranchAddress("HLT_MET200", &HLT_MET200 );
+            _inputTree->SetBranchAddress("HLT_PFHT300_PFMET110", &HLT_PFHT300_PFMET110 );
+            _inputTree->SetBranchAddress("HLT_PFMET170_HBHECleaned", &HLT_PFMET170_HBHECleaned );
+            _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight );
+            _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight );
+            if( (dataset_group == "Data") && (dataset_era == "H") ){
+                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ );
+                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ );
+                _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ );
+                _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
+            }else{
+                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL );
+                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL );
+                _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL );
+                _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL );
+            }
+        }else if( dataset_year == "17" ){
+            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
+            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
+            _inputTree->SetBranchAddress("HLT_Ele35_WPTight_Gsf", &HLT_Ele35_WPTight_Gsf );
+            _inputTree->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27 );
+            _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
+            _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL );
+            _inputTree->SetBranchAddress("HLT_DoubleEle33_CaloIdL_MW", &HLT_DoubleEle33_CaloIdL_MW ); 
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 ); 
+            _inputTree->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight_PFHT60", &HLT_PFMET120_PFMHT120_IDTight_PFHT60 ); 
+            _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 ); 
+            _inputTree->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight );
+        }else if( dataset_year == "18" ){
+            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
+            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL ); 
+            _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 ); 
+            _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            _inputTree->SetBranchAddress("HLT_Ele32_WPTight_Gsf", &HLT_Ele32_WPTight_Gsf );
+            _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
+            _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL ); 
+            _inputTree->SetBranchAddress("HLT_DoubleEle25_CaloIdL_MW", &HLT_DoubleEle25_CaloIdL_MW ); 
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 ); 
+            _inputTree->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned ); 
+            _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight_PFHT60", &HLT_PFMET120_PFMHT120_IDTight_PFHT60 ); 
+            _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 ); 
+            _inputTree->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight ); 
+            _inputTree->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight );
+        }
+        
+        //-----------------------------------------------------------------------------------------------------------------------
+        if( dataset_group != "Data" ) {
+            _inputTree->SetBranchAddress("genWeight", &genWeight );
+            
+            _inputTree->SetBranchAddress("Electron_genPartIdx", &Electron_genPartIdx );
+            _inputTree->SetBranchAddress("Muon_genPartIdx", &Muon_genPartIdx );
+            _inputTree->SetBranchAddress("Jet_genJetIdx", &Jet_genJetIdx );
+            _inputTree->SetBranchAddress("Jet_hadronFlavour", &Jet_hadronFlavour );
+            
+            _inputTree->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt );
+            _inputTree->SetBranchAddress("Pileup_nPU", &Pileup_nPU );
+            
+            _inputTree->SetBranchAddress("nGenJet", &nGenJet );
+            _inputTree->SetBranchAddress("GenJet_eta", &GenJet_eta );
+            _inputTree->SetBranchAddress("GenJet_phi", &GenJet_phi );
+            _inputTree->SetBranchAddress("GenJet_pt", &GenJet_pt );
+            _inputTree->SetBranchAddress("GenJet_partonFlavour", &GenJet_partonFlavour );
+            
+            _inputTree->SetBranchAddress("GenMET_phi", &GenMET_phi );
+            _inputTree->SetBranchAddress("GenMET_pt", &GenMET_pt );
+            
+            _inputTree->SetBranchAddress("nGenPart", &nGenPart );
+            _inputTree->SetBranchAddress("GenPart_eta", &GenPart_eta );
+            _inputTree->SetBranchAddress("GenPart_mass", &GenPart_mass );
+            _inputTree->SetBranchAddress("GenPart_phi", &GenPart_phi );
+            _inputTree->SetBranchAddress("GenPart_pt", &GenPart_pt );
+            _inputTree->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother );
+            _inputTree->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId );
+            _inputTree->SetBranchAddress("GenPart_status", &GenPart_status );
+            _inputTree->SetBranchAddress("GenPart_statusFlags", &GenPart_statusFlags );
+            
+            _inputTree->SetBranchAddress("LHEWeight_originalXWGTUP", &LHEWeight_originalXWGTUP );
+            _inputTree->SetBranchAddress("nLHEPdfWeight", &nLHEPdfWeight );
+            _inputTree->SetBranchAddress("LHEPdfWeight", &LHEPdfWeight );
+            _inputTree->SetBranchAddress("nLHEScaleWeight", &nLHEScaleWeight );
+            _inputTree->SetBranchAddress("LHEScaleWeight", &LHEScaleWeight );
+            _inputTree->SetBranchAddress("nPSWeight", &nPSWeight );
+            _inputTree->SetBranchAddress("PSWeight", &PSWeight );
+            _inputTree->SetBranchAddress("nLHEReweightingWeight", &nLHEReweightingWeight );
+            _inputTree->SetBranchAddress("LHEReweightingWeight", &LHEReweightingWeight );
+            
+            _inputTree->SetBranchAddress("LHE_HT", &LHE_HT );
+            _inputTree->SetBranchAddress("LHE_Vpt", &LHE_Vpt );
+            _inputTree->SetBranchAddress("LHE_Njets", &LHE_Njets );
+
+            _inputTree->SetBranchAddress("L1PreFiringWeight_Dn", &L1PreFiringWeight_Dn );
+            _inputTree->SetBranchAddress("L1PreFiringWeight_Nom", &L1PreFiringWeight_Nom );
+            _inputTree->SetBranchAddress("L1PreFiringWeight_Up", &L1PreFiringWeight_Up );
+        }
     }
-    
 
     
     return true;
@@ -566,7 +610,38 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
     //======GET NUMBER OF EVENTS===================================================================
     if( ControlEntries < 0 ){
-        _NumberEntries = _inputTree -> GetEntries();
+        if( _ANALYSIS == "GEN" ){
+            // HEPHeroGEN
+            ifstream in_file( _inputFileNames.at(0), ios::in );
+            string line;
+
+            int E_counts = 0;
+            int C_counts = 0;
+            int F_counts = 0;
+            int N_counts = 0;
+            while(std::getline( in_file, line)){
+                if( line.substr(0,2) == "E " ) E_counts += 1;
+                if( (line.substr(0,2) == "N ") && (N_counts == 0) ){ 
+                    string delimiter = " ";
+                    size_t pos = line.find(delimiter);
+                    string line_part2 = line.erase(0, pos + delimiter.length());
+                    pos = line_part2.find(delimiter);
+                    string N_weights_str = line_part2.substr(0, pos);
+                    _N_PS_weights = 18; //atoi(N_weights_str.c_str());
+                    N_counts += 1;
+                }
+                if( line.substr(0,2) == "C " ) C_counts += 1;
+                if( line.substr(0,2) == "F " ) F_counts += 1;
+            }
+            _has_xsec = false;
+            _has_pdf = false;
+            if( C_counts == E_counts ) _has_xsec = true;
+            if( F_counts == E_counts ) _has_pdf = true;
+            
+            _NumberEntries = E_counts;
+        }else{
+            _NumberEntries = _inputTree -> GetEntries();
+        }
         if( _NumberEntries > _NumMaxEvents && _NumMaxEvents > 0 ) _NumberEntries = _NumMaxEvents;
     }
     
@@ -597,15 +672,15 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         _CutflowFile.close();
     }
     
+
     //======VERTICAL SYSTEMATICS SIZE==============================================================
-    VerticalSysSizes( );
+    if( _ANALYSIS != "GEN" ) VerticalSysSizes( );
     
     //======PRE-OBJECTS SETUP======================================================================
     PreObjects();
     
     //======SETUP SELECTION========================================================================
     if( false );
-    else if( _SELECTION == "Test" ) SetupTest();
     // SETUP YOUR SELECTION HERE
     else {
       cout << "Unknown selection requested. Exiting. " << endl;
@@ -629,12 +704,20 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     //======LOOP OVER THE EVENTS===================================================================
     SumGenWeights = 0;
     
-    
     for( int i = 0; i < _NumberEntries; ++i ) {
+        if( _ANALYSIS == "GEN" ){ 
+           if( _ascii_file->failed() ) break;
+        }
         
-        //======TIMER====================================================================    
-        if( (i+1)/10000 != itime ){
-            int timeEstimated = (_NumberEntries-i)*difftime(time(NULL),timeOld)/10000.;
+        //======TIMER====================================================================
+        int timer_steps;
+        if( _ANALYSIS == "GEN" ){ 
+            timer_steps = 1000;
+        }else{
+            timer_steps = 10000;
+        }
+        if( (i+1)/timer_steps != itime ){
+            int timeEstimated = (_NumberEntries-i)*difftime(time(NULL),timeOld)/(timer_steps*1.);
             hoursEstimated = timeEstimated/3600;
             minutesEstimated = (timeEstimated%3600)/60;
             secondsEstimated = (timeEstimated%3600)%60;
@@ -649,7 +732,11 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
         //======SETUP EVENT==============================================================
         _EventPosition = i;
-        _inputTree->GetEntry(i);
+        if( _ANALYSIS == "GEN" ){ 
+            _ascii_file->read_event(_evt);
+        }else{
+            _inputTree->GetEntry(i);
+        }
         
         
         //======RUN OBJECTS SETUP========================================================
@@ -658,12 +745,11 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         
         //======START EVENT WEIGHT=====================================================
         evtWeight = 1.;
-        if(dataset_group != "Data") evtWeight = genWeight;
+        if( (_ANALYSIS != "GEN") && (dataset_group != "Data") ) evtWeight = genWeight;
         
         
         //======RUN REGION SETUP=========================================================
         bool Selected = true;
-        if( _SELECTION == "Test" && !TestRegion() ) Selected = false;
         // SET THE REGION OF YOUR SELECTION HERE
         
         
@@ -685,20 +771,16 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         //======RUN SELECTION ON THE MAIN UNIVERSE=======================================
         if( _sysID_lateral == 0 ){
             
-            if( _SELECTION == "Test" ) TestSelection();
             // CALL YOUR SELECTION HERE
             
         }
               
               
         //======RUN SYSTEMATIC PRODUCTION=================================================
-        VerticalSys();
+        if( _ANALYSIS != "GEN" ) VerticalSys();
         
-        if( _SELECTION == "Test" ) TestSystematic();
         // PRODUCE THE SYSTEMATIC OF YOUR SELECTION HERE
 
-    
-        
     }
     
     
@@ -749,12 +831,20 @@ void HEPHero::FinishRun() {
     }
         
     //======FINISH SELECTION=======================================================================
-    if( _SELECTION == "Test" ) FinishTest();
     // FINISH YOUR SELECTION HERE
     
     
     //======PRINT INFO ABOUT THE SELECTION PROCESS=================================================
-    WriteCutflowInfo();
+    if( _ANALYSIS == "GEN" ){
+        WriteGenCutflowInfo();
+    }else{
+        WriteCutflowInfo();
+    }
+    
+    
+    //======CLOSE ASCII FILE=======================================================================
+    // HEPHeroGEN
+    if( _ANALYSIS == "GEN" ) _ascii_file->close();
     
     
     //======STORE HISTOGRAMS IN A ROOT FILE========================================================

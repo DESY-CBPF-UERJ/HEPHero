@@ -61,12 +61,17 @@ Source the hepenv environment before work with the HEPHero:
 hepenv
 ```
 
-Enter in the HEPHero directory and compile the code (running cmake is necessary at the first time and when you add a new anafile to the framework):
+Enter in the HEPHero directory and compile the code (running cmake is necessary only at the first time):
 
 ```bash
 cd HEPHero
 cmake .
 make -j 8
+```
+
+Set up the runSelection.py to one of the available setups (HHDM,EFT,GEN,...) inside the directory "setups":
+```bash
+python setup.py -a HHDM
 ```
 
 You can check for different cases [**m**= 0(signal), 1-4(bkg all years), 5(data)] if your code is working as intended using the test datasets:
@@ -217,21 +222,6 @@ Dissociate **TrigEff** from the framework (the anafile is not deleted):
 ./rmSelection.sh TrigEff
 ```
 
-# Using Torch for machine learning
-
-Include Torch library to the framework:
-
-```bash
-./torch on
-```
-
-Uncouple Torch library from the framework:  
-
-```bash
-./torch off
-```
-
-Compile the code after the commands above.  
 
 # Local development with Docker
 
