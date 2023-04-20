@@ -646,18 +646,36 @@ void HEPHero::JESvariation(){
             JetLV_before.SetPtEtaPhiM(Jet_pt[ijet],Jet_eta[ijet],Jet_phi[ijet],Jet_mass[ijet]);
             
             float jet_raw_pt = Jet_pt[ijet]*(1-Jet_rawFactor[ijet]);
+            float jet_pt = Jet_pt[ijet];
             float jet_eta = Jet_eta[ijet];
+            float jet_area = Jet_area[ijet];
             
             if( jet_raw_pt <= 10 ) continue;
             if( jet_eta >= 5.2 ) continue;
             
-            //float pt_unc = JES_unc.getUnc( jet_eta, jet_raw_pt );
-            float pt_unc = jet_JES_Unc->evaluate({jet_eta, jet_raw_pt});
+            //float pt_unc = JES_unc.getUnc( jet_eta, jet_pt );
+            float pt_unc = jet_JES_Unc->evaluate({jet_eta, jet_pt}); 
+            
+            /*
+            float facL1 = jet_JES_L1->evaluate({jet_area, jet_eta, jet_raw_pt, fixedGridRhoFastjetAll});
+            float facL2 = jet_JES_L2->evaluate({jet_eta, jet_raw_pt});
+            float facL3 = jet_JES_L3->evaluate({jet_eta, jet_raw_pt});
+            float facRes = jet_JES_Res->evaluate({jet_eta, jet_raw_pt});
+            //float facL1L2L3Res = jet_JES_L1L2L3Res->evaluate({jet_area, jet_eta, jet_raw_pt, fixedGridRhoFastjetAll});
+            
+            float jet_pt_new = jet_raw_pt*facL1*facL2*facL3;
+                
+            cout << " " << endl;
+            cout << "diff raw-new = " << abs(jet_raw_pt - jet_pt_new)/jet_pt << endl;
+            cout << "diff std-new = " << abs(jet_pt - jet_pt_new)/jet_pt << endl;
+            cout << "diff std-newRes = " << abs(jet_pt - jet_pt_new*facRes)/jet_pt << endl;
+            //cout << "diff std-newCom = " << abs(jet_pt - jet_raw_pt*facL1L2L3Res)/jet_pt << endl;
+            */
             
             if( _Universe % 2 == 0 ){
-                Jet_pt[ijet] = jet_raw_pt*(1. - pt_unc);
+                Jet_pt[ijet] = jet_pt*(1. - pt_unc);
             }else{
-                Jet_pt[ijet] = jet_raw_pt*(1. + pt_unc);
+                Jet_pt[ijet] = jet_pt*(1. + pt_unc);
             }
             
             float jet_pt_nomuon = Jet_pt[ijet]*(1-Jet_muonSubtrFactor[ijet]);
@@ -680,18 +698,25 @@ void HEPHero::JESvariation(){
             
             float jet_raw_pt = CorrT1METJet_rawPt[ijet];
             float jet_eta = CorrT1METJet_eta[ijet];
+            float jet_area = CorrT1METJet_area[ijet];
             
             if( jet_raw_pt <= 10 ) continue;
             if( jet_eta >= 5.2 ) continue;
             
-            //float pt_unc = JES_unc.getUnc( jet_eta, jet_raw_pt );
-            float pt_unc = jet_JES_Unc->evaluate({jet_eta, jet_raw_pt});
+            float facL1 = jet_JES_L1->evaluate({jet_area, jet_eta, jet_raw_pt, fixedGridRhoFastjetAll});
+            float facL2 = jet_JES_L2->evaluate({jet_eta, jet_raw_pt});
+            float facL3 = jet_JES_L3->evaluate({jet_eta, jet_raw_pt});
             
-            float jet_pt;
+            float jet_pt = jet_raw_pt*facL1*facL2*facL3;
+            
+            //float pt_unc = JES_unc.getUnc( jet_eta, jet_pt );
+            float pt_unc = jet_JES_Unc->evaluate({jet_eta, jet_pt});    
+
+            
             if( _Universe % 2 == 0 ){
-                jet_pt = jet_raw_pt*(1 - pt_unc);
+                jet_pt = jet_pt*(1 - pt_unc);
             }else{
-                jet_pt = jet_raw_pt*(1 + pt_unc);
+                jet_pt = jet_pt*(1 + pt_unc);
             }
             
             float jet_pt_nomuon = jet_pt*(1-CorrT1METJet_muonSubtrFactor[ijet]);

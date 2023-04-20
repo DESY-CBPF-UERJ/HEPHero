@@ -133,4 +133,6 @@ with open("runSelection_temp.py", "a") as newfile:
 os.system("mv runSelection_temp.py runSelection.py")
 
 
-
+#======CREATE NEW ANALYSIS FILE IN TOOLS===========================================================
+with open("tools/analysis.txt", "w") as txtfile:
+    txtfile.write(sm.analysis)

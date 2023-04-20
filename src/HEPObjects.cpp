@@ -121,27 +121,52 @@ void HEPHero::PreObjects() {
         string jer_SF_corr_name;
         string jer_PtRes_corr_name;
         string jes_Unc_name;
+        string jes_L1_name;
+        string jes_L2_name;
+        string jes_L3_name;
+        string jes_Res_name;
+        string jes_L1L2L3Res_name;
         
         if( dataset_year == "16" ){
             if( dataset_HIPM ){
                 jer_SF_corr_name = "Summer20UL16APV_JRV3_MC_ScaleFactor_AK4PFchs";
                 jer_PtRes_corr_name = "Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs";
+                jes_L1_name = "Summer19UL16APV_V7_MC_L1FastJet_AK4PFchs";
+                jes_L2_name = "Summer19UL16APV_V7_MC_L2Relative_AK4PFchs";
+                jes_L3_name = "Summer19UL16APV_V7_MC_L3Absolute_AK4PFchs";
+                jes_Res_name = "Summer19UL16APV_V7_MC_L2L3Residual_AK4PFchs";
+                jes_L1L2L3Res_name = "Summer19UL16APV_V7_MC_L1L2L3Res_AK4PFchs";
                 jes_Unc_name = "Summer19UL16APV_V7_MC_Total_AK4PFchs";
                 if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL16APV_V7_MC_"+_SysSubSource+"_AK4PFchs";
             }else{
                 jer_SF_corr_name = "Summer20UL16_JRV3_MC_ScaleFactor_AK4PFchs";
                 jer_PtRes_corr_name = "Summer20UL16_JRV3_MC_PtResolution_AK4PFchs";
+                jes_L1_name = "Summer19UL16_V7_MC_L1FastJet_AK4PFchs";
+                jes_L2_name = "Summer19UL16_V7_MC_L2Relative_AK4PFchs";
+                jes_L3_name = "Summer19UL16_V7_MC_L3Absolute_AK4PFchs";
+                jes_Res_name = "Summer19UL16_V7_MC_L2L3Residual_AK4PFchs";
+                jes_L1L2L3Res_name = "Summer19UL16_V7_MC_L1L2L3Res_AK4PFchs";
                 jes_Unc_name = "Summer19UL16_V7_MC_Total_AK4PFchs";
                 if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL16_V7_MC_"+_SysSubSource+"_AK4PFchs";
             }
         }else if( dataset_year == "17" ){
             jer_SF_corr_name = "Summer19UL17_JRV2_MC_ScaleFactor_AK4PFchs";
                 jer_PtRes_corr_name = "Summer19UL17_JRV2_MC_PtResolution_AK4PFchs";
+                jes_L1_name = "Summer19UL17_V5_MC_L1FastJet_AK4PFchs";
+                jes_L2_name = "Summer19UL17_V5_MC_L2Relative_AK4PFchs";
+                jes_L3_name = "Summer19UL17_V5_MC_L3Absolute_AK4PFchs";
+                jes_Res_name = "Summer19UL17_V5_MC_L2L3Residual_AK4PFchs";
+                jes_L1L2L3Res_name = "Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs";
                 jes_Unc_name = "Summer19UL17_V5_MC_Total_AK4PFchs";
                 if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL17_V5_MC_"+_SysSubSource+"_AK4PFchs";
         }else if( dataset_year == "18" ){
             jer_SF_corr_name = "Summer19UL18_JRV2_MC_ScaleFactor_AK4PFchs";
                 jer_PtRes_corr_name = "Summer19UL18_JRV2_MC_PtResolution_AK4PFchs";
+                jes_L1_name = "Summer19UL18_V5_MC_L1FastJet_AK4PFchs";
+                jes_L2_name = "Summer19UL18_V5_MC_L2Relative_AK4PFchs";
+                jes_L3_name = "Summer19UL18_V5_MC_L3Absolute_AK4PFchs";
+                jes_Res_name = "Summer19UL18_V5_MC_L2L3Residual_AK4PFchs";
+                jes_L1L2L3Res_name = "Summer19UL18_V5_MC_L1L2L3Res_AK4PFchs";
                 jes_Unc_name = "Summer19UL18_V5_MC_Total_AK4PFchs";
                 if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL18_V5_MC_"+_SysSubSource+"_AK4PFchs";
         }
@@ -151,6 +176,13 @@ void HEPHero::PreObjects() {
             jet_JER_PtRes_corr = jet_jerc_set->at(jer_PtRes_corr_name);
         }
         jet_JES_Unc = jet_jerc_set->at(jes_Unc_name);
+        jet_JES_L1 = jet_jerc_set->at(jes_L1_name);
+        jet_JES_L2 = jet_jerc_set->at(jes_L2_name);
+        jet_JES_L3 = jet_jerc_set->at(jes_L3_name);
+        jet_JES_Res = jet_jerc_set->at(jes_Res_name);
+        //cout << "before" << endl;
+        //jet_JES_L1L2L3Res = jet_jerc_set->at("compound_corrections").at(jes_L1L2L3Res_name);
+        //cout << "after" << endl;
         
         /*
         shared_ptr<correction::Correction const> jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_Total_AK4PFchs");

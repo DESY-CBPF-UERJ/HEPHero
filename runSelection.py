@@ -306,8 +306,8 @@ if args.check >= 0:
     
     jobs = [[datasets[0], 0, 1, 0, 0]]
     
-    with open('tools/analysis.txt', "w") as newfile:
-        newfile.write(analysis)
+    #with open('tools/analysis.txt', "w") as newfile:
+    #    newfile.write(analysis)
 else:
     #======SETUP ENVIRONMENT VARIABLES======
     outpath = os.environ.get("HEP_OUTPATH")
@@ -398,11 +398,11 @@ else:
     else:
         jobs = []
         empty_text_files = []
-        files_not_at_desy = []
-        number_of_files_not_at_desy = {}
+        files_not_at_local_storage = []
+        number_of_files_not_at_local_storage = {}
         total_number_of_files = {}
         for dataset in datasets:
-            files_not_at_desy_per_dataset = []
+            files_not_at_local_storage_per_dataset = []
             if( dataset[0][:4] == "Data" ):
                 NumFilesPerJob = NumFilesPerJob_Data;
             elif( dataset[0][:6] == "Signal" ):
@@ -414,21 +414,24 @@ else:
             total_number_of_files[dataset[0]] = NumFiles
             if NumFiles == 0:
                 empty_text_files.append(dataset[0])
-                number_of_files_not_at_desy[dataset[0]] = 0
+                number_of_files_not_at_local_storage[dataset[0]] = 0
             else:
-                if machines == "DESY":
+                if machines != "CERN":
                     file_input = open(dataset[2], 'r')
                     lines = file_input.readlines()
                     lines = [x.strip() for x in lines]
                     NumFiles = 0
                     for line in lines:
-                        file_path = "/pnfs/desy.de/cms/tier2/" + line
+                        if machines == "DESY":
+                            file_path = "/pnfs/desy.de/cms/tier2/" + line
+                        elif machines == "UERJ":
+                            file_path = "/mnt/hadoop/cms/" + line
                         if os.path.isfile(file_path) or dataset[1][2:4] == "99":
                             NumFiles += 1
                         else:
-                            files_not_at_desy.append(line)
-                            files_not_at_desy_per_dataset.append(line)
-                    number_of_files_not_at_desy[dataset[0]] = len(files_not_at_desy_per_dataset)
+                            files_not_at_local_storage.append(line)
+                            files_not_at_local_storage_per_dataset.append(line)
+                    number_of_files_not_at_local_storage[dataset[0]] = len(files_not_at_local_storage_per_dataset)
                 
                 if NumFiles > 0:
                     dataset.append(NumFiles)
@@ -470,16 +473,16 @@ else:
                 print(empty_text_files[i])
             print("")
             sys.exit("There are " + str(len(empty_text_files)) + " empty text files")
-        if machines == "DESY":
+        if machines != "CERN":
             if N == -4:
-                for i in range(len(files_not_at_desy)):
-                    print(files_not_at_desy[i])
+                for i in range(len(files_not_at_local_storage)):
+                    print(files_not_at_local_storage[i])
                 print("")    
                 for dataset in datasets:
-                    if number_of_files_not_at_desy[dataset[0]] > 0:
-                        print(dataset[0] + " has " + str(number_of_files_not_at_desy[dataset[0]]) + " missing files of " + str(total_number_of_files[dataset[0]]))
+                    if number_of_files_not_at_local_storage[dataset[0]] > 0:
+                        print(dataset[0] + " has " + str(number_of_files_not_at_local_storage[dataset[0]]) + " missing files of " + str(total_number_of_files[dataset[0]]))
                 print("")
-                sys.exit("There are " + str(len(files_not_at_desy)) + " missing files at DESY")
+                sys.exit("There are " + str(len(files_not_at_local_storage)) + " missing files at local storage")
             if N <= -5:
                 print("")
                 sys.exit(">> Enter an integer >= -4")
@@ -562,8 +565,8 @@ else:
     lines = [x.strip() for x in lines]
     iline = 0
     for line in lines:
-        if machines == "DESY" and analysis != "GEN":
-            if line in files_not_at_desy:
+        if machines != "CERN" and analysis != "GEN":
+            if line in files_not_at_local_storage:
                 continue
         if iline >= jobs[N][1] and iline < jobs[N][2]:
             in_file.write("InputFile            " + line                       + "\n")

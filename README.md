@@ -7,6 +7,7 @@
 Set up your environment: (only once in your life)   
 CERN - add the lines below to the file **/afs/cern.ch/user/${USER:0:1}/${USER}/.bashrc** and restart your session.   
 DESY - add the lines below to the file **/afs/desy.de/user/${USER:0:1}/${USER}/.zshrc** and restart your session. (Create the file if it doesn't exist)   
+UERJ - add the lines below to the file **/home/${USER}/.bashrc** and restart your session.   
 
 ```bash
 export HEP_OUTPATH=<place the full path to a directory that will store the outputs>
@@ -15,12 +16,14 @@ export MACHINES=<place the organization name, owner of the computing resources>
 
 alias hepenv='source /afs/cern.ch/work/g/gcorreia/public/hepenv_setup.sh'  #(CERN)
 alias hepenv='source /afs/desy.de/user/g/gcorreia/public/hepenv_setup.sh'  #(DESY)
+alias hepenv='source /mnt/hadoop/cms/store/user/gcorreia/hepenv_setup.sh'  #(UERJ)
 ```
 
 Possible outpaths:   
 
-* `At CERN, use a folder inside your eos area.` 
-* `At DESY, use a folder inside your dust area.`
+* `At CERN, use a folder inside your eos area` 
+* `At DESY, use a folder inside your dust area`
+* `At UERJ, you must create and define your outpath as: /home/username/output`
 
 Possible redirectors (only used at CERN):   
 
@@ -32,6 +35,7 @@ Possible machines:
 
 * `CERN`
 * `DESY`
+* `UERJ`
 
 # Examples
 
@@ -43,10 +47,15 @@ export MACHINES=CERN
 
 ```bash
 export HEP_OUTPATH=/nfs/dust/cms/user/gcorea/output
-export REDIRECTOR=fake
+export REDIRECTOR=None
 export MACHINES=DESY
 ```
 
+```bash
+export HEP_OUTPATH=/home/gcorea/output  
+export REDIRECTOR=None
+export MACHINES=UERJ
+```
 
 # Quick start
 

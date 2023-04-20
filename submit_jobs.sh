@@ -35,9 +35,9 @@ if [ ${resubmit} ] && [ "${resubmit}" != "--resubmit" ]; then
 fi
 
 if [ ${resubmit} ] && [ "${resubmit}" == "--resubmit" ]; then
-  run_fix="no"
+  run_start="no"
 else
-  run_fix="yes"
+  run_start="yes"
 fi
 
 if [ "$1" == "help" ]
@@ -63,12 +63,45 @@ else
         Proxy_file=None
     fi
     
+    if [ "${machines}" == "UERJ" ]; then
+        Proxy_file=None
+        cd ..
+        tgzdir=$(pwd)
+        rm HEPHero.tgz
+        tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/Datasets/*.hepmc' --exclude='HEPHero/Datasets/*.root' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/ana/local_output' -zcf HEPHero.tgz HEPHero
+        cd HEPHero
+        if grep -q "#grid_resource" HTCondor/condor.sub; then
+            sed -i "s/.*Universe.*/Universe              = grid/" HTCondor/condor.sub
+            sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" HTCondor/condor.sub
+            sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" HTCondor/condor.sub
+            sed -i "s/.*grid_resource.*/grid_resource         = condor condor.hepgrid.uerj.br condor.hepgrid.uerj.br/" HTCondor/condor.sub
+            sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHero.tgz~" HTCondor/condor.sub
+            sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" HTCondor/condor.sub
+            sed -i "s/.*when_to_transfer_output.*/when_to_transfer_output = ON_EXIT/" HTCondor/condor.sub
+            sed -i "s/.*transfer_output_files.*/transfer_output_files = output/" HTCondor/condor.sub
+            sed -i "s~.*transfer_output_remaps.*~transfer_output_remaps = \"output = /home/${USER}/output\"~" HTCondor/condor.sub
+        fi
+    else
+        if ! grep -q "#grid_resource" HTCondor/condor.sub; then
+            sed -i "s/.*Universe.*/#Universe              = grid/" HTCondor/condor.sub
+            sed -i "s/.*accounting_group_user.*/#accounting_group_user = ${USER}/" HTCondor/condor.sub
+            sed -i "s/.*accounting_group      =.*/#accounting_group      = group_uerj/" HTCondor/condor.sub
+            sed -i "s/.*grid_resource.*/#grid_resource         = condor condor.hepgrid.uerj.br condor.hepgrid.uerj.br/" HTCondor/condor.sub
+            sed -i "s~.*transfer_input_files.*~#transfer_input_files  = ${tgzdir}/HEPHero.tgz~" HTCondor/condor.sub
+            sed -i "s/.*should_transfer_files.*/#should_transfer_files = YES/" HTCondor/condor.sub
+            sed -i "s/.*when_to_transfer_output.*/#when_to_transfer_output = ON_EXIT/" HTCondor/condor.sub
+            sed -i "s/.*transfer_output_files.*/#transfer_output_files = output/" HTCondor/condor.sub
+            sed -i "s~.*transfer_output_remaps.*~#transfer_output_remaps = \"output = /home/${USER}/output\"~" HTCondor/condor.sub
+        fi
+    fi
+    
+    
     sed -i "s/.*queue.*/queue ${N_datasets}/" HTCondor/condor.sub
     sed -i "s~.*Proxy_path            =.*~Proxy_path            = ${Proxy_file}~" HTCondor/condor.sub
-    sed -i "s~.*arguments.*~arguments             = \$(ProcId) \$(Proxy_path) $(pwd) ${outpath} ${redirector} ${machines} ${resubmit}~" HTCondor/condor.sub
+    sed -i "s~.*arguments.*~arguments             = \$(ProcId) \$(Proxy_path) $(pwd) ${outpath} ${redirector} ${machines} ${USER} ${resubmit}~" HTCondor/condor.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour             = ${flavor}/" HTCondor/condor.sub
     
-    if [ "${run_fix}" == "yes" ]; then
+    if [ "${run_start}" == "yes" ]; then
     python runSelection.py -j 0 --start
     rm HTCondor/*.log
     rm HTCondor/jobs_log/run*
@@ -79,11 +112,5 @@ else
     condor_submit condor.sub
 fi
 
-#used in submit_jobs.sh
-#sed -i "s~.*transfer_input_files.*~transfer_input_files    = $(pwd)~" HTCondor/condor.sub
 
-#used in condor.sub
-#should_transfer_files   = YES
-#when_to_transfer_output = ON_EXIT
-#transfer_input_files    = file1,file2
 

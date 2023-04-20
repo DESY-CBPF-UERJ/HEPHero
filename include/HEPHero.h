@@ -306,6 +306,11 @@ class HEPHero {
         shared_ptr<correction::Correction const> jet_JER_SF_corr;
         shared_ptr<correction::Correction const> jet_JER_PtRes_corr;
         shared_ptr<correction::Correction const> jet_JES_Unc;
+        shared_ptr<correction::Correction const> jet_JES_L1;
+        shared_ptr<correction::Correction const> jet_JES_L2;
+        shared_ptr<correction::Correction const> jet_JES_L3;
+        shared_ptr<correction::Correction const> jet_JES_Res;
+        shared_ptr<correction::Correction const> jet_JES_L1L2L3Res;
         
         //----JES------------------------------------------
         string  JES_MC_file;
