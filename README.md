@@ -1,6 +1,6 @@
-# ![HEPHERO](Metadata/logo.svg)
+# ![HEPHERO](Metadata/logoframe.svg)
 
-**HEPHero - code for the DESY-CBPF-UERJ collaboration**
+**HEPHero - Framework for the DESY-CBPF-UERJ collaboration**
 
 # Initial setup
 

@@ -101,8 +101,9 @@ class HEPHero {
         
         //=====GEN Tools===========================================================================
         void calculate_gen_variables();
-        void plot_events(vector<int> events);
+        void plot_events( vector<int> events );
         void WriteGenCutflowInfo();
+        float part_mass( int barcode );
         //void VerticalSys();
         //void Weight_corrections();
         

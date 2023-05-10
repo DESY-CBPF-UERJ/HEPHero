@@ -51,9 +51,15 @@ python -m venv hepenv
 source hepenv/bin/activate
 cd HEPHero
 
-if [ "$6" == "CERN" ]  || [ "$6" == "UERJ" ]; then
+if [ "$6" == "CERN" ]; then
 rm CMakeCache.txt
 cmake .
+make -j 4
+fi
+
+if [ "$6" == "UERJ" ]; then
+rm CMakeCache.txt
+cmake $(pwd)
 make -j 4
 fi
 

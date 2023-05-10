@@ -12,21 +12,32 @@ void HEPHero::calculate_gen_variables(){
     MET.SetPtEtaPhiE(0, 0, 0, 0);
     for (auto p: _evt.particles()) {
         if( !(*p).end_vertex() || ((*p).status() == 1) ){
+            
             bool jet_component = false;
+            bool has_Boson = false;
             for (auto ancestor : HepMC3::Relatives::ANCESTORS(p) ) {
-                if( (*ancestor).pdg_id() == 81 ){
+                //if( (*ancestor).pdg_id() == 81 ){
+                if( (abs((*ancestor).pdg_id()) <= 6) || ((*ancestor).pdg_id() == 21) ){
                     jet_component = true;
-                    break;
+                    //break;
+                }
+                if( ((*ancestor).pdg_id() >= 22) && ((*ancestor).pdg_id() <= 37) ){
+                    has_Boson = true;
                 }
             }
-            if( (abs((*p).pdg_id()) != 12)  && (abs((*p).pdg_id()) != 14)  && (abs((*p).pdg_id()) != 16)  && (abs((*p).pdg_id()) != 18)  && (abs((*p).pdg_id()) != 1000022)  && (abs((*p).pdg_id()) != 1000023)  && (abs((*p).pdg_id()) != 1000025)  && (abs((*p).pdg_id()) != 1000035) ){
-                TLorentzVector part;
-                part.SetPtEtaPhiE((*p).momentum().perp(), (*p).momentum().eta(), (*p).momentum().phi(), (*p).momentum().e());
-                MET = MET - part;
-                if( jet_component ){ 
-                    GEN_HT += (*p).momentum().perp();
-                    MHT = MHT - part;
-                }
+            
+            if( has_Boson ) jet_component = false;
+            
+            TLorentzVector part;
+            part.SetPtEtaPhiE((*p).momentum().perp(), (*p).momentum().eta(), (*p).momentum().phi(), (*p).momentum().e());
+            
+            if( jet_component ){ 
+                MHT = MHT - part;
+                GEN_HT += (*p).momentum().perp();
+            }
+            
+            if( (abs((*p).pdg_id()) == 12) || (abs((*p).pdg_id()) == 14) || (abs((*p).pdg_id()) == 16) || (abs((*p).pdg_id()) == 18) || (abs((*p).pdg_id()) == 1000022) || (abs((*p).pdg_id()) == 1000023) || (abs((*p).pdg_id()) == 1000025) || (abs((*p).pdg_id()) == 1000035) ){
+                MET = MET + part;
             }
         }
     }
@@ -34,7 +45,44 @@ void HEPHero::calculate_gen_variables(){
     GEN_MET_phi = MET.Phi();
     GEN_MHT_pt = MHT.Pt();
     GEN_MHT_phi = MHT.Phi();
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Compute particle mass from stable particles at the end of the chain
+//---------------------------------------------------------------------------------------------------------------
+float HEPHero::part_mass( int barcode ){
     
+    /*
+    TLorentzVector part;
+    int N_descendant = 0;
+    for (auto p: _evt.particles()) {
+        if( !(*p).end_vertex() || ((*p).status() == 1) ){
+            
+            bool is_descendant = false;
+            for (auto ancestor : HepMC3::Relatives::ANCESTORS(p) ) {
+                if( (*ancestor).barcode() == barcode ){
+                    is_descendant = true;
+                    break;
+                }
+            }
+            
+            if( is_descendant ){
+                if( N_descendant == 0 ){
+                    part.SetPtEtaPhiE((*p).momentum().perp(), (*p).momentum().eta(), (*p).momentum().phi(), (*p).momentum().e());
+                }else{
+                    TLorentzVector desc_part;
+                    desc_part.SetPtEtaPhiE((*p).momentum().perp(), (*p).momentum().eta(), (*p).momentum().phi(), (*p).momentum().e());
+                    part = part + desc_part;
+                }
+                N_descendant += 1;
+            }
+        }
+    }
+    
+    return part.M();
+    */
+    return 0.0;
 }
 
 
@@ -51,7 +99,6 @@ void HEPHero::plot_events(vector<int> events){
             system(dot_command.c_str());
         }
     }
-    
 }
 
   

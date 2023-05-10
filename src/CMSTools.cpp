@@ -360,41 +360,58 @@ float HEPHero::GetMuonWeight( string sysID ){
 //---------------------------------------------------------------------------------------------------------------
 // Jet puID Correction
 // Return weight associated to the jet pileup ID selection
+// Jet pileup ID identify jets that are NOT pileup
 // https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Data_MC_Efficiency_Scale_Factors
+// https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetID#Efficiencies_and_data_MC_scale_f
 //---------------------------------------------------------------------------------------------------------------
 float HEPHero::GetJetPUIDWeight( string sysID ){
     
     double puid_weight = 1.;
     if( dataset_group != "Data" ){
         
-        string puID_WP;
+        string WP;
         if( JET_PUID_WP == 1 ){ 
-            puID_WP = "L";
+            WP = "L";
         }else if( JET_PUID_WP == 3 ){
-            puID_WP = "M";
+            WP = "M";
         }else if( JET_PUID_WP == 7 ){
-            puID_WP = "T";
+            WP = "T";
         }
         
+        //double P_MC = 1;
+        //double P_DATA = 1;
         for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
             if( abs(Jet_eta[ijet]) >= 5.0 ) continue;
             if( Jet_pt[ijet] < 20 ) continue;
             if( Jet_pt[ijet] >= 50 ) continue;
             if( Jet_puId[ijet] < JET_PUID_WP ) continue;
-            if( !Jet_GenJet_match(ijet, 0.4) ) continue;
+            //if( !Jet_GenJet_match(ijet, 0.4) ) continue;
+            if( Jet_genJetIdx[ijet] < 0 ) continue;
+            
             float jet_pt = Jet_pt[ijet];
             float jet_eta = Jet_eta[ijet];
             
+            //double eff = jet_PUID_corr->evaluate({jet_eta, jet_pt, "MCEff", WP});
+        
             double SF;
             if( sysID == "cv" ){
-                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "nom", puID_WP});
+                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "nom", WP});
             }else if( sysID == "down" ){
-                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "down", puID_WP});
+                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "down", WP});
             }else if( sysID == "up" ){
-                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "up", puID_WP});
+                SF = jet_PUID_corr->evaluate({jet_eta, jet_pt, "up", WP});
             }
             if( JET_PUID_WP > 0 ) puid_weight *= SF;
+            //if( JET_PUID_WP > 0 ){
+            //    P_MC *= eff;
+            //    P_DATA *= eff*SF;
+            //}
         }
+        //if( P_MC > 0 ){
+        //    puid_weight = P_DATA/P_MC;
+        //}else{
+        //    puid_weight = 1.;
+        //}
     }
     
     return puid_weight;
@@ -411,6 +428,11 @@ float HEPHero::GetBTagWeight( string sysID, string sysFlavor, string sysType ){
     double btag_weight = 1.;
     if( dataset_group != "Data" ){
         
+        string WP;
+        if(      (JET_BTAG_WP == 0) || (JET_BTAG_WP == 3) ) WP = "L";
+        else if( (JET_BTAG_WP == 1) || (JET_BTAG_WP == 4) ) WP = "M";
+        else if( (JET_BTAG_WP == 2) || (JET_BTAG_WP == 5) ) WP = "T";
+        
         double P_MC = 1;
         double P_DATA = 1;  
         //for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
@@ -418,11 +440,6 @@ float HEPHero::GetBTagWeight( string sysID, string sysFlavor, string sysType ){
             //if( abs(Jet_eta[ijet]) >= 2.4 ) continue;
         for( unsigned int iselJet = 0; iselJet < selectedJet.size(); ++iselJet ) {
             int ijet = selectedJet[iselJet];    
-            
-            string WP;
-            if(      (JET_BTAG_WP == 0) || (JET_BTAG_WP == 3) ) WP = "L";
-            else if( (JET_BTAG_WP == 1) || (JET_BTAG_WP == 4) ) WP = "M";
-            else if( (JET_BTAG_WP == 2) || (JET_BTAG_WP == 5) ) WP = "T";
             
             std::string Jet_flavour_str;
             if (Jet_hadronFlavour[ijet] == 5) {         // B
@@ -635,6 +652,10 @@ float HEPHero::GetPrefiringWeight( string sysID ){
 
 //---------------------------------------------------------------------------------------------------------------
 // JES uncertainty
+// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+// https://twiki.cern.ch/twiki/bin/view/CMS/IntroToJEC
+// https://gitlab.cern.ch/cms-nanoAOD/jsonpog-integration/-/tree/master/POG/JME
+// https://github.com/cms-jet/JECDatabase/blob/master/scripts/JERC2JSON/minimalDemo.py
 //---------------------------------------------------------------------------------------------------------------
 void HEPHero::JESvariation(){
     

@@ -388,7 +388,7 @@ bool HEPHero::RunObjects() {
         weights_value = _evt.weights();
         if( _EventPosition == 0 ) weights_name = _ascii_file->run_info()->weight_names();
         
-        // EVENT INFO
+        // PROCESS INFO
         if( _EventPosition == 0 ){
             if( _has_pdf ){
                 std::shared_ptr<HepMC3::GenPdfInfo> pdf = _evt.attribute<HepMC3::GenPdfInfo>("GenPdfInfo");
@@ -420,6 +420,22 @@ bool HEPHero::RunObjects() {
                 cross_section_unc = -1;
             }
         }
+        
+        // EVENT INFO
+        event_number = _evt.event_number();
+        
+        if( _has_pdf ){
+            std::shared_ptr<HepMC3::GenPdfInfo> pdf = _evt.attribute<HepMC3::GenPdfInfo>("GenPdfInfo");
+            scalePDF = pdf->scale;      // Q-scale used in evaluation of PDF’s (in GeV)
+            id1 = pdf->parton_id[0];    // flavour code of first parton
+            id2 = pdf->parton_id[1];    // flavour code of second parton
+            x1 = pdf->x[0];             // fraction of beam momentum carried by first parton (”beam side”)
+            x2 = pdf->x[1];             // fraction of beam momentum carried by second parton (”target side”)
+            pdf1 = pdf->xf[0];          // PDF (id1, x1, Q) This should be of the form x*f(x)
+            pdf2 = pdf->xf[1];          // PDF (id2, x2, Q) This should be of the form x*f(x)
+        }
+        
+        
     }else{
         //======SUM THE GENERATOR WEIGHTS================================================
         SumGenWeights += genWeight;
