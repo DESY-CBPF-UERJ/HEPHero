@@ -59,8 +59,6 @@ print('')
 
 samples = get_samples( basedir, period, args.apv )
 
-TreeName="selection"
-
 
 jobs_file_name = os.path.join(basedir, "jobs.txt")
 json_sys_file_name = os.path.join(basedir, "lateral_systematics.json")

@@ -117,109 +117,96 @@ void HEPHero::HEMissue(){
     
     HEM_issue_ele = false;
     HEM_issue_jet = false;
-    HEM_issue_bjet = false;
     HEM_issue_ele_v2 = false;
     HEM_issue_jet_v2 = false;
-    HEM_issue_bjet_v2 = false;
-    //if ( (dataset_group != "Data") && (dataset_year == "18") ){
-    //if ( (dataset_year == "18") ){
+    HEM_issue_met = false;
+    HEM_filter = true;
+            
+    for( unsigned int iselele = 0; iselele < selectedEle.size(); ++iselele ) {
+        int iele = selectedEle.at(iselele);
+        float eta = Electron_eta[iele];
+        float phi = Electron_phi[iele];
+        if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_ele_v2 = true;
+    }
 
-        
-        for( unsigned int iselele = 0; iselele < selectedEle.size(); ++iselele ) {
-            int iele = selectedEle[iselele];
-            float eta = Electron_eta[iele];
-            float phi = Electron_phi[iele];
-            if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_ele = true;
-            if( (eta > -3.0) && (eta < -1.4) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_ele_v2 = true;
-        }
-        
-        /*
-        for( unsigned int iseljet = 0; iseljet < selectedJet.size(); ++iseljet ) {
-            int ijet = selectedJet[iseljet];
-            float eta = Jet_eta[ijet];
-            float phi = Jet_phi[ijet];
-            if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) && (Njets == 1) ) HEM_issue_jet = true;
-            if( (eta > -3.2) && (eta < -1.2) && (phi > -1.77) && (phi < -0.67) && (Njets == 1) ) HEM_issue_jet_v2 = true;
-            if( JetBTAG( ijet, JET_BTAG_WP ) ){
-                if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) && (Nbjets == 1) ) HEM_issue_bjet = true;
-                if( (eta > -3.2) && (eta < -1.2) && (phi > -1.77) && (phi < -0.67) && (Nbjets == 1) ) HEM_issue_bjet_v2 = true;
-            }
-        }
-        */
-        
-        
-        for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
-            float eta = Jet_eta[ijet];
-            float phi = Jet_phi[ijet];
-            float pt = Jet_pt[ijet];
-            if( (pt > 30) && (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_jet = true;
-            if( (pt > 30) && (eta > -3.2) && (eta < -1.2) && (phi > -1.77) && (phi < -0.67) ) HEM_issue_jet_v2 = true;
-            if( JetBTAG( ijet, JET_BTAG_WP ) ){
-                if( (pt > 30) && (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_bjet = true;
-                if( (pt > 30) && (eta > -3.2) && (eta < -1.2) && (phi > -1.77) && (phi < -0.67) ) HEM_issue_bjet_v2 = true;
-            }
-        }
-        
-    //}
+
+    for( unsigned int iseljet = 0; iseljet < selectedJet.size(); ++iseljet ) {
+        int ijet = selectedJet.at(iseljet);
+        float eta = Jet_eta[ijet];
+        float phi = Jet_phi[ijet];
+        if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_jet_v2 = true;
+    }
+
+
+
+
+    for( unsigned int iele = 0; iele < nElectron; ++iele ) {
+        float eta = Electron_eta[iele];
+        float phi = Electron_phi[iele];
+        if( (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_ele = true;
+    }
+    
+    for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+        float eta = Jet_eta[ijet];
+        float phi = Jet_phi[ijet];
+        float pt = Jet_pt[ijet];
+        if( (pt > 20) && (eta > -3.0) && (eta < -1.3) && (phi > -1.57) && (phi < -0.87) ) HEM_issue_jet = true;
+    }
+
+    
+    if( (MET_phi > -1.57) && (MET_phi < -0.87) ) HEM_issue_met = true;
+    
+    
+    if( (dataset_year == "18") && (HEM_issue_ele || HEM_issue_jet) ) HEM_filter = false;
+    
 }
 
 
 //-------------------------------------------------------------------------
 // MET  Filters
-// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#UL_data
 //-------------------------------------------------------------------------
 bool HEPHero::METFilters(){
-    // MET Filters for MC 2016 are still being checked
-
+    
+    string dsName;
+    if( dataset_HIPM ){
+        dsName = _datasetName.substr(0,_datasetName.length()-7);
+    }else{
+        dsName = _datasetName.substr(0,_datasetName.length()-3);
+    }
+    string dsNameSignal = dsName.substr(0,15);
+    
+    
     bool filtered = false;
-    
-    bool filters =  Flag_goodVertices && 
-                    Flag_globalSuperTightHalo2016Filter &&
-                    Flag_HBHENoiseFilter && 
-                    Flag_HBHENoiseIsoFilter && 
-                    Flag_EcalDeadCellTriggerPrimitiveFilter && 
-                    Flag_BadPFMuonFilter;
-    
-    // For MC samples
-    if ( (dataset_group != "Data") ){
-        // FOR 2016
-        if ( (dataset_year == "16") ){
-            if ( filters ) filtered = true;
-        }
-        // FOR 2017
-        else if ( (dataset_year == "17") ){
-            if (filters && Flag_ecalBadCalibFilter) filtered = true;
-        }
-        // FOR 2018
-        else if ( (dataset_year == "18") ){
-            if (filters && Flag_ecalBadCalibFilter) filtered = true;
-        }
-        else
-        {   std::cout << "Something is Wrong !!!" << std::endl;
-            std::cout << "The dataset name does not have the year [16,17,18] or dataset is from another year" << std::endl;
-        }
+    bool filters;
+    //if( (dataset_year == "18") && (dsNameSignal == "Signal_1000_600") ){
+    //    filters =   Flag_goodVertices &&
+    //                Flag_globalSuperTightHalo2016Filter &&
+    //                Flag_HBHENoiseFilter &&
+    //                Flag_HBHENoiseIsoFilter &&
+    //                Flag_EcalDeadCellTriggerPrimitiveFilter &&
+    //                Flag_BadPFMuonFilter &&
+    //                Flag_eeBadScFilter;
+    //}else{
+    filters =   Flag_goodVertices &&
+                Flag_globalSuperTightHalo2016Filter &&
+                Flag_HBHENoiseFilter &&
+                Flag_HBHENoiseIsoFilter &&
+                Flag_EcalDeadCellTriggerPrimitiveFilter &&
+                Flag_BadPFMuonFilter &&
+                Flag_BadPFMuonDzFilter &&
+                Flag_eeBadScFilter;
+
+                    
+    if( dataset_year == "16" ){
+        if( filters ) filtered = true;
+    }else if( (dataset_year == "17") || (dataset_year == "18") ){
+        if(filters && Flag_ecalBadCalibFilter) filtered = true;
+    }else{   
+        std::cout << "Something is Wrong !!!" << std::endl;
+        std::cout << "The dataset name does not have the year [16,17,18] or dataset is from another year" << std::endl;
     }
 
-    // For Data samples
-    else if( (dataset_group == "Data") ){
-        // FOR 2016
-        if ( (dataset_year == "16") ){
-            if (filters && Flag_eeBadScFilter) filtered = true;
-        }
-        // FOR 2017
-        else if ( (dataset_year == "17") ){
-            if (filters && Flag_eeBadScFilter && Flag_ecalBadCalibFilter ) filtered = true;
-        }
-        // FOR 2018
-        else if ( (dataset_year == "18") ){
-            if (filters && Flag_eeBadScFilter && Flag_ecalBadCalibFilter ) filtered = true;
-        }
-        else
-        {   std::cout << "Something is Wrong !!!" << std::endl;
-            std::cout << "The dataset name does not have the year [16,17,18] or dataset is from another year" << std::endl;
-        }
-    }
-    
     return filtered ;
 }
 
@@ -515,6 +502,7 @@ float HEPHero::GetPileupWeight( float Pileup_nTrueInt, string sysType ){
     }
     string dsNameDY = dsName.substr(0,10);
     
+    
     if( (dsNameDY == "DYJetsToLL") && (sysType != "nominal") ){
         
         float syst_SF;
@@ -602,9 +590,9 @@ float HEPHero::GetTriggerWeight( string sysID ){
         
         string sample;
         if( (RecoLepID == 11) || ((RecoLepID > 31100) && (RecoLepID <= 31199)) || ((RecoLepID > 41100) && (RecoLepID <= 41199)) ){
-            sample = "DoubleEl";
+            sample = "ElEl";
         }else if( (RecoLepID == 13) || ((RecoLepID > 31300) && (RecoLepID <= 31399)) || ((RecoLepID > 41300) && (RecoLepID <= 41399)) ){
-            sample = "DoubleMu";
+            sample = "MuMu";
         }else if( (RecoLepID > 1000) && (RecoLepID < 1999) ){
             sample = "ElMu";
         }
@@ -858,6 +846,7 @@ void HEPHero::PDFtype(){
     
         if( pdf_list.HasMember(LHAID.c_str()) ){
             PDF_TYPE = pdf_list[LHAID.c_str()].GetString();
+            cout << "PDF_TYPE " << PDF_TYPE << endl;
         }else{
             PDF_TYPE = "unknown";
             cout << "LHA ID unknown!" << endl;
@@ -1169,7 +1158,6 @@ void HEPHero::VerticalSysSizes( ){
         _inputTree->GetEntry(0);
         
         get_PDF_sfs = false;
-        get_AlphaS_sfs = false;
         get_Scale_sfs = false;
         get_ISR_sfs = false;
         get_FSR_sfs = false;
@@ -1187,13 +1175,10 @@ void HEPHero::VerticalSysSizes( ){
         for( int ivert = 0; ivert < _sysNames_vertical.size(); ++ivert ){
             string sysName = _sysNames_vertical.at(ivert);
             if( sysName == "PDF" ){
-                sys_vertical_size.push_back(2);
+                sys_vertical_size.push_back(nLHEPdfWeight+1);
                 get_PDF_sfs = true;
-            }else if( sysName == "AlphaS" ){
-                sys_vertical_size.push_back(2);
-                get_AlphaS_sfs = true;    
             }else if( sysName == "Scales" ){
-                sys_vertical_size.push_back(9);
+                sys_vertical_size.push_back(7);
                 get_Scale_sfs = true;
             }else if( sysName == "ISR" ){ 
                 sys_vertical_size.push_back(2);
@@ -1252,44 +1237,25 @@ void HEPHero::VerticalSys(){
             vector<float> PDF_sfs;
             
             if( nLHEPdfWeight > 0 ){
-                int n_offset = 0;
-                if( nLHEPdfWeight == 33 || nLHEPdfWeight == 103 ) n_offset = 2;
                 
-                float tot_unc;
-                if( PDF_TYPE == "mc" ){
-                    vector<float> variations;
-                    for( int iuniv = 1; iuniv < (nLHEPdfWeight-n_offset); ++iuniv ) {
-                        variations.push_back(LHEPdfWeight[iuniv]);
-                    }
-                    sort(variations.begin(), variations.end());
-                    int nvar = variations.size();
-                    tot_unc = ( variations[(int)round(0.841344746*nvar)] - variations[(int)round(0.158655254*nvar)] ) / 2;
-                    PDF_sfs.push_back(1-tot_unc);      // DOWN
-                    PDF_sfs.push_back(1+tot_unc);      // UP
+                for( int iuniv = 0; iuniv < nLHEPdfWeight; ++iuniv ) {
+                    PDF_sfs.push_back(LHEPdfWeight[iuniv]);
                 }
-                else if( PDF_TYPE == "hessian" ){
-                    tot_unc = 0;
-                    for( int iuniv = 1; iuniv < (nLHEPdfWeight-n_offset); ++iuniv ) {
-                        tot_unc += pow(LHEPdfWeight[iuniv] - LHEPdfWeight[0], 2);
-                    }
-                    tot_unc = sqrt(tot_unc);
-                    PDF_sfs.push_back(1-tot_unc);      // DOWN
-                    PDF_sfs.push_back(1+tot_unc);      // UP
-                }
-                else{
-                    PDF_sfs.push_back(1);              // DOWN
-                    PDF_sfs.push_back(1);              // UP
-                    //cout << "PDF type unknown!" << endl;
-                }
+
+                if( PDF_TYPE == "mc" ) PDF_sfs.push_back(2);
+                if( PDF_TYPE == "hessian" ) PDF_sfs.push_back(1);
+
+                //cout << "PDF size " << PDF_sfs.size() << endl;
+
             }else{
-                PDF_sfs.push_back(1);              // DOWN
-                PDF_sfs.push_back(1);              // UP
-                //cout << "No PDF weights!" << endl;
+                PDF_sfs.push_back(3);
+                cout << "No PDF weights!" << endl;
             } 
             sys_vertical_sfs.insert(pair<string, vector<float>>("PDF", PDF_sfs));
         }
         
         //-----------------------------------------------------------------------------------
+        /*
         if( get_AlphaS_sfs ){
             vector<float> AlphaS_sfs;
             
@@ -1305,23 +1271,23 @@ void HEPHero::VerticalSys(){
             } 
             sys_vertical_sfs.insert(pair<string, vector<float>>("AlphaS", AlphaS_sfs));
         }
-            
+        */
         //-----------------------------------------------------------------------------------
         if( get_Scale_sfs ){
             vector<float> Scale_sfs;
             if( nLHEScaleWeight == 9 ){
                 for( int iuniv = 0; iuniv < 9; ++iuniv ) {
-                    Scale_sfs.push_back(LHEScaleWeight[iuniv]);
+                    if( (iuniv != 2) && (iuniv != 6) ) Scale_sfs.push_back(LHEScaleWeight[iuniv]);
                 }
             }else{
-                for( int iuniv = 0; iuniv < 9; ++iuniv ) {
+                for( int iuniv = 0; iuniv < 7; ++iuniv ) {
                     Scale_sfs.push_back(1);
                 }
                 //cout << "No renormalization and factorization scale weights!" << endl;
             }
             sys_vertical_sfs.insert(pair<string, vector<float>>("Scales", Scale_sfs));
         }
-            
+
         //-----------------------------------------------------------------------------------
         if( get_ISR_sfs ){
             vector<float> ISR_sfs;

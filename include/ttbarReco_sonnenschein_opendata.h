@@ -6,6 +6,7 @@
 // than 2) and missing transverse energy, see description-ttbar.pdf, 
 // page 4. Follows the method described in Phys. Rev. D73 (2006) 054015,
 // additional information can be found in DESY-THESIS-2012-037
+// https://github.com/cms-opendata-validation/2011-doubleelectron-doublemu-mueg-ttbar/blob/master/PostAnalyzer/kinReco.h
 
 #ifndef TTBAR_KINRECO_H
 #define TTBAR_KINRECO_H

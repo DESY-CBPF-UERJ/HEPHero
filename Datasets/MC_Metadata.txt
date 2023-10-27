@@ -22,16 +22,36 @@ Signal_1000_300                                 0.00081513973       unknown     
 Signal_1000_400                                 0.00080103474       unknown             unknown
 Signal_1000_600                                 0.00071681937       unknown             unknown
 Signal_1000_800                                 0.00034042023       unknown             unknown
-DYJetsToLL_PtZ-0To50                            1414.0              8.457               unknown
-DYJetsToLL_PtZ-3To50                            1414.0              8.457               unknown
-DYJetsToLL_PtZ-50To100                          378.97              2.867               unknown*incl-factor
-DYJetsToLL_PtZ-100To250                         93.1366             0.7121              unknown*incl-factor
-DYJetsToLL_PtZ-250To400                         3.7093              0.02487             unknown*incl-factor
-DYJetsToLL_PtZ-400To650                         0.5150              0.003171            unknown*incl-factor
-DYJetsToLL_PtZ-650ToInf                         0.048934            0.0002801           unknown*incl-factor
+Signal_200_100                                  0.04477874562       temporary           temporary
+Signal_400_300                                  0.04477874562       temporary           temporary
+Signal_500_400                                  0.04477874562       temporary           temporary
+Signal_600_500                                  0.04477874562       temporary           temporary
+Signal_800_700                                  0.04477874562       temporary           temporary
+Signal_1000_900                                 0.04477874562       temporary           temporary
+Signal_1400_100                                 0.04477874562       temporary           temporary
+Signal_1400_400                                 0.04477874562       temporary           temporary
+Signal_1400_600                                 0.04477874562       temporary           temporary
+Signal_1400_1000                                0.04477874562       temporary           temporary
+Signal_1400_1200                                0.04477874562       temporary           temporary
+Signal_1400_1300                                0.04477874562       temporary           temporary
+Signal_2000_100                                 0.04477874562       temporary           temporary
+Signal_2000_400                                 0.04477874562       temporary           temporary
+Signal_2000_600                                 0.04477874562       temporary           temporary
+Signal_2000_1000                                0.04477874562       temporary           temporary
+Signal_2000_1200                                0.04477874562       temporary           temporary
+Signal_2000_1800                                0.04477874562       temporary           temporary
+Signal_2000_1900                                0.04477874562       temporary           temporary
+
+DYJetsToLL_PtZ-0To50                            1414.0              -                   [new1]NNLO*
+DYJetsToLL_PtZ-3To50                            1414.0              -                   [new1]NNLO*
+DYJetsToLL_PtZ-50To100                          378.97              -                   [new1]NNLO*
+DYJetsToLL_PtZ-100To250                         93.1366             -                   [new1]NNLO*
+DYJetsToLL_PtZ-250To400                         3.7093              -                   [new1]NNLO*
+DYJetsToLL_PtZ-400To650                         0.5150              -                   [new1]NNLO*
+DYJetsToLL_PtZ-650ToInf                         0.048934            -                   [new1]NNLO*
 DYJetsToLL_M10to50                              15890.0	            24.94               LO
-DYJetsToLL_Pt-Inclusive                         6077.22             122.44/122.44       [*]NNLO
-DYJetsToLL_Pt-0To3                              6077.22             122.44/122.44       [*]NNLO
+DYJetsToLL_Pt-Inclusive                         6077.22             122.45/122.45       [new1]NNLO
+DYJetsToLL_Pt-0To3                              6077.22             122.45/122.45       [new1]NNLO
 DYJetsToLL_Pt-50To100                           398.8	            2.664               unknown
 DYJetsToLL_Pt-100To250                          93.61	            0.6145              unknown
 DYJetsToLL_Pt-250To400                          3.67	            0.02248             unknown
@@ -46,23 +66,28 @@ DYJetsToLL_HT-600to800                          1.761	            0.005281		    
 DYJetsToLL_HT-800to1200                         0.8021	            0.002418		    LO
 DYJetsToLL_HT-1200to2500                        0.1937	            0.0005863		    LO
 DYJetsToLL_HT-2500toInf                         0.003514	        1.087e-05		    LO
-TTTo2L2Nu                                       88.29	            4.24/5.39		    NNLO
-TTToSemiLeptonic                                365.34	            17.54/22.29		    NNLO
-ST_tW_top                                       32.45	            0.02338		        NLO
-ST_tW_antitop                                   32.51	            0.02346             NLO
-ST_t-channel_top                                119.7	            0.2166		        NLO
-ST_t-channel_antitop                            71.74	            0.1193		        NLO
-ST_s-channel                                    3.549	            0.002988	        unknown
+TTTo2L2Nu                                       88.51               -                   [new2]NNLO+NNLL
+TTToSemiLeptonic                                366.29              -                   [new2]NNLO+NNLL
+xsdb-ST_tW_top                                  32.45	            0.02338		        NLO
+xsdb-ST_tW_antitop                              32.51	            0.02346             NLO
+xsdb-ST_t-channel_top                           119.7	            0.2166		        NLO
+xsdb-ST_t-channel_antitop                       71.74	            0.1193		        NLO
+xsdb-ST_s-channel                               3.549	            0.002988	        unknown
+ST_tW_top                                       35.85               +1.92-1.92          [new3]NLO
+ST_tW_antitop                                   35.85               +1.92-1.92          [new3]NLO
+ST_t-channel_top                                136.02              +7.72-6.56          [new3]NLO
+ST_t-channel_antitop                            80.95               +5.79-5.16          [new3]NLO
+ST_s-channel                                    10.32               +0.20-0.18          [new3]NLO
 WZ_Inclusive                                    27.59	            0.03993		        unknown
 WZ_Others                                       27.59	            0.03993		        unknown
 WZTo3LNu                                        4.664               0.004639            NLO
-WZTo2Q2L                                        6.419               0.01984             NLO
+WZTo2Q2L                                        6.565               0.01984             NLO
 ZZ_Inclusive                                    12.17	            0.01966		        unknown
 ZZ_Others                                       12.17	            0.01966		        unknown
 ZZTo2L2Nu                                       0.9738              0.0009971           NLO
 ZZTo4L                                          1.325               0.00122             NLO
 ZZTo4L_M-1toInf                                 13.74               0.02054             NLO
-ZZTo2Q2L                                        3.22                unknown             unknown
+ZZTo2Q2L                                        3.676               unknown             unknown
 WW                                              75.95	            0.1124		        unknown
 WWTo2L2Nu                                       11.09	            0.00704		        NLO
 ZZZ                                             0.01476	            2.5e-06		        unknown
@@ -109,8 +134,9 @@ WGToLNuG                                        412.7               1.027       
 Source > > https://cms-gen-dev.cern.ch/xsdb/
 Source[*] > > https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns
 Source[**] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWG
-
-    
+Source[new1] > > https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+Source[new2] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+Source[new3] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
     
     
     

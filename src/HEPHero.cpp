@@ -475,10 +475,54 @@ bool HEPHero::Init() {
         _inputTree->SetBranchAddress("Flag_HBHENoiseIsoFilter", &Flag_HBHENoiseIsoFilter );
         _inputTree->SetBranchAddress("Flag_EcalDeadCellTriggerPrimitiveFilter", &Flag_EcalDeadCellTriggerPrimitiveFilter );
         _inputTree->SetBranchAddress("Flag_BadPFMuonFilter", &Flag_BadPFMuonFilter );
+        _inputTree->SetBranchAddress("Flag_BadPFMuonDzFilter", &Flag_BadPFMuonDzFilter );
         _inputTree->SetBranchAddress("Flag_ecalBadCalibFilter", &Flag_ecalBadCalibFilter );
         _inputTree->SetBranchAddress("Flag_eeBadScFilter", &Flag_eeBadScFilter );
         
         //-----------------------------------------------------------------------------------------------------------------------
+        HLT_Ele27_WPTight_Gsf = false;
+        HLT_Ele115_CaloIdVT_GsfTrkIdT = false;
+        HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ = false;
+        HLT_IsoMu24 = false;
+        HLT_IsoTkMu24 = false;
+        HLT_Mu50 = false;
+        HLT_TkMu50 = false;
+        HLT_PFMET300 = false;
+        HLT_MET200 = false;
+        HLT_PFHT300_PFMET110 = false;
+        HLT_PFMET170_HBHECleaned = false;
+        HLT_PFMET120_PFMHT120_IDTight = false;
+        HLT_PFMETNoMu120_PFMHTNoMu120_IDTight = false;
+        HLT_Photon175 = false;
+        HLT_DoubleEle33_CaloIdL_GsfTrkIdVL = false;
+        HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ = false;
+        HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ = false;
+        HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ = false;
+        HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ = false;
+        HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL = false;
+        HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL = false;
+        HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL = false;
+        HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL = false;
+        HLT_Ele35_WPTight_Gsf = false;
+        HLT_IsoMu27 = false;
+        HLT_OldMu100 = false;
+        HLT_TkMu100 = false;
+        HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL = false;
+        HLT_DoubleEle33_CaloIdL_MW = false;
+        HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 = false;
+        HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 = false;
+        HLT_PFMET200_HBHECleaned = false;
+        HLT_PFMET200_HBHE_BeamHaloCleaned = false;
+        HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned = false;
+        HLT_PFMET120_PFMHT120_IDTight_PFHT60 = false;
+        HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 = false;
+        HLT_PFHT500_PFMET100_PFMHT100_IDTight = false;
+        HLT_PFHT700_PFMET85_PFMHT85_IDTight = false;
+        HLT_PFHT800_PFMET75_PFMHT75_IDTight = false;
+        HLT_Photon200 = false;
+        HLT_Ele32_WPTight_Gsf = false;
+        HLT_DoubleEle25_CaloIdL_MW = false;
+
         if( dataset_year == "16" ){
             _inputTree->SetBranchAddress("HLT_Ele27_WPTight_Gsf", &HLT_Ele27_WPTight_Gsf );
             _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
@@ -487,6 +531,7 @@ bool HEPHero::Init() {
             _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 );
             _inputTree->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24 );
             _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            _inputTree->SetBranchAddress("HLT_TkMu50", &HLT_TkMu50 );
             //_inputTree->SetBranchAddress("HLT_Mu30_TkMu11", &HLT_Mu30_TkMu11 );
             _inputTree->SetBranchAddress("HLT_PFMET300", &HLT_PFMET300 );
             _inputTree->SetBranchAddress("HLT_MET200", &HLT_MET200 );
@@ -494,27 +539,33 @@ bool HEPHero::Init() {
             _inputTree->SetBranchAddress("HLT_PFMET170_HBHECleaned", &HLT_PFMET170_HBHECleaned );
             _inputTree->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight );
             _inputTree->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight );
-            if( (dataset_group == "Data") && (dataset_era == "H") ){
-                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ );
-                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ );
-                _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ );
-                _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
-            }else{
-                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL );
-                _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL );
-                _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL );
-                _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL );
-            }
+            _inputTree->SetBranchAddress("HLT_Photon175", &HLT_Photon175 );
+            _inputTree->SetBranchAddress("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL", &HLT_DoubleEle33_CaloIdL_GsfTrkIdVL );
+            
+            //if( (dataset_group == "Data") && (dataset_era == "H") ){
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ );
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ );
+            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ );
+            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
+            //}else{
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL );
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL );
+            _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL );
+            _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL );
+            //}
         }else if( dataset_year == "17" ){
             _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
             _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ );
             _inputTree->SetBranchAddress("HLT_Ele35_WPTight_Gsf", &HLT_Ele35_WPTight_Gsf );
             _inputTree->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27 );
             _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            _inputTree->SetBranchAddress("HLT_OldMu100", &HLT_OldMu100 );
+            _inputTree->SetBranchAddress("HLT_TkMu100", &HLT_TkMu100 );
             _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
             _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL );
             _inputTree->SetBranchAddress("HLT_DoubleEle33_CaloIdL_MW", &HLT_DoubleEle33_CaloIdL_MW ); 
             _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8 ); 
+            _inputTree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 );
             _inputTree->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned ); 
             _inputTree->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned ); 
             _inputTree->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned ); 
@@ -525,11 +576,14 @@ bool HEPHero::Init() {
             _inputTree->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight ); 
             _inputTree->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight ); 
             _inputTree->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight );
+            _inputTree->SetBranchAddress("HLT_Photon200", &HLT_Photon200 );
         }else if( dataset_year == "18" ){
             _inputTree->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ ); 
             _inputTree->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL ); 
             _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 ); 
             _inputTree->SetBranchAddress("HLT_Mu50", &HLT_Mu50 );
+            _inputTree->SetBranchAddress("HLT_OldMu100", &HLT_OldMu100 );
+            _inputTree->SetBranchAddress("HLT_TkMu100", &HLT_TkMu100 );
             _inputTree->SetBranchAddress("HLT_Ele32_WPTight_Gsf", &HLT_Ele32_WPTight_Gsf );
             _inputTree->SetBranchAddress("HLT_Ele115_CaloIdVT_GsfTrkIdT", &HLT_Ele115_CaloIdVT_GsfTrkIdT );
             _inputTree->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL ); 

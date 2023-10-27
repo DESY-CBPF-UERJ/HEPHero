@@ -1,0 +1,250 @@
+import os
+import pandas as pd
+from tqdm import tqdm
+import json
+import sys
+import h5py
+import argparse
+sys.path.insert(0, '../Datasets')
+from Samples import *
+
+import numpy as np
+from itertools import repeat
+import concurrent.futures
+import multiprocessing
+
+import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
+
+
+#======SETUP=======================================================================================
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--selection")
+parser.add_argument("-p", "--period")
+parser.add_argument("-c", "--cpu")
+parser.set_defaults(cpu=None)
+parser.add_argument("-r", "--signal_ref")
+parser.set_defaults(signal_ref=None)
+parser.add_argument("--apv", dest='apv', action='store_true')
+parser.set_defaults(apv=False)
+
+args = parser.parse_args()
+
+with open('analysis.txt') as f:
+    analysis = f.readline()
+    
+outpath = os.environ.get("HEP_OUTPATH")
+print(outpath, analysis, args.selection)
+basedir = os.path.join(outpath, analysis, args.selection)
+period = str(args.period)
+
+comb_path = os.path.join(basedir, "datasets")
+if not os.path.exists(comb_path):
+    os.makedirs(comb_path)
+
+if args.cpu is None:
+    cpu_count = multiprocessing.cpu_count()
+    if cpu_count <= 2:
+        cpu_count = 1
+    else:
+        cpu_count -= 2
+else:
+    cpu_count = int(args.cpu)
+
+print('Analysis = ' + analysis)
+print('Selection = ' + args.selection)
+print('Period = ' + period)
+print('APV = ' + str(args.apv))
+print('Outpath = ' + basedir)
+print('CPUs = ' + str(cpu_count))
+print('')
+
+
+samples = get_samples( basedir, period, args.apv )
+
+
+jobs_file_name = os.path.join(basedir, "jobs.txt")
+if not os.path.isfile(jobs_file_name):
+    print('Missing configuration files, execute the runSelection.py using the flag "fix" as in the example below, and then try again!')
+    print('python runSelection.py -j 0 --fix')
+    sys.exit()
+
+
+def __generate_cutflow(period, samples, basedir=basedir, signal_ref=None):
+    """
+    Combine cutflow file for each event process for each job directory and produce general cutflow
+
+    Args:
+        basedir (str): Path to analysis root folder
+        period (str): Jobs period used in anafile
+        samples (dict): Dictionary mapping each event flavour to jobs directories
+    """
+    cutflow_filepath = os.path.join(basedir, "datasets/cutflow_XX.txt")
+    cutflow_file = open(cutflow_filepath, "w")
+
+    if signal_ref is not None:
+        signal_tag = signal_ref
+    else:
+        signal_tag = "all_signals"
+    
+    plot_n = 1
+    plot_control = 0
+    cut_val_signal = []
+
+    has_tag = False  # Remove if CMS join 2016 samples again
+    for datasets in tqdm(samples.keys()):
+        cutflow_file.write("------------------------------------------------------------------------------------"+"\n")
+        cutflow_file.write("Cutflow from " + datasets + ":"+"\n")
+        cutflow_file.write("------------------------------------------------------------------------------------"+"\n")
+        plotted = False
+        control = 0
+        DATA_LUMI = 0
+        PROC_XSEC = 0
+        SUM_GEN_WGT = 0
+        for dataset in samples[datasets]:
+            dataset_year = dataset.split("_files_")[0]
+            dataset_year = dataset_year.split("_")[-1]
+            dataset_tag = dataset.split("_"+dataset_year)[0][-3:]
+            if (dataset_year == period):
+                if( dataset_tag == "APV" ): 
+                    has_tag = True
+                cutflow = os.path.join(basedir, dataset, "cutflow.txt")
+                cut_name = []
+                cut_val_i = []
+                cut_unc_i = []
+                if os.path.isfile(cutflow):
+                    with open(cutflow) as f:
+                        for line in f:
+                            if line[:10] == "Luminosity" :
+                                DATA_LUMI = float(line.split()[1])
+                            if line[:13] == "Cross section" :
+                                PROC_XSEC = float(line.split()[2])
+                            if line[:17] == "Sum of genWeights" :
+                                SUM_GEN_WGT += float(line.split()[3])
+                            if line[0] == "|" :
+                                line_info = line.split()
+                                cut_name.append(line_info[0][1:])
+                                cut_val_i.append(float(line_info[1]))
+                                cut_unc_i.append(float(line_info[2])**2)
+                    if control == 0:
+                        cut_val = np.array(cut_val_i)
+                        cut_unc = np.array(cut_unc_i)
+                        control = 1
+                    else:
+                        cut_val = cut_val + np.array(cut_val_i)
+                        cut_unc = cut_unc + np.array(cut_unc_i)
+        
+        if plot_control == 0:
+            fig1 = plt.figure(figsize=(15,8))
+            ax = plt.subplot(1,1,1)
+            if len(cut_val_signal) > 0:
+                plt.plot(cut_val_signal, label=signal_ref, dashes=[6, 2])
+                plot_control += 1
+                    
+        if control == 1:
+            cut_unc = np.sqrt(cut_unc)
+            if PROC_XSEC == 0:
+                dataScaleWeight = 1
+                SUM_GEN_WGT = -1
+            else:
+                dataScaleWeight = (PROC_XSEC/SUM_GEN_WGT) * DATA_LUMI
+                SUM_GEN_WGT = SUM_GEN_WGT*dataScaleWeight
+            cut_val = cut_val*dataScaleWeight
+            cut_unc = cut_unc*dataScaleWeight
+            cutflow_file.write("Data scale weight = " + str(dataScaleWeight)+"\n")
+            cutflow_file.write("------------------------------------------------------------------------------------"+"\n")
+            cutflow_file.write('Cutflow               Selected Events      Stat. Error         Efficiency (%)'+"\n")
+            for i in range(len(cut_name)):
+                cutflow_file.write(cut_name[i].ljust(17) + "%18.6f %16.6f %19.4f" % (cut_val[i], cut_unc[i], (cut_val[i]*100)/SUM_GEN_WGT)+"\n")
+            cutflow_file.write(""+"\n")
+            cutflow_file.write(""+"\n")
+    
+            if signal_ref is not None:
+                if datasets == signal_ref:
+                    plt.plot(cut_val, label=datasets, dashes=[6, 2])
+                    cut_val_signal = cut_val.copy()
+                    plotted = True
+                elif datasets[:4] != "Data" and datasets[:6] != "Signal":
+                    plt.plot(cut_val, label=datasets)
+                    plotted = True
+            else:
+                if datasets[:6] == "Signal":
+                    plt.plot(cut_val, label=datasets)
+                    plotted = True
+    
+        if plot_control == 7:
+            ax.set_xlabel("Selection", size=14, horizontalalignment='right', x=1.0)
+            ax.set_ylabel("Events", size=14, horizontalalignment='right', y=1.0)
+            
+            ax.tick_params(which='major', length=8)
+            ax.tick_params(which='minor', length=4)
+            ax.xaxis.set_minor_locator(AutoMinorLocator())
+            ax.yaxis.set_minor_locator(AutoMinorLocator())
+            ax.spines['bottom'].set_linewidth(1)
+            ax.spines['top'].set_linewidth(1)
+            ax.spines['left'].set_linewidth(1)
+            ax.spines['right'].set_linewidth(1)
+            ax.margins(x=0)
+            plt.yscale('log')
+            ax.grid(which='major', axis='x', linewidth=0.2, linestyle='-', color='0.75')
+            ax.grid(which='major', axis='y', linewidth=0.2, linestyle='-', color='0.75')
+            ax.set_ylim([1.e-1,5.e7])
+            ax.legend(numpoints=1, ncol=5, prop={'size': 10.5}, frameon=False, loc='upper right')
+            
+            plt.xticks(range(len(cut_name)), cut_name, rotation = 25, ha="right")
+            
+            plt.subplots_adjust(left=0.07, bottom=0.17, right=0.98, top=0.95, wspace=0.25, hspace=0.0)
+    
+            
+            if( has_tag ):
+                cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_APV_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+            else:
+                cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+            
+            plt.savefig(cutflow_plot_path, transparent=False)
+            
+            plot_control = 0
+            plot_n += 1
+        elif plotted:
+            plot_control += 1
+            
+            
+    ax.set_xlabel("Selection", size=14, horizontalalignment='right', x=1.0)
+    ax.set_ylabel("Events", size=14, horizontalalignment='right', y=1.0)
+    
+    ax.tick_params(which='major', length=8)
+    ax.tick_params(which='minor', length=4)
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    ax.yaxis.set_minor_locator(AutoMinorLocator())
+    ax.spines['bottom'].set_linewidth(1)
+    ax.spines['top'].set_linewidth(1)
+    ax.spines['left'].set_linewidth(1)
+    ax.spines['right'].set_linewidth(1)
+    ax.margins(x=0)
+    plt.yscale('log')
+    ax.grid(which='major', axis='x', linewidth=0.2, linestyle='-', color='0.75')
+    ax.grid(which='major', axis='y', linewidth=0.2, linestyle='-', color='0.75')
+    ax.set_ylim([1.e-1,5.e7])
+    ax.legend(numpoints=1, ncol=5, prop={'size': 10.5}, frameon=False, loc='upper right')
+    
+    plt.xticks(range(len(cut_name)), cut_name, rotation = 25, ha="right")
+    
+    plt.subplots_adjust(left=0.07, bottom=0.17, right=0.98, top=0.95, wspace=0.25, hspace=0.0)
+    
+    
+    if( has_tag ):
+        real_cutflow_filepath = os.path.join(basedir, "datasets/cutflow_APV_" + period + "_" + signal_tag + ".txt")
+        cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_APV_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+    else:
+        real_cutflow_filepath = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + ".txt")
+        cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+    
+    plt.savefig(cutflow_plot_path, transparent=False)
+    
+    os.system("mv " + cutflow_filepath + " " + real_cutflow_filepath)    
+
+    cutflow_file.close()
+
+
+__generate_cutflow(period, samples, basedir=basedir, signal_ref=args.signal_ref)
+        

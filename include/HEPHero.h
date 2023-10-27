@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include "TRandom.h"
 #include "THnSparse.h"
 #include "TF1.h"
 #include "TSystem.h"
@@ -127,7 +128,7 @@ class HEPHero {
         void JERvariation();
         void PDFtype();
         bool Jet_GenJet_match( int ijet, float deltaR_cut );
-        bool Jet_lep_overlap( int ijet, float deltaR_cut );
+        void Jet_lep_overlap( float deltaR_cut );
         bool Lep_jet_overlap( int ilep, string type );
         bool ElectronID( int iobj, int WP );
         bool MuonID( int iobj, int WP );
@@ -216,6 +217,18 @@ class HEPHero {
         map<string, vector< vector<float>>>         _hdf_evtVec_floatVec;
         map<string, vector< vector<double>>>        _hdf_evtVec_doubleVec;
         map<string, int>                            _hdf_evtVec_max_size;
+        
+        map<string, double>                         _hdf_intVec_N;
+        map<string, double>                         _hdf_intVec_mean;
+        map<string, double>                         _hdf_intVec_std;
+        map<string, double>                         _hdf_floatVec_N;
+        map<string, double>                         _hdf_floatVec_mean;
+        map<string, double>                         _hdf_floatVec_std;
+        map<string, double>                         _hdf_doubleVec_N;    // Entry counting (not WgtSum), good enough for preprocessing
+        map<string, double>                         _hdf_doubleVec_mean;
+        map<string, double>                         _hdf_doubleVec_std;
+        
+        
         
         double                      evtWeight;
         double                      SumGenWeights;
@@ -347,7 +360,6 @@ class HEPHero {
         
         //----VERTICAL SYSTEMATICS-------------------------
         bool get_PDF_sfs;
-        bool get_AlphaS_sfs;
         bool get_Scale_sfs;
         bool get_ISR_sfs;
         bool get_FSR_sfs;
@@ -522,6 +534,7 @@ class HEPHero {
         float Uy;
         float U1;
         float U2;
+        TRandom random_recoil_18;
         
         //----TRIGGERS-------------------------------------
         bool HLT_SingleEle;
@@ -570,6 +583,7 @@ class HEPHero {
         vector<int> selectedMu;
         vector<int> selectedMuLowPt;
         vector<int> selectedJet;
+        vector<bool> Jet_LepOverlap;
         int RecoLepID;  // 11 - reco electron event, 13- reco muon event
         int RegionID;
         const float Z_pdg_mass = 91.1876; //GeV
@@ -636,10 +650,10 @@ class HEPHero {
         float ttbar_score_v2;
         bool HEM_issue_ele;
         bool HEM_issue_jet;
-        bool HEM_issue_bjet;
         bool HEM_issue_ele_v2;
         bool HEM_issue_jet_v2;
-        bool HEM_issue_bjet_v2;
+        bool HEM_issue_met;
+        bool HEM_filter;
         
         //float genHT;
         //float genPt;
@@ -1135,6 +1149,7 @@ class HEPHero {
         Bool_t  Flag_muonBadTrackFilter;
         Bool_t  Flag_BadChargedCandidateFilter;
         Bool_t  Flag_BadPFMuonFilter;
+        Bool_t  Flag_BadPFMuonDzFilter;
         Bool_t  Flag_BadChargedCandidateSummer16Filter;
         Bool_t  Flag_BadPFMuonSummer16Filter;
         Bool_t  Flag_METFilters;
@@ -1151,6 +1166,7 @@ class HEPHero {
         Bool_t  HLT_IsoMu24;
         Bool_t  HLT_IsoTkMu24;
         Bool_t  HLT_Mu50;
+        Bool_t  HLT_TkMu50;
         Bool_t  HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;
         Bool_t  HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;
         Bool_t  HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
@@ -1166,6 +1182,8 @@ class HEPHero {
         Bool_t  HLT_PFMET170_HBHECleaned; 
         Bool_t  HLT_PFMET120_PFMHT120_IDTight;   
         Bool_t  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;
+        Bool_t  HLT_Photon175;
+        Bool_t  HLT_DoubleEle33_CaloIdL_GsfTrkIdVL;
         
         // Triggers added in 2017
         Bool_t  HLT_Ele35_WPTight_Gsf;
@@ -1181,11 +1199,14 @@ class HEPHero {
         Bool_t  HLT_PFHT500_PFMET100_PFMHT100_IDTight;
         Bool_t  HLT_PFHT700_PFMET85_PFMHT85_IDTight;
         Bool_t  HLT_PFHT800_PFMET75_PFMHT75_IDTight;
+        Bool_t  HLT_Photon200;
         
         // Triggers added in 2018
         Bool_t  HLT_Ele32_WPTight_Gsf;
         Bool_t  HLT_DoubleEle25_CaloIdL_MW; 
         Bool_t  HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;
+        Bool_t  HLT_OldMu100;
+        Bool_t  HLT_TkMu100;
         
 };
 

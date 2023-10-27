@@ -41,18 +41,27 @@ void HEPHero::HDF_insert( string varname, vector<int>* variable ) {
     vector<vector<int>> evtVec;
     _hdf_evtVec_intVec.insert( pair<string, vector<vector<int>>>( varname, evtVec ) );
     _hdf_evtVec_max_size.insert( pair<string, int>( varname, 0 ) );
+    _hdf_intVec_N.insert(pair<string,double>(varname, 0) );
+    _hdf_intVec_mean.insert(pair<string,double>(varname, 0) );
+    _hdf_intVec_std.insert(pair<string,double>(varname, 0) );
 }
 void HEPHero::HDF_insert( string varname, vector<float>* variable ) {
     _hdf_floatVec.insert( pair<string, vector<float>*>( varname, variable ) );
     vector<vector<float>> evtVec;
     _hdf_evtVec_floatVec.insert( pair<string, vector<vector<float>>>( varname, evtVec ) );
     _hdf_evtVec_max_size.insert( pair<string, int>( varname, 0 ) );
+    _hdf_floatVec_N.insert(pair<string,double>(varname, 0) );
+    _hdf_floatVec_mean.insert(pair<string,double>(varname, 0) );
+    _hdf_floatVec_std.insert(pair<string,double>(varname, 0) );
 }
 void HEPHero::HDF_insert( string varname, vector<double>* variable ) {
     _hdf_doubleVec.insert( pair<string, vector<double>*>( varname, variable ) );
     vector<vector<double>> evtVec;
     _hdf_evtVec_doubleVec.insert( pair<string, vector<vector<double>>>( varname, evtVec ) );
     _hdf_evtVec_max_size.insert( pair<string, int>( varname, 0 ) );
+    _hdf_doubleVec_N.insert(pair<string,double>(varname, 0) );
+    _hdf_doubleVec_mean.insert(pair<string,double>(varname, 0) );
+    _hdf_doubleVec_std.insert(pair<string,double>(varname, 0) );
 }
 
 
@@ -144,6 +153,11 @@ void HEPHero::HDF_write() {
             for( int im = 0; im < m; ++im ){
                 if( im < (*itr_h).second.at(in).size() ){
                     boost_array[in][im] = (*itr_h).second.at(in).at(im);
+                    if( (*itr_h).second.at(in).at(im) > 0 ){
+                        _hdf_intVec_N.at((*itr_h).first) += 1.;
+                        _hdf_intVec_mean.at((*itr_h).first) += (*itr_h).second.at(in).at(im);
+                        _hdf_intVec_std.at((*itr_h).first) += pow((*itr_h).second.at(in).at(im),2);
+                    }
                 }else{
                     boost_array[in][im] = 0;
                 }
@@ -151,6 +165,9 @@ void HEPHero::HDF_write() {
         }
         vector<vector<int>>().swap((*itr_h).second);
         _hdf_file->createDataSet("vectors/"+(*itr_h).first, boost_array);
+        
+        _hdf_intVec_mean.at((*itr_h).first) = _hdf_intVec_mean.at((*itr_h).first)/_hdf_intVec_N.at((*itr_h).first);
+        _hdf_intVec_std.at((*itr_h).first) = sqrt(_hdf_intVec_std.at((*itr_h).first)/_hdf_intVec_N.at((*itr_h).first) - pow(_hdf_intVec_mean.at((*itr_h).first),2));
     }
     for( map<string,vector<vector<float>>>::iterator itr_h = _hdf_evtVec_floatVec.begin(); itr_h != _hdf_evtVec_floatVec.end(); ++itr_h ) {
         long unsigned int n = (*itr_h).second.size();
@@ -160,6 +177,11 @@ void HEPHero::HDF_write() {
             for( int im = 0; im < m; ++im ){
                 if( im < (*itr_h).second.at(in).size() ){
                     boost_array[in][im] = (*itr_h).second.at(in).at(im);
+                    if( (*itr_h).second.at(in).at(im) > 0 ){
+                        _hdf_floatVec_N.at((*itr_h).first) += 1.;
+                        _hdf_floatVec_mean.at((*itr_h).first) += (*itr_h).second.at(in).at(im);
+                        _hdf_floatVec_std.at((*itr_h).first) += pow((*itr_h).second.at(in).at(im),2);
+                    }
                 }else{
                     boost_array[in][im] = 0;
                 }
@@ -167,6 +189,9 @@ void HEPHero::HDF_write() {
         }
         vector<vector<float>>().swap((*itr_h).second);
         _hdf_file->createDataSet("vectors/"+(*itr_h).first, boost_array);
+        
+        _hdf_floatVec_mean.at((*itr_h).first) = _hdf_floatVec_mean.at((*itr_h).first)/_hdf_floatVec_N.at((*itr_h).first);
+        _hdf_floatVec_std.at((*itr_h).first) = sqrt(_hdf_floatVec_std.at((*itr_h).first)/_hdf_floatVec_N.at((*itr_h).first) - pow(_hdf_floatVec_mean.at((*itr_h).first),2));
     }
     for( map<string,vector<vector<double>>>::iterator itr_h = _hdf_evtVec_doubleVec.begin(); itr_h != _hdf_evtVec_doubleVec.end(); ++itr_h ) {
         long unsigned int n = (*itr_h).second.size();
@@ -176,6 +201,11 @@ void HEPHero::HDF_write() {
             for( int im = 0; im < m; ++im ){
                 if( im < (*itr_h).second.at(in).size() ){
                     boost_array[in][im] = (*itr_h).second.at(in).at(im);
+                    if( (*itr_h).second.at(in).at(im) > 0 ){
+                        _hdf_doubleVec_N.at((*itr_h).first) += 1.;
+                        _hdf_doubleVec_mean.at((*itr_h).first) += (*itr_h).second.at(in).at(im);
+                        _hdf_doubleVec_std.at((*itr_h).first) += pow((*itr_h).second.at(in).at(im),2);
+                    }
                 }else{
                     boost_array[in][im] = 0;
                 }
@@ -183,6 +213,38 @@ void HEPHero::HDF_write() {
         }
         vector<vector<double>>().swap((*itr_h).second);
         _hdf_file->createDataSet("vectors/"+(*itr_h).first, boost_array);
+        
+        _hdf_doubleVec_mean.at((*itr_h).first) = _hdf_doubleVec_mean.at((*itr_h).first)/_hdf_doubleVec_N.at((*itr_h).first);
+        _hdf_doubleVec_std.at((*itr_h).first) = sqrt(_hdf_doubleVec_std.at((*itr_h).first)/_hdf_doubleVec_N.at((*itr_h).first) - pow(_hdf_doubleVec_mean.at((*itr_h).first),2));
+    }
+    
+    
+    for( map<string,double>::iterator itr_h = _hdf_intVec_N.begin(); itr_h != _hdf_intVec_N.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_N", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_intVec_mean.begin(); itr_h != _hdf_intVec_mean.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_mean", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_intVec_std.begin(); itr_h != _hdf_intVec_std.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_std", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_floatVec_N.begin(); itr_h != _hdf_floatVec_N.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_N", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_floatVec_mean.begin(); itr_h != _hdf_floatVec_mean.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_mean", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_floatVec_std.begin(); itr_h != _hdf_floatVec_std.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_std", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_doubleVec_N.begin(); itr_h != _hdf_doubleVec_N.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_N", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_doubleVec_mean.begin(); itr_h != _hdf_doubleVec_mean.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_mean", (*itr_h).second);
+    }
+    for( map<string,double>::iterator itr_h = _hdf_doubleVec_std.begin(); itr_h != _hdf_doubleVec_std.end(); ++itr_h ) {
+        _hdf_file->createDataSet("metadata/"+(*itr_h).first+"_std", (*itr_h).second);
     }
     
 }

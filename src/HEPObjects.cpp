@@ -358,6 +358,7 @@ void HEPHero::PreObjects() {
         }
         
         //----MET RECOIL-------------------------------------------------------------------------------
+        random_recoil_18.SetSeed(1);
         //if( apply_met_recoil_corr ){
         //    Z_recoil.ReadFile(Z_recoil_file.c_str());
         //}

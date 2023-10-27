@@ -64,6 +64,7 @@ for period,year,path in zip(periods,years,paths):
         ["ST_tW_antitop_"+period]                    + [year+'0401'+APVID, path+"ST_tW_antitop.txt"],
         ["ST_t-channel_top_"+period]                 + [year+'0402'+APVID, path+"ST_t-channel_top.txt"],
         ["ST_t-channel_antitop_"+period]             + [year+'0403'+APVID, path+"ST_t-channel_antitop.txt"],
+        ["ST_s-channel_"+period]                     + [year+'0404'+APVID, path+"ST_s-channel.txt"],
     ]
     VZ = [
         ["ZZTo2L2Nu_"+period]                        + [year+'0501'+APVID, path+"ZZTo2L2Nu.txt"],
@@ -72,13 +73,13 @@ for period,year,path in zip(periods,years,paths):
     ]
     ResidualSM = [
         #["ZZ_Inclusive_"+period]                     + [year+'0500'+APVID, path+"ZZ.txt"],
-        ["ZZ_Others_"+period]                        + [year+'0500'+APVID, path+"ZZ.txt"],
-        #["ZZTo2Q2L_"+period]                         + [year+'0504'+APVID, path+"ZZTo2Q2L.txt"],
+        #["ZZ_Others_"+period]                        + [year+'0500'+APVID, path+"ZZ.txt"],
+        ["ZZTo2Q2L_"+period]                         + [year+'0504'+APVID, path+"ZZTo2Q2L.txt"],
         #["WZ_Inclusive_"+period]                     + [year+'0510'+APVID, path+"WZ.txt"],
-        ["WZ_Others_"+period]                        + [year+'0510'+APVID, path+"WZ.txt"],
-        #["WZTo2Q2L_"+period]                         + [year+'0513'+APVID, path+"WZTo2Q2L.txt"],
-        ["WW_"+period]                               + [year+'0520'+APVID, path+"WW.txt"],
-        #["WWTo2L2Nu_"+period]                        + [year+'0521'+APVID, path+"WWTo2L2Nu.txt"],
+        #["WZ_Others_"+period]                        + [year+'0510'+APVID, path+"WZ.txt"],
+        ["WZTo2Q2L_"+period]                         + [year+'0513'+APVID, path+"WZTo2Q2L.txt"],
+        #["WW_"+period]                               + [year+'0520'+APVID, path+"WW.txt"],
+        ["WWTo2L2Nu_"+period]                        + [year+'0521'+APVID, path+"WWTo2L2Nu.txt"],
         ["ZZZ_"+period]                              + [year+'0600'+APVID, path+"ZZZ.txt"],
         ["WZZ_"+period]                              + [year+'0601'+APVID, path+"WZZ.txt"],
         ["WWZ_"+period]                              + [year+'0602'+APVID, path+"WWZ.txt"],
@@ -119,6 +120,7 @@ for period,year,path in zip(periods,years,paths):
         #["WJetsToLNu_"+period]                       + [year+'1900'+APVID, path+"WJetsToLNu.txt"],
         #["WGToLNuG_"+period]                         + [year+'1901'+APVID, path+"WGToLNuG.txt"],
     ]
+    
     
     if period == "APV_16":
         ResidualSM_preVFP_16 = ResidualSM

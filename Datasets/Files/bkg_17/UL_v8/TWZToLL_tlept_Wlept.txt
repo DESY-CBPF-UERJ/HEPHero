@@ -1,4 +1,0 @@
-/store/mc/RunIISummer20UL17NanoAODv2/TWZToLL_tlept_Wlept_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v8-v1/70000/E2C93D58-0CC0-BF40-8C3C-CA8DADB00E7D.root
-/store/mc/RunIISummer20UL17NanoAODv2/TWZToLL_tlept_Wlept_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v8-v1/70000/B868E7F0-88B5-BD4F-8093-B24A88DDCC65.root
-/store/mc/RunIISummer20UL17NanoAODv2/TWZToLL_tlept_Wlept_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v8-v1/70000/CFF899F6-9E6A-C74A-95AF-AF697DEE5002.root
-/store/mc/RunIISummer20UL17NanoAODv2/TWZToLL_tlept_Wlept_5f_DR_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v8-v1/70000/5B8384D6-B649-334D-9EEF-EEB1B0D0EC45.root

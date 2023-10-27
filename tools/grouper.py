@@ -55,8 +55,7 @@ print('CPUs = ' + str(cpu_count))
 print('')
 
 samples = get_samples( basedir, period, args.apv )
- 
-TreeName="selection"
+
 
 comb_path = os.path.join(basedir, "datasets")
 period_path = os.path.join(comb_path, period)
@@ -123,8 +122,8 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     # Initialize source list (object which will store the systematic histograms)
     if args_syst:
         ds_type = "00"
-        with open(jobs_file_name) as f:
-            for line in f:
+        with open(jobs_file_name) as jfn:
+            for line in jfn:
                 info = line.split(" ")
                 job_dataset = info[2][3:-5] 
                 if( datasets == job_dataset ):
@@ -146,6 +145,10 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                         source_list.append(universe_list)
                     source_idx += 1
     
+    
+    fpath = os.path.join(period_path, f"{datasets}.h5")
+    f_out = h5py.File(fpath, "w")
+    
     first_h5 = True
     first_syst = True
     DATA_LUMI = 0
@@ -161,8 +164,8 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
         if (dataset_year == period):
             cutflow = os.path.join(basedir, dataset, "cutflow.txt")
             if os.path.isfile(cutflow):
-                with open(cutflow) as f:
-                    for line in f:
+                with open(cutflow) as cf:
+                    for line in cf:
                         if line[:10] == "Luminosity" :
                             DATA_LUMI = float(line.split()[1])
                         if line[:13] == "Cross section" :
@@ -182,7 +185,13 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                         for group in f.keys():
                             for hdfvar in f[group].keys():
                                 varname = group+"/"+hdfvar
-                                datasets_out_dict[varname] = np.array(f[varname])
+                                if varname[-4:] != "_std" and varname[-5:] != "_mean" and varname[-2:] != "_N":
+                                    datasets_out_dict[varname] = np.array(f[varname])
+                                if varname[-5:] == "_mean":
+                                    N_name = varname[:-5]+"_N"
+                                    datasets_out_dict[varname] = np.array(f[varname])*np.array(f[N_name])
+                                if varname[-2:] == "_N":
+                                    datasets_out_dict[varname] = np.array(f[varname])
                         first_h5 = False
                     else:
                         datasets_new_dict = {}
@@ -202,7 +211,17 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                                         number_of_events = len(datasets_out_dict[varname])
                                         for i in range(diff_size):
                                             datasets_out_dict[varname] = np.c_[ datasets_out_dict[varname], np.zeros(number_of_events) ]
-                                datasets_out_dict[varname] = np.concatenate((datasets_out_dict[varname],datasets_new_dict[varname]))
+                                if group == "vectors" or group == "scalars":
+                                    datasets_out_dict[varname] = np.concatenate((datasets_out_dict[varname],datasets_new_dict[varname]))
+                                elif group == "metadata":
+                                    if varname[-2:] == "_N":
+                                        N_name = varname
+                                        mean_name = varname[:-2]+"_mean"
+                                        N_new = datasets_new_dict[varname]
+                                        mean_new = np.array(f[mean_name])
+                                        datasets_out_dict[N_name] += N_new;
+                                        datasets_out_dict[mean_name] += N_new*mean_new;
+                                    
                         datasets_new_dict.clear()
                     
                 #----------------------------------------------------
@@ -239,13 +258,57 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     
                 first_syst = False
 
+
+
+    if len(datasets_out_dict) > 0:
+        for group in f.keys():
+            if group == "metadata":
+                for hdfvar in f[group].keys():
+                    varname = group+"/"+hdfvar
+                    if varname[-5:] == "_mean":
+                        N_name = varname[:-5]+"_N"
+                        std_name = varname[:-5]+"_std"
+                        datasets_out_dict[varname] = datasets_out_dict[varname]/datasets_out_dict[N_name];
+                        datasets_out_dict[std_name] = 0;
+    
+    for dataset in samples[datasets]:
+        if args_debug:
+            print(dataset, "metadata_std")
+        if (dataset_year == period):
+            hdf_file = os.path.join(basedir, dataset, "selection.h5")
+            f = h5py.File(hdf_file, "r")
+            if len(np.array(f["scalars/evtWeight"])) > 0:
+                for group in f.keys():
+                    if group == "metadata":
+                        for hdfvar in f[group].keys():
+                            varname = group+"/"+hdfvar
+                            if varname[-4:] == "_std":
+                                N_name = varname[:-4]+"_N"
+                                mean_name = varname[:-4]+"_mean"
+                                std_name = varname
+                                N_new = np.array(f[N_name])
+                                mean_new = np.array(f[mean_name])
+                                std_new = np.array(f[std_name])
+                                mean_all = datasets_out_dict[mean_name]
+                                datasets_out_dict[varname] += (N_new-1)*std_new**2 + N_new*(mean_new-mean_all)**2
+                                
+    
+    if len(datasets_out_dict) > 0:
+        for group in f.keys():
+            if group == "metadata":
+                for hdfvar in f[group].keys():
+                    varname = group+"/"+hdfvar
+                    if varname[-4:] == "_std":
+                        N_name = varname[:-4]+"_N"
+                        datasets_out_dict[varname] = np.sqrt(datasets_out_dict[varname]/(datasets_out_dict[N_name]-1));
+
+
     if PROC_XSEC == 0:
         dataScaleWeight = 1
     else:
         dataScaleWeight = (PROC_XSEC/SUM_GEN_WGT) * DATA_LUMI
     
-    fpath = os.path.join(period_path, f"{datasets}.h5")
-    f_out = h5py.File(fpath, "w")
+    
     f_out.create_dataset("metadata/lumiWeight", data=dataScaleWeight)
     f_out.create_dataset("metadata/CrossSection", data=PROC_XSEC)
     f_out.create_dataset("metadata/SumGenWeights", data=SUM_GEN_WGT)
@@ -255,9 +318,10 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
         for group in f.keys():
             for hdfvar in f[group].keys():
                 varname = group+"/"+hdfvar
-                f_out.create_dataset(varname, data=datasets_out_dict[varname])
+                if varname[-2:] != "_N":
+                    f_out.create_dataset(varname, data=datasets_out_dict[varname])
         datasets_out_dict.clear()
-    
+
     #---SYS--------------------------------------------------------------
     if args_syst:
         output_sys_dict = {}

@@ -5,11 +5,11 @@ path17 = 'Datasets/Files/signal_17/UL_'+nano_version+'/'
 path18 = 'Datasets/Files/signal_18/UL_'+nano_version+'/'
 
 # ID digits:
-# 1st-2nd = 16(2016),17(2017),18(2018)                      # Year
-# 3th-4th = 00(Data),01(MC-signal),02-13(MC-bkg)            # Type
-# 5th-6th = 00(none),...                                    # Bkg -> Exclusive interval 
-# 5th-6th = 00(none),11(250_30),12(250_40),55(1250_100)     # Signal -> Phisical process
-# 5th-6th = 00(none),01(A),02(B),03(C)                      # Data -> Era
+# 1st-2nd = 16(2016),17(2017),18(2018)                                  # Year
+# 3th-4th = 00(Data),01(MC-signal),02-13(MC-bkg),99(MC-private-signal)  # Type
+# 5th-6th = 00(none),...                                                # Bkg -> Exclusive interval 
+# 5th-6th = 00(none),11(250_30),12(250_40),55(1250_100)                 # Signal -> Phisical process
+# 5th-6th = 00(none),01(A),02(B),03(C)                                  # Data -> Era
 # 7th     = 1(with "HIPM"/"APV")("pre-VFP"), 0(without "HIPM"/"APV")("pos-VFP")  # 2016
 
 
@@ -43,10 +43,33 @@ for period,year,path in zip(periods,years,paths):
         ["Signal_1000_200_"+period]          + [year+'0115'+APVID, path+"Signal_1000_200.txt"],
         ["Signal_1000_300_"+period]          + [year+'0116'+APVID, path+"Signal_1000_300.txt"],
         ["Signal_1000_400_"+period]          + [year+'0117'+APVID, path+"Signal_1000_400.txt"],
-        ["Signal_1000_600_"+period]          + [year+'0118'+APVID, path+"Signal_1000_600.txt"],
         ["Signal_1000_800_"+period]          + [year+'0119'+APVID, path+"Signal_1000_800.txt"],
-    ]    
-        
+        # New signal points
+        #["Signal_200_100_"+period]           + [year+'9920'+APVID, path+"Signal_200_100.txt"],
+        #["Signal_400_300_"+period]           + [year+'9921'+APVID, path+"Signal_400_300.txt"],
+        #["Signal_500_400_"+period]           + [year+'9922'+APVID, path+"Signal_500_400.txt"],
+        #["Signal_600_500_"+period]           + [year+'9923'+APVID, path+"Signal_600_500.txt"],
+        #["Signal_800_700_"+period]           + [year+'9924'+APVID, path+"Signal_800_700.txt"],
+        #["Signal_1000_900_"+period]          + [year+'9925'+APVID, path+"Signal_1000_900.txt"],
+        ["Signal_1400_100_"+period]          + [year+'9926'+APVID, path+"Signal_1400_100.txt"],
+        ["Signal_1400_400_"+period]          + [year+'9927'+APVID, path+"Signal_1400_400.txt"],
+        ["Signal_1400_600_"+period]          + [year+'9928'+APVID, path+"Signal_1400_600.txt"],
+        ["Signal_1400_1000_"+period]         + [year+'9929'+APVID, path+"Signal_1400_1000.txt"],
+        ["Signal_1400_1200_"+period]         + [year+'9930'+APVID, path+"Signal_1400_1200.txt"],
+        #["Signal_1400_1300_"+period]         + [year+'9931'+APVID, path+"Signal_1400_1300.txt"],
+        ["Signal_2000_100_"+period]          + [year+'9932'+APVID, path+"Signal_2000_100.txt"],
+        ["Signal_2000_400_"+period]          + [year+'9933'+APVID, path+"Signal_2000_400.txt"],
+        ["Signal_2000_600_"+period]          + [year+'9934'+APVID, path+"Signal_2000_600.txt"],
+        ["Signal_2000_1000_"+period]         + [year+'9935'+APVID, path+"Signal_2000_1000.txt"],
+        ["Signal_2000_1200_"+period]         + [year+'9936'+APVID, path+"Signal_2000_1200.txt"],
+        ["Signal_2000_1800_"+period]         + [year+'9937'+APVID, path+"Signal_2000_1800.txt"],
+        #["Signal_2000_1900_"+period]         + [year+'9938'+APVID, path+"Signal_2000_1900.txt"],
+    ]
+
+    if year == "18":
+        Signal.append(["Signal_1000_600_"+period]          + [year+'9918'+APVID, path+"Signal_1000_600.txt"])
+    else:
+        Signal.append(["Signal_1000_600_"+period]          + [year+'0118'+APVID, path+"Signal_1000_600.txt"])
         
     if period == "APV_16":
         Signal_preVFP_16 = Signal

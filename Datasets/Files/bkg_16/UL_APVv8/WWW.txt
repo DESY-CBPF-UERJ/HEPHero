@@ -1,1 +1,0 @@
-/store/mc/RunIISummer20UL16NanoAODAPVv2/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v9-v1/30000/3C951515-FF1A-B447-8B3C-26489E39F5D4.root

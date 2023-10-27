@@ -23,6 +23,7 @@ elif args.version == "9":
 
 
 campaign = "UL2017_"+tag
+campaignSingleMu = "UL2017_"+tag+"_GT36"
 
 basedir = "data_17/UL_"+version+"/"
 if os.path.isdir(basedir) is False:
@@ -44,11 +45,11 @@ datasets = [
 ["DoubleEle_D",     "/DoubleEG/Run2017D-" + campaign],
 ["DoubleEle_E",     "/DoubleEG/Run2017E-" + campaign],
 ["DoubleEle_F",     "/DoubleEG/Run2017F-" + campaign],
-["SingleMu_B",      "/SingleMuon/Run2017B-" + campaign],
-["SingleMu_C",      "/SingleMuon/Run2017C-" + campaign],
-["SingleMu_D",      "/SingleMuon/Run2017D-" + campaign],
-["SingleMu_E",      "/SingleMuon/Run2017E-" + campaign],
-["SingleMu_F",      "/SingleMuon/Run2017F-" + campaign],
+["SingleMu_B",      "/SingleMuon/Run2017B-" + campaignSingleMu],
+["SingleMu_C",      "/SingleMuon/Run2017C-" + campaignSingleMu],
+["SingleMu_D",      "/SingleMuon/Run2017D-" + campaignSingleMu],
+["SingleMu_E",      "/SingleMuon/Run2017E-" + campaignSingleMu],
+["SingleMu_F",      "/SingleMuon/Run2017F-" + campaignSingleMu],
 ["SingleEle_B",     "/SingleElectron/Run2017B-" + campaign],
 ["SingleEle_C",     "/SingleElectron/Run2017C-" + campaign],
 ["SingleEle_D",     "/SingleElectron/Run2017D-" + campaign],

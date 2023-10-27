@@ -14,9 +14,9 @@ import h5py
 import pandas as pd
 import numpy as np
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Main Setup
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 selection = 'Test'
 analysis = 'HHDM'
 treeName = 'Events'
@@ -31,7 +31,7 @@ analysis_parameters = {
 'JET_LEP_DR_ISO_CUT         ': 0.4,
 'ELECTRON_GAP_LOWER_CUT     ': 1.444,
 'ELECTRON_GAP_UPPER_CUT     ': 1.566,
-'ELECTRON_ETA_CUT           ': 2.4,
+'ELECTRON_ETA_CUT           ': 2.5,
 'ELECTRON_PT_CUT            ': 20,
 'ELECTRON_LOW_PT_CUT        ': 15,
 'ELECTRON_ID_WP             ': 4,
@@ -66,99 +66,98 @@ corrections = {  # 0-don't apply, 1-apply
 }
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Systematics
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 lateral_systematics = {
 'CV': [0, 1, [], []],
-'JER': [28, 2, [], []],
-'UncMET': [29, 2, [], []],
-'Recoil': [30, 4, ['02'], []],
-'JES': [41, 2, [], ['Total']],
+#'JER': [28, 2, [], []],
+#'UncMET': [29, 2, [], []],
+#'Recoil': [30, 4, ['02'], []],
+#'JES': [41, 2, [], ['Total']],
 }
 
 vertical_systematics = {
-'Pileup': [50, 2, [], []],
-'EleID': [51, 2, [], []],
-'MuID': [52, 2, [], []],
-'JetPU': [53, 2, [], []],
-'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
-'Trig': [58, 2, [], []],
-'PreFir': [59, 2, [], []],
-'PDF': [60, 2, [], []],
-'AlphaS': [61, 2, [], []],
-'Scales': [62, 9, [], []],
-'ISR': [63, 2, [], []],
-'FSR': [64, 2, [], []],
+#'Pileup': [50, 2, [], []],
+#'EleID': [51, 2, [], []],
+#'MuID': [52, 2, [], []],
+#'JetPU': [53, 2, [], []],
+#'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
+#'Trig': [58, 2, [], []],
+#'PreFir': [59, 2, [], []],
+#'PDF': [60, 100, [], []], # 100 or 30
+#'Scales': [62, 7, [], []],
+#'ISR': [63, 2, [], []],
+#'FSR': [64, 2, [], []],
 }
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Jobs setup
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 NumMaxEvents = -1
 NumFilesPerJob_Data = 1
-NumFilesPerJob_Signal = 50
-NumFilesPerJob_Bkg = 5
+NumFilesPerJob_Signal = 1
+NumFilesPerJob_Bkg = 1
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Datasets
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 sys.path.insert(0, 'Datasets')
 from Signal import *
 from Bkg import *
 from Data import *
 datasets = []
 
-datasets.extend(Data_Lep_preVFP_16)
-datasets.extend(Data_MET_preVFP_16)
-datasets.extend(Signal_preVFP_16)
-datasets.extend(DYPt50ToInf_preVFP_16)
-datasets.extend(DYPt0To50_preVFP_16)
-datasets.extend(TTFullLep_preVFP_16)
-datasets.extend(TTSemiLep_preVFP_16)
-datasets.extend(ST_preVFP_16)
-datasets.extend(VZ_preVFP_16)
-datasets.extend(ResidualSM_preVFP_16)
+#datasets.extend(Data_Lep_preVFP_16)
+#datasets.extend(Data_MET_preVFP_16)
+#datasets.extend(Signal_preVFP_16)
+#datasets.extend(DYPt50ToInf_preVFP_16)
+#datasets.extend(DYPt0To50_preVFP_16)
+#datasets.extend(TTFullLep_preVFP_16)
+#datasets.extend(TTSemiLep_preVFP_16)
+#datasets.extend(ST_preVFP_16)
+#datasets.extend(VZ_preVFP_16)
+#datasets.extend(ResidualSM_preVFP_16)
 
-datasets.extend(Data_Lep_postVFP_16)
-datasets.extend(Data_MET_postVFP_16)
-datasets.extend(Signal_postVFP_16)
-datasets.extend(DYPt50ToInf_postVFP_16)
-datasets.extend(DYPt0To50_postVFP_16)
-datasets.extend(TTFullLep_postVFP_16)
-datasets.extend(TTSemiLep_postVFP_16)
-datasets.extend(ST_postVFP_16)
-datasets.extend(VZ_postVFP_16)
-datasets.extend(ResidualSM_postVFP_16)
+#datasets.extend(Data_Lep_postVFP_16)
+#datasets.extend(Data_MET_postVFP_16)
+#datasets.extend(Signal_postVFP_16)
+#datasets.extend(DYPt50ToInf_postVFP_16)
+#datasets.extend(DYPt0To50_postVFP_16)
+#datasets.extend(TTFullLep_postVFP_16)
+#datasets.extend(TTSemiLep_postVFP_16)
+#datasets.extend(ST_postVFP_16)
+#datasets.extend(VZ_postVFP_16)
+#datasets.extend(ResidualSM_postVFP_16)
 
-datasets.extend(Data_Lep_17)
-datasets.extend(Data_MET_17)
-datasets.extend(Signal_17)
-datasets.extend(DYPt50ToInf_17)
-datasets.extend(DYPt0To50_17)
-datasets.extend(TTFullLep_17)
-datasets.extend(TTSemiLep_17)
-datasets.extend(ST_17)
-datasets.extend(VZ_17)
-datasets.extend(ResidualSM_17)
+#datasets.extend(Data_Lep_17)
+#datasets.extend(Data_MET_17)
+#datasets.extend(Signal_17)
+#datasets.extend(DYPt50ToInf_17)
+#datasets.extend(DYPt0To50_17)
+#datasets.extend(TTFullLep_17)
+#datasets.extend(TTSemiLep_17)
+#datasets.extend(ST_17)
+#datasets.extend(VZ_17)
+#datasets.extend(ResidualSM_17)
 
-datasets.extend(Data_Lep_18)
-datasets.extend(Data_MET_18)
-datasets.extend(Signal_18)
-datasets.extend(DYPt50ToInf_18)
-datasets.extend(DYPt0To50_18)
-datasets.extend(TTFullLep_18)
-datasets.extend(TTSemiLep_18)
-datasets.extend(ST_18)
-datasets.extend(VZ_18)
-datasets.extend(ResidualSM_18)
+#datasets.extend(Data_Lep_18)
+#datasets.extend(Data_MET_18)
+#datasets.extend(Signal_18)
+#datasets.extend(DYPt50ToInf_18)
+#datasets.extend(DYPt0To50_18)
+#datasets.extend(TTFullLep_18)
+#datasets.extend(TTSemiLep_18)
+#datasets.extend(ST_18)
+#datasets.extend(VZ_18)
+#datasets.extend(ResidualSM_18)
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Metadata
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 metadata = {
 'NN_prep_keras_XX         ': 'Metadata/ML/Keras/preprocessing.json',
 'NN_model_keras_XX        ': 'Metadata/ML/Keras/NN_4_100_elu_adam/model.json',
@@ -190,9 +189,9 @@ metadata = {
 'btag_eff_NORMAL_16       ': 'Metadata/btag_eff/DeepCSVLoose/2016postVFP.json',
 'btag_eff_17              ': 'Metadata/btag_eff/DeepCSVLoose/2017.json',
 'btag_eff_18              ': 'Metadata/btag_eff/DeepCSVLoose/2018.json',
-'trigger_16               ': 'Metadata/trigger/SF_2016_ttbar.json',
-'trigger_17               ': 'Metadata/trigger/SF_2017_ttbar.json',
-'trigger_18               ': 'Metadata/trigger/SF_2018_ttbar.json',
+'trigger_16               ': 'Metadata/trigger/SF_2016.json',
+'trigger_17               ': 'Metadata/trigger/SF_2017.json',
+'trigger_18               ': 'Metadata/trigger/SF_2018.json',
 'JES_MC_HIPM_16           ': 'Metadata/JES/JES_MC_16_preVFP.txt',
 'JES_MC_NORMAL_16         ': 'Metadata/JES/JES_MC_16_postVFP.txt',
 'JES_MC_17                ': 'Metadata/JES/JES_MC_17.txt',
@@ -223,17 +222,17 @@ metadata = {
 }
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # Plots
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 Get_Image_in_EPS = 0
 Get_Image_in_PNG = 1
 Get_Image_in_PDF = 0
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # [DO NOT TOUCH THIS PART] 
-#---------------------------------------------------------------------------------------------------------------------------------------- 
+#------------------------------------------------------------------------------------------------------------
 
 #======ARGUMENTS SETUP=============================================================================
 parser = argparse.ArgumentParser()
@@ -289,6 +288,12 @@ if args.check >= 0:
         if args.check >= 1:
             sys.exit("There are only 1 test from 0 to 0.")
     else:
+        #if args.check == 0:
+        #    datasets = [["Signal_test_16",                  '1600000', "../splitSUSY_M1400_1300_ctau0p1.root", 0],]
+        #if args.check == 1:
+        #    datasets = [["TTToSemiLeptonic_test_17",        '1700000', "../TTToSemiLeptonic.root",  0],]
+        #if args.check == 2:
+        #    datasets = [["TTToSemiLeptonic_test_18",        '1800000', "../ZJetsToNuNu.root",  0],]
         if args.check == 0:
             datasets = [["Signal_test_16",                  '1600000', "Datasets/signal_nano.root", 0],]
         if args.check == 1:
@@ -711,30 +716,38 @@ if os.path.isfile(hdf_file):
 
     f = h5py.File(hdf_file, "r")
     variable = []
+    var_group = []
     shape = []
     var_mean = []
     var_std = []
+    var_NPosEntryPerEvt = []
     for group in f.keys():
-        for hdfvar in f[group].keys():
-            varname = group+"/"+hdfvar
-            var_array = np.array(f[varname])
-            variable.append(hdfvar)
-            shape.append(var_array.shape)
-            if len(var_array) > 0:
-                if group == "scalars":
-                    var_mean.append(np.mean(var_array))
-                    var_std.append(np.std(var_array))
-                elif group == "vectors":
-                    if len(var_array[0]) > 0:
-                        var_mean.append(np.mean(var_array))
-                        var_std.append(np.std(var_array))
-                    else:
-                        var_mean.append("empty")
-                        var_std.append("empty")
-            else:
-                var_mean.append("empty")
-                var_std.append("empty")
-    df_features = pd.DataFrame({"feature": variable, "shape": shape, "mean": var_mean, "std": var_std})
+        if group == "scalars" or group == "vectors":
+            for hdfvar in f[group].keys():
+                varname = group+"/"+hdfvar
+                var_array = np.array(f[varname])
+                variable.append(hdfvar)
+                var_group.append(group)
+                shape.append(var_array.shape)
+                if var_array.size > 0:
+                    if group == "scalars":
+                        var_mean.append("{:.5f}".format(np.mean(var_array)))
+                        var_std.append("{:.5f}".format(np.std(var_array)))
+                        var_NPosEntryPerEvt.append("-")
+                    elif group == "vectors":
+                        if len(var_array[0]) > 0:
+                            var_mean.append("{:.5f}".format(np.array(f["metadata/"+hdfvar+"_mean"])))
+                            var_std.append("{:.5f}".format(np.array(f["metadata/"+hdfvar+"_std"])))
+                            var_NPosEntryPerEvt.append("{:.5f}".format(np.array(f["metadata/"+hdfvar+"_N"])/len(var_array)))
+                        else:
+                            var_mean.append("empty")
+                            var_std.append("empty")
+                            var_NPosEntryPerEvt.append("empty")
+                else:
+                    var_mean.append("empty")
+                    var_std.append("empty")
+                    var_NPosEntryPerEvt.append("empty")
+    df_features = pd.DataFrame({"group": var_group, "feature": variable, "shape": shape, "mean": var_mean, "std": var_std, "NPosEntryPerEvt": var_NPosEntryPerEvt})
     print(df_features)
 else:
     print("There is no hdf5 file in the output directory!")
