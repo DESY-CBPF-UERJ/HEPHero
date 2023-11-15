@@ -287,6 +287,7 @@ class HEPHero {
         bool    apply_muon_wgt;
         double  muon_wgt;
         string  muon_file;
+        shared_ptr<correction::Correction const> muon_RECO_corr;
         shared_ptr<correction::Correction const> muon_ID_corr;
         shared_ptr<correction::Correction const> muon_ISO_corr;
         

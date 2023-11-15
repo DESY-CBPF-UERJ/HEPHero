@@ -311,10 +311,23 @@ float HEPHero::GetMuonWeight( string sysID ){
         for( unsigned int imu = 0; imu < nMuon; ++imu ) {
             if( Muon_pt[imu] <= 15 ) continue;
             if( abs(Muon_eta[imu]) >= 2.4 ) continue;
-            if( !MuonID( imu, MUON_ID_WP ) ) continue;
-            
+
             float mu_pt = Muon_pt[imu];
             float mu_abseta = abs(Muon_eta[imu]);
+
+            float RECO_SF;
+            if( mu_pt < 200 ){
+                if( sysID == "cv" ){
+                    RECO_SF = muon_RECO_corr->evaluate({year+"_UL", mu_abseta, mu_pt, "sf"});
+                }else if( sysID == "down" ){
+                    RECO_SF = muon_RECO_corr->evaluate({year+"_UL", mu_abseta, mu_pt, "systdown"});
+                }else if( sysID == "up" ){
+                    RECO_SF = muon_RECO_corr->evaluate({year+"_UL", mu_abseta, mu_pt, "systup"});
+                }
+                LeptonID_wgt *= RECO_SF;
+            }
+
+            if( !MuonID( imu, MUON_ID_WP ) ) continue;
             
             float ID_SF;
             if( sysID == "cv" ){

@@ -86,6 +86,8 @@ void HEPHero::PreObjects() {
         if( apply_muon_wgt ){
             auto muon_set = correction::CorrectionSet::from_file(muon_file.c_str());
             
+            muon_RECO_corr = muon_set->at("NUM_TrackerMuons_DEN_genTracks");
+
             string MuID_WP;
             if( MUON_ID_WP == 0 ){ 
                 MuID_WP = "NUM_LooseID_DEN_TrackerMuons";

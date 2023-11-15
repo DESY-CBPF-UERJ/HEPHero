@@ -41,7 +41,6 @@ Signal_2000_1000                                0.04477874562       temporary   
 Signal_2000_1200                                0.04477874562       temporary           temporary
 Signal_2000_1800                                0.04477874562       temporary           temporary
 Signal_2000_1900                                0.04477874562       temporary           temporary
-
 DYJetsToLL_PtZ-0To50                            1414.0              -                   [new1]NNLO*
 DYJetsToLL_PtZ-3To50                            1414.0              -                   [new1]NNLO*
 DYJetsToLL_PtZ-50To100                          378.97              -                   [new1]NNLO*

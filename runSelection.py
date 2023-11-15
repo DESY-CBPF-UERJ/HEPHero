@@ -96,9 +96,9 @@ vertical_systematics = {
 # Jobs setup
 #------------------------------------------------------------------------------------------------------------
 NumMaxEvents = -1
-NumFilesPerJob_Data = 1
-NumFilesPerJob_Signal = 1
-NumFilesPerJob_Bkg = 1
+NumFilesPerJob_Data = 2
+NumFilesPerJob_Signal = 4
+NumFilesPerJob_Bkg = 4
 
 
 #------------------------------------------------------------------------------------------------------------
