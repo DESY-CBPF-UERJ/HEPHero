@@ -299,40 +299,28 @@ To be able to work with the CMS open data, you need to download the list of data
 * `Run2012B_TauPlusX.root`
 * `Run2012C_TauPlusX.root`
 
-# Local development with Docker
+# Self-contained HEPHero container
 
-This repository ships a development container and a docker-compose file that aims to simulate the lxplus environment and `CVMFS` in your local machine. In order to use the development container you need to use Visual Studio Code (VSCode) with Remote Development extension.
-
-Simulating `CVMFS` (CERN VM File System) is quite easy using `cvmfs/service` docker image, the `docker-compose.yml` already has the necessary caveats to properly start the container service and store the cache in your local machine (for better perforamnce after first use). Install docker (use the recipe in https://docs.docker.com/engine/install/) and docker-compose, then 
-add your user name to the docker group typing:
+HEPHero framework can be fitted in a Docker container in order to be system agnostic, in order to fully work you need to mount `CVMFS` (CERN VM File System) in you own computer, the following command is used to mount in you root repository using the `cvmfs/service` docker image.
 
 ```bash
-sudo usermod -aG docker $USER
+docker run --rm --name cvmfs -e CVMFS_CLIENT_PROFILE=single -e CVMFS_REPOSITORIES=sft.cern.ch --cap-add SYS_ADMIN --device /dev/fuse -v /cvmfs:/cvmfs:shared registry.cern.ch/cvmfs/service
 ```
 
-Using the VSCode terminal synchronized to the directory of the HEPHero, start the detached service with:
+## Building
 
 ```bash
-docker-compose up -d
+docker build -t hephero_standalone .
 ```
 
-When desired, stop the service running:
+## Running
 
 ```bash
-docker-compose stop
+docker run -it --rm --name hephero -v /cvmfs:/cvmfs:shared hephero_standalone
 ```
 
-Remove the service from your machine with:
+If you want to make the data inside the container persistent (in order to access root files not shipped in the container or edit anafiles) you can add the `-v` flag to the hephero mountpoint:
 
 ```bash
-docker-compose down
-```
-
-After installing press `Ctrl + Shift + P` and type `reopen in container` and select the option `Remote-Containers: Reopen in Container`. This will start a session inside the container environment, if it is the first the opening the development container it will take a time to setup.
-
-Note: If cvmfs directories do not load inside devcontainer, rebuilt the container.
-
-hepenv setup:
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/setup.sh; python -m venv hepenv; source hepenv/bin/activate
+docker run -it --rm --name hephero -v /cvmfs:/cvmfs:shared -v ./HEPHero:/home/hero/HEPHero hephero_standalone
 ```
