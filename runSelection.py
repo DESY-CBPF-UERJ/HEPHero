@@ -14,9 +14,9 @@ import h5py
 import pandas as pd
 import numpy as np
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Main Setup
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 selection = 'Test'
 analysis = 'HHDM'
 treeName = 'Events'
@@ -66,98 +66,98 @@ corrections = {  # 0-don't apply, 1-apply
 }
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Systematics
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 lateral_systematics = {
 'CV': [0, 1, [], []],
-#'JER': [28, 2, [], []],
-#'UncMET': [29, 2, [], []],
-#'Recoil': [30, 4, ['02'], []],
-#'JES': [41, 2, [], ['Total']],
+'JER': [28, 2, [], []],
+'UncMET': [29, 2, [], []],
+'Recoil': [30, 4, ['02'], []],
+'JES': [41, 2, [], ['Total']],
 }
 
 vertical_systematics = {
-#'Pileup': [50, 2, [], []],
-#'EleID': [51, 2, [], []],
-#'MuID': [52, 2, [], []],
-#'JetPU': [53, 2, [], []],
-#'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
-#'Trig': [58, 2, [], []],
-#'PreFir': [59, 2, [], []],
-#'PDF': [60, 100, [], []], # 100 or 30
-#'Scales': [62, 7, [], []],
-#'ISR': [63, 2, [], []],
-#'FSR': [64, 2, [], []],
+'Pileup': [50, 2, [], []],
+'EleID': [51, 2, [], []],
+'MuID': [52, 2, [], []],
+'JetPU': [53, 2, [], []],
+'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
+'Trig': [58, 2, [], []],
+'PreFir': [59, 2, [], []],
+'PDF': [60, 100, [], []],
+'Scales': [62, 7, [], []],
+'ISR': [63, 2, [], []],
+'FSR': [64, 2, [], []],
 }
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Jobs setup
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 NumMaxEvents = -1
-NumFilesPerJob_Data = 2
-NumFilesPerJob_Signal = 4
-NumFilesPerJob_Bkg = 4
+NumFilesPerJob_Data = 1
+NumFilesPerJob_Signal = 50
+NumFilesPerJob_Bkg = 5
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Datasets
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 sys.path.insert(0, 'Datasets')
 from Signal import *
 from Bkg import *
 from Data import *
 datasets = []
 
-#datasets.extend(Data_Lep_preVFP_16)
-#datasets.extend(Data_MET_preVFP_16)
-#datasets.extend(Signal_preVFP_16)
-#datasets.extend(DYPt50ToInf_preVFP_16)
-#datasets.extend(DYPt0To50_preVFP_16)
-#datasets.extend(TTFullLep_preVFP_16)
-#datasets.extend(TTSemiLep_preVFP_16)
-#datasets.extend(ST_preVFP_16)
-#datasets.extend(VZ_preVFP_16)
-#datasets.extend(ResidualSM_preVFP_16)
+datasets.extend(Data_Lep_preVFP_16)
+datasets.extend(Data_MET_preVFP_16)
+datasets.extend(Signal_preVFP_16)
+datasets.extend(DYPt50ToInf_preVFP_16)
+datasets.extend(DYPt0To50_preVFP_16)
+datasets.extend(TTFullLep_preVFP_16)
+datasets.extend(TTSemiLep_preVFP_16)
+datasets.extend(ST_preVFP_16)
+datasets.extend(VZ_preVFP_16)
+datasets.extend(ResidualSM_preVFP_16)
 
-#datasets.extend(Data_Lep_postVFP_16)
-#datasets.extend(Data_MET_postVFP_16)
-#datasets.extend(Signal_postVFP_16)
-#datasets.extend(DYPt50ToInf_postVFP_16)
-#datasets.extend(DYPt0To50_postVFP_16)
-#datasets.extend(TTFullLep_postVFP_16)
-#datasets.extend(TTSemiLep_postVFP_16)
-#datasets.extend(ST_postVFP_16)
-#datasets.extend(VZ_postVFP_16)
-#datasets.extend(ResidualSM_postVFP_16)
+datasets.extend(Data_Lep_postVFP_16)
+datasets.extend(Data_MET_postVFP_16)
+datasets.extend(Signal_postVFP_16)
+datasets.extend(DYPt50ToInf_postVFP_16)
+datasets.extend(DYPt0To50_postVFP_16)
+datasets.extend(TTFullLep_postVFP_16)
+datasets.extend(TTSemiLep_postVFP_16)
+datasets.extend(ST_postVFP_16)
+datasets.extend(VZ_postVFP_16)
+datasets.extend(ResidualSM_postVFP_16)
 
-#datasets.extend(Data_Lep_17)
-#datasets.extend(Data_MET_17)
-#datasets.extend(Signal_17)
-#datasets.extend(DYPt50ToInf_17)
-#datasets.extend(DYPt0To50_17)
-#datasets.extend(TTFullLep_17)
-#datasets.extend(TTSemiLep_17)
-#datasets.extend(ST_17)
-#datasets.extend(VZ_17)
-#datasets.extend(ResidualSM_17)
+datasets.extend(Data_Lep_17)
+datasets.extend(Data_MET_17)
+datasets.extend(Signal_17)
+datasets.extend(DYPt50ToInf_17)
+datasets.extend(DYPt0To50_17)
+datasets.extend(TTFullLep_17)
+datasets.extend(TTSemiLep_17)
+datasets.extend(ST_17)
+datasets.extend(VZ_17)
+datasets.extend(ResidualSM_17)
 
-#datasets.extend(Data_Lep_18)
-#datasets.extend(Data_MET_18)
-#datasets.extend(Signal_18)
-#datasets.extend(DYPt50ToInf_18)
-#datasets.extend(DYPt0To50_18)
-#datasets.extend(TTFullLep_18)
-#datasets.extend(TTSemiLep_18)
-#datasets.extend(ST_18)
-#datasets.extend(VZ_18)
-#datasets.extend(ResidualSM_18)
+datasets.extend(Data_Lep_18)
+datasets.extend(Data_MET_18)
+datasets.extend(Signal_18)
+datasets.extend(DYPt50ToInf_18)
+datasets.extend(DYPt0To50_18)
+datasets.extend(TTFullLep_18)
+datasets.extend(TTSemiLep_18)
+datasets.extend(ST_18)
+datasets.extend(VZ_18)
+datasets.extend(ResidualSM_18)
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Metadata
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 metadata = {
 'NN_prep_keras_XX         ': 'Metadata/ML/Keras/preprocessing.json',
 'NN_model_keras_XX        ': 'Metadata/ML/Keras/NN_4_100_elu_adam/model.json',
@@ -189,9 +189,9 @@ metadata = {
 'btag_eff_NORMAL_16       ': 'Metadata/btag_eff/DeepCSVLoose/2016postVFP.json',
 'btag_eff_17              ': 'Metadata/btag_eff/DeepCSVLoose/2017.json',
 'btag_eff_18              ': 'Metadata/btag_eff/DeepCSVLoose/2018.json',
-'trigger_16               ': 'Metadata/trigger/SF_2016.json',
-'trigger_17               ': 'Metadata/trigger/SF_2017.json',
-'trigger_18               ': 'Metadata/trigger/SF_2018.json',
+'trigger_16               ': 'Metadata/trigger/SF_2016_ttbar.json',
+'trigger_17               ': 'Metadata/trigger/SF_2017_ttbar.json',
+'trigger_18               ': 'Metadata/trigger/SF_2018_ttbar.json',
 'JES_MC_HIPM_16           ': 'Metadata/JES/JES_MC_16_preVFP.txt',
 'JES_MC_NORMAL_16         ': 'Metadata/JES/JES_MC_16_postVFP.txt',
 'JES_MC_17                ': 'Metadata/JES/JES_MC_17.txt',
@@ -222,15 +222,15 @@ metadata = {
 }
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # Plots
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 Get_Image_in_EPS = 0
 Get_Image_in_PNG = 1
 Get_Image_in_PDF = 0
 
 
-#------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # [DO NOT TOUCH THIS PART] 
 #------------------------------------------------------------------------------------------------------------
 
@@ -315,7 +315,7 @@ if args.check >= 0:
     #    newfile.write(analysis)
 else:
     #======SETUP ENVIRONMENT VARIABLES======
-    outpath = os.environ.get("HEP_OUTPATH")
+    hep_outpath = os.environ.get("HEP_OUTPATH")
     redirector = os.environ.get("REDIRECTOR")
 
     
@@ -326,17 +326,17 @@ else:
     if machines is None:
         raise ValueError("MACHINES environment variable is undefined. Aborting script execution...")
 
-    if outpath is None:
-        outpath = os.path.join("/eos/user", first_letter_user, user, "HEP_OUTPUT")
-        #outpath = "/home/" # used for offline tests
-        warnings.warn("HEP_OUTPATH environment varibale is undefined. Defaulting to " + outpath)
-        if os.path.isdir(outpath) is False:
+    if hep_outpath is None:
+        hep_outpath = os.path.join("/eos/user", first_letter_user, user, "HEP_OUTPUT")
+        #hep_outpath = "/home/" # used for offline tests
+        warnings.warn("HEP_OUTPATH environment varibale is undefined. Defaulting to " + hep_outpath)
+        if os.path.isdir(hep_outpath) is False:
             try:
-                os.makedirs(outpath)
+                os.makedirs(hep_outpath)
             except Exception as e:
                 quit("Script failed when creating default output path. Exception: " + str(e) + " Aborting...")
     
-    outpath = os.path.join(outpath, analysis)
+    outpath = os.path.join(hep_outpath, analysis)
     if os.path.isdir(outpath) is False:
         try:
             os.makedirs(outpath)
@@ -429,8 +429,11 @@ else:
                     for line in lines:
                         if machines == "DESY":
                             file_path = "/pnfs/desy.de/cms/tier2/" + line
-                        elif machines == "UERJ":
+                        if machines == "UERJ":
                             file_path = "/mnt/hadoop/cms/" + line
+                        if analysis == "OPENDATA":
+                            file_path = hep_outpath + "/" + line
+
                         if os.path.isfile(file_path) or dataset[1][2:4] == "99":
                             NumFiles += 1
                         else:

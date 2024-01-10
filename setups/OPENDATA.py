@@ -1,77 +1,52 @@
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 # Dataset files
 #--------------------------------------------------------------------------------------------------------------------------------------------------
-selection = "Test"
-analysis = "HHDM"
+selection = "TestOD"
+analysis = "OPENDATA"
 treeName = "Events"
 LumiWeights = 1
 
 analysis_parameters = {   
-"JET_ETA_CUT                ": 2.4,
-"JET_PT_CUT                 ": 20,      # GeV
-"JET_ID_WP                  ": 6,       # 0-loose, 2-tight, 6-tightlepveto 
-"JET_PUID_WP                ": 7,       # 0-fail, 1-loose, 3-medium, 7-tight (tight is the only correct WP in v9)
-"JET_BTAG_WP                ": 3,       # DeepJet: 0-loose, 1-medium, 2-tight; DeepCSV: 3-loose, 4-medium, 5-tight; [Set up the efficiency maps as well]
-"JET_LEP_DR_ISO_CUT         ": 0.4,
-"ELECTRON_GAP_LOWER_CUT     ": 1.444,   # Lower absolute limit of barrel-endcap gap
-"ELECTRON_GAP_UPPER_CUT     ": 1.566,   # Upper absolute limit of barrel-endcap gap
-"ELECTRON_ETA_CUT           ": 2.5,
-"ELECTRON_PT_CUT            ": 20,      # GeV  
-"ELECTRON_LOW_PT_CUT        ": 15,      # GeV
-"ELECTRON_ID_WP             ": 4,       # 0-veto, 1-loose, 2-medium, 3-tight, 4-WP90iso, 5-WP80iso
-"MUON_ETA_CUT               ": 2.4, 
-"MUON_PT_CUT                ": 20,      # GeV
-"MUON_LOW_PT_CUT            ": 15,      # GeV
-"MUON_ID_WP                 ": 1,       # 0-loose, 1-medium, 2-tight
-"MUON_ISO_WP                ": 3,       # 0-none, 1-loose/looseID, 2-loose/mediumID, 3-tight/mediumID
-#"LEPTON_DR_ISO_CUT          ": 0.3,
-"LEADING_LEP_PT_CUT         ": 40,      # GeV
-"LEPLEP_PT_CUT              ": 40,      # GeV
-"LEPLEP_DR_CUT              ": 3.2,
-"LEPLEP_DM_CUT              ": 25,      # GeV
-"MET_CUT                    ": 65,      # GeV
-"MET_DY_UPPER_CUT           ": 100,     # GeV
-"MET_LEPLEP_DPHI_CUT        ": 0.8,
-"MET_LEPLEP_MT_CUT          ": 90,      # GeV     
+'JET_ETA_CUT                ': 2.4,
+'JET_PT_CUT                 ': 20,
+'JET_ID_WP                  ': 6,
+'JET_PUID_WP                ': 7,
+'JET_BTAG_WP                ': 3,
+'JET_LEP_DR_ISO_CUT         ': 0.5,
+'MUON_ETA_CUT               ': 2.1,
+'MUON_PT_CUT                ': 45,
+'TAU_ETA_CUT                ': 2.3,
+'TAU_PT_CUT                 ': 45,
 }
 
 corrections = {  # 0-don't apply, 1-apply
-"PILEUP_WGT                 ": 1, 
-"ELECTRON_ID_WGT            ": 1,
-"MUON_ID_WGT                ": 1,
-"JET_PUID_WGT               ": 1,
-"BTAG_WGT                   ": 1,
+"PILEUP_WGT                 ": 1,
 "TRIGGER_WGT                ": 1,
-"PREFIRING_WGT              ": 1,
-"JER_CORR                   ": 1,
-"MET_XY_CORR                ": 1,
 "MET_RECOIL_CORR            ": 1,
-"TOP_PT_WGT                 ": 1,
-#"VJETS_HT_WGT               ": 0,
-"MUON_ROC_CORR              ": 1,
 }
 
 lateral_systematics = { 
 "CV":          [0,  1, [], []],   # [sys_source, sys_universe, processes_ID (empty -> all), subsources] 
 #"JES":         [1,  54, [], ["AbsoluteMPFBias_fc", "AbsoluteScale_fc", "AbsoluteStat", "FlavorQCD_fc", "Fragmentation_fc", "PileUpDataMC_fc", "PileUpPtBB_fc", "PileUpPtEC1_fc", "PileUpPtEC2_fc", "PileUpPtHF_fc", "PileUpPtRef_fc", "RelativeFSR_fc", "RelativeJEREC1", "RelativeJEREC2", "RelativeJERHF_fc", "RelativePtBB_fc", "RelativePtEC1", "RelativePtEC2", "RelativePtHF_fc", "RelativeBal_fc", "RelativeSample", "RelativeStatEC", "RelativeStatFSR", "RelativeStatHF", "SinglePionECAL_fc", "SinglePionHCAL_fc", "TimePtEta"]],
-"JER":         [28,  2, [], []],
-"UncMET":      [29,  2, [], []],
-"Recoil":      [30,  4, ["02"], []],
-"JES":         [41,  2, [], ["Total"]],
+#"JER":         [28,  2, [], []],
+#"UncMET":      [29,  2, [], []],
+#"Recoil":      [30,  4, ["02"], []],
+#"JES":         [41,  2, [], ["Total"]],
 }
 
 vertical_systematics = {
-"Pileup":      [50,   2,  [], []],
-"EleID":       [51,   2,  [], []],
-"MuID":        [52,  2,  [], []],
-"JetPU":       [53,  2,  [], []],
-"BTag":        [54,  8,  [], ["bc", "light", "bc_fc", "light_fc"]],
-"Trig":        [58,  2,  [], []],
-"PreFir":      [59,  2,  [], []],
-"PDF":         [60,  100,  [], []],
-"Scales":      [62,  7,  [], []],
-"ISR":         [63,  2,  [], []],
-"FSR":         [64,  2,  [], []],
+#"Pileup":      [50,   2,  [], []],
+#"EleID":       [51,   2,  [], []],
+#"MuID":        [52,  2,  [], []],
+#"JetPU":       [53,  2,  [], []],
+#"BTag":        [54,  8,  [], ["bc", "light", "bc_fc", "light_fc"]],
+#"Trig":        [58,  2,  [], []],
+#"PreFir":      [59,  2,  [], []],
+#"PDF":         [60,  2,  [], []],
+#"AlphaS":      [61,  2,  [], []],
+#"Scales":      [62,  9,  [], []],
+#"ISR":         [63,  2,  [], []],
+#"FSR":         [64,  2,  [], []],
 #"TT1LXS":      [65,  2,  0],
 #"TT2LXS":      [66,  2,  0],
 #"DYXS":        [67,  2,  0],
@@ -82,8 +57,8 @@ vertical_systematics = {
 # Jobs setup
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 NumMaxEvents = -1
-NumFilesPerJob_Data = 1   
-NumFilesPerJob_Signal = 50 
+NumFilesPerJob_Data = 5
+NumFilesPerJob_Signal = 5
 NumFilesPerJob_Bkg = 5      
 
 
@@ -91,16 +66,11 @@ NumFilesPerJob_Bkg = 5
 # Dataset files
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 datasets = [
-"Data_Lep",
-"Data_MET",
+"Data",
 "Signal",
-"DYPt50ToInf",
-"DYPt0To50",
-"TTFullLep",
-"TTSemiLep",
-"ST",
-"VZ",
-"ResidualSM"    
+"DYJetsToLL",
+"TTbar",
+"WJetsToLNu"
 ]
 
 
@@ -114,6 +84,7 @@ metadata = {
 "NN_model_torch_NORMAL_16 ": "Metadata/ML/Torch/DeepCSV/2016postVFP/model_scripted.pt",
 "NN_model_torch_17        ": "Metadata/ML/Torch/DeepCSV/2017/model_scripted.pt",
 "NN_model_torch_18        ": "Metadata/ML/Torch/DeepCSV/2018/model_scripted.pt",
+'NN_model_torch_12        ': 'Metadata/ML/Torch/OpenData/2012/model_scripted.pt',
 "lumi_certificate_16      ": "Metadata/certificates/Cert_271036-284044_13TeV_Legacy2016_Collisions16.json",
 "lumi_certificate_17      ": "Metadata/certificates/Cert_294927-306462_13TeV_UL2017_Collisions17.json",
 "lumi_certificate_18      ": "Metadata/certificates/Cert_314472-325175_13TeV_Legacy2018_Collisions18.json",

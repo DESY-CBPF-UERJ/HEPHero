@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------------------------- 
 void HEPHero::PreObjects() {
     
-    if( _ANALYSIS != "GEN" ){
+    if( (_ANALYSIS != "GEN") && (_ANALYSIS != "OPENDATA") ){
         //=================================================================================================================
         // CMS SETUP
         //=================================================================================================================
@@ -30,7 +30,7 @@ void HEPHero::PreObjects() {
             //HDF_insert( "LHE_Njets", &LHE_Njets );
         }
         
-        
+
         /*
         TFile* vjets_file = new TFile("Metadata/QCD_NLO_k_factors_VJets/UL/scale_factors.root","READ");
         
@@ -116,7 +116,7 @@ void HEPHero::PreObjects() {
             auto jet_puid_set = correction::CorrectionSet::from_file(jet_puid_file.c_str());        
             jet_PUID_corr = jet_puid_set->at("PUJetID_eff");
         }
-        
+
         //----JERC-------------------------------------------------------------------------------------
         auto jet_jerc_set = correction::CorrectionSet::from_file(jet_jerc_file.c_str());
         
@@ -190,121 +190,9 @@ void HEPHero::PreObjects() {
         shared_ptr<correction::Correction const> jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_Total_AK4PFchs");
         double total_jes = jet_JES_cout->evaluate({1.3, 30.});
         cout << "Total " << total_jes << endl;
-        
-        double part_jes = 0;
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_AbsoluteMPFBias_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "AbsoluteMPFBias " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_AbsoluteScale_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "AbsoluteScale " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_AbsoluteStat_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "AbsoluteStat " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_FlavorQCD_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "FlavorQCD " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_Fragmentation_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "Fragmentation " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpDataMC_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpDataMC " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpPtBB_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpPtBB " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpPtEC1_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpPtEC1 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpPtEC2_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpPtEC2 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpPtHF_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpPtHF " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_PileUpPtRef_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "PileUpPtRef " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeFSR_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeFSR " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeJEREC1_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeJEREC1 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeJEREC2_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeJEREC2 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeJERHF_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeJERHF " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativePtBB_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativePtBB " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativePtEC1_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativePtEC1 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativePtEC2_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativePtEC2 " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativePtHF_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativePtHF " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeBal_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeBal " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeSample_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeSample " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeStatEC_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeStatEC " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeStatFSR_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeStatFSR " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_RelativeStatHF_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "RelativeStatHF " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_SinglePionECAL_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "SinglePionECAL " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_SinglePionHCAL_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "SinglePionHCAL " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        jet_JES_cout = jet_jerc_set->at("Summer19UL16APV_V7_MC_TimePtEta_AK4PFchs");
-        part_jes += pow(jet_JES_cout->evaluate({1.3, 30.}),2);
-        cout << "TimePtEta " << jet_JES_cout->evaluate({1.3, 30.}) << endl;
-        
-        part_jes = sqrt(part_jes);
-        cout << "Check Total " << part_jes << endl;
         */
         
-        
+
         //----B TAGGING--------------------------------------------------------------------------------
         if( apply_btag_wgt ){
             
@@ -314,12 +202,19 @@ void HEPHero::PreObjects() {
             }else{
                 dsName = _datasetName.substr(0,_datasetName.length()-3);
             }
-            string dsName10 = dsName.substr(0,10);
-            if( dsName10 == "DYJetsToLL" ) dsName = dsName10;
-            
+
+            string dsNameDY = dsName.substr(0,10);
+            if( dsNameDY == "DYJetsToLL" ) dsName = "DYJetsToLL";
+
+            string dsNameTop = dsName.substr(0,3);
+            if( dsNameTop == "TTT" or dsNameTop == "ST_" ) dsName = "Top";
+
+            string dsNameVV = dsName.substr(0,6);
+            if( dsNameVV == "WZTo3L" or dsNameVV == "ZZTo2L" or dsNameVV == "ZZTo4L" ) dsName = "VV";
+
             btag_eff.readFile(btag_eff_file);
-            if( dataset_group != "Data" ) btag_eff.calib(dsName, "TTTo2L2Nu");
-            
+            if( dataset_group != "Data" ) btag_eff.calib(dsName, "Top");
+
             // Choose btag algo
             // https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18
             std::string btagAlgorithmMujets;
@@ -346,7 +241,7 @@ void HEPHero::PreObjects() {
         if( apply_trigger_wgt ){
             triggerSF.readFile(trigger_SF_file);
         }
-        
+
         //----PILEUP-----------------------------------------------------------------------------------
         if( apply_pileup_wgt ){
             auto pileup_set = correction::CorrectionSet::from_file(pileup_file.c_str());
@@ -369,11 +264,17 @@ void HEPHero::PreObjects() {
         //=================================================================================================================
         // ANALYSIS SETUP
         //=================================================================================================================
-        
+
         //----MACHINE LEARNING-------------------------------------------------------------------------
         MLP_keras.readFiles( model_keras_file, preprocessing_keras_file );
         MLP_torch.readFile( model_torch_file ); 
         
+    }else if( _ANALYSIS == "OPENDATA" ){
+        GetMCMetadata();
+
+        //----OUTPUT INFO------------------------------------------------------------------------------
+        _outputTree->Branch( "evtWeight", &evtWeight );
+        HDF_insert( "evtWeight", &evtWeight );
     }
     
 }

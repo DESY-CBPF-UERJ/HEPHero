@@ -28,11 +28,11 @@ void HEPHero::Regions(){
       ){                                        // [ttbar - Control Region]
         RegionID = 2;
     }
-    if( (RecoLepID > 30000) && (RecoLepID < 39999) && 
+    else if( (RecoLepID > 30000) && (RecoLepID < 39999) &&
         (ttbar_reco == 0) &&
         (Nbjets >= 1) &&
         (LepLep_deltaM < 10) &&
-        (MET_Lep3_Mt > 50) && (MET_Lep3_Mt < 100)
+        (MET_Lep3_Mt > 50) //&& (MET_Lep3_Mt < 100)
       ){                                        // [WZ - Control Region]
         RegionID = 3;
     }
@@ -48,22 +48,22 @@ void HEPHero::Regions(){
 
 
 //---------------------------------------------------------------------------------------------------------------
-// MLP Model for signal discrimination (Keras)
+// MLP Model for signal discrimination
 //---------------------------------------------------------------------------------------------------------------
 void HEPHero::Signal_discriminators(){
     
     float floatC = 1.;
     
     //MLP_score_keras = MLP_keras.predict({LeadingLep_pt, LepLep_pt, LepLep_deltaR, LepLep_deltaM, MET_pt, MET_LepLep_Mt, MET_LepLep_deltaPhi});
-    
+
     MLP_score_torch = MLP_torch.predict({LeadingLep_pt, LepLep_pt, LepLep_deltaR, LepLep_deltaM, MET_pt, MET_LepLep_Mt, MET_LepLep_deltaPhi, TrailingLep_pt, MT2LL});//, Nbjets*floatC}); backup
-    
+
     //MLP_score_torch = MLP_torch.predict({LeadingLep_pt, TrailingLep_pt, LepLep_pt, LepLep_deltaR, LepLep_deltaM, MET_pt, MET_LepLep_Mt, MET_LepLep_deltaPhi, MT2LL});//, Nbjets*floatC});
-    
+
     //MLP_score_torch = MLP_torch.predict({LeadingLep_pt, TrailingLep_pt, LepLep_pt, LepLep_deltaR, LepLep_deltaM, MET_pt, MET_LepLep_Mt, MET_LepLep_deltaPhi, MT2LL, Dijet_deltaEta, Dijet_pt, Dijet_M});//, Nbjets*floatC});
-    
+
     MLP4_score_torch = pow(1.e4,MLP_score_torch)/1.e4;
-    
+
 }
 
 
@@ -130,12 +130,16 @@ void HEPHero::Jet_lep_overlap( float deltaR_cut ){
 void HEPHero::JetSelection(){
 
     selectedJet.clear();
-    
+
+    for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+        Jet_JES_pt[ijet] = Jet_pt[ijet];
+    }
+
     JESvariation();
     JERvariation();
-    
+
     Jet_lep_overlap( JET_LEP_DR_ISO_CUT );
-    
+
     Nbjets = 0;
     Nbjets30 = 0;
     Nbjets_LepIso04 = 0;
@@ -163,9 +167,9 @@ void HEPHero::JetSelection(){
     float HPx_trig = 0;
     float HPy_trig = 0;
     for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
-        
+
         if( Jet_pt[ijet] <= JET_PT_CUT ) continue;
-        if( Jet_jetId[ijet] >= 2 ){ 
+        if( Jet_jetId[ijet] >= 2 ){
             TLorentzVector Jet_trig;
             Jet_trig.SetPtEtaPhiE(Jet_pt[ijet], Jet_eta[ijet], Jet_phi[ijet], 0);
             HPx_trig += Jet_trig.Px();
@@ -173,11 +177,11 @@ void HEPHero::JetSelection(){
         }
         if( (abs(Jet_eta[ijet]) < JET_ETA_CUT) and (Jet_jetId[ijet] >= 2) ) Njets_tight += 1;
         if( Jet_jetId[ijet] < JET_ID_WP ) continue;
-        
+
         //if( Jet_lep_overlap( ijet, JET_LEP_DR_ISO_CUT ) ) continue;
-        if( Jet_LepOverlap[ijet] ) continue; 
+        if( Jet_LepOverlap[ijet] ) continue;
         if( (Jet_pt[ijet] < 50) && (Jet_puId[ijet] < JET_PUID_WP) ) continue;
-        
+
         if( abs(Jet_eta[ijet]) >= 5.0 ) continue;
         if( abs(Jet_eta[ijet]) > 1.4 ) Njets_forward += 1;
         if( abs(Jet_eta[ijet]) > Jet_abseta_max ) Jet_abseta_max = abs(Jet_eta[ijet]);
@@ -185,28 +189,28 @@ void HEPHero::JetSelection(){
         selectedJet.push_back(ijet);
         TLorentzVector Jet;
         Jet.SetPtEtaPhiE(Jet_pt[ijet], Jet_eta[ijet], Jet_phi[ijet], 0);
-        
+
         Njets += 1;
         //if( !Jet_lep_overlap(ijet, 0.4) ) Njets_LepIso04 += 1;
         if( PileupJet( ijet ) ) NPUjets += 1;
         HT += Jet_pt[ijet];
         HPx += Jet.Px();
         HPy += Jet.Py();
-        if( Jet_pt[ijet] > 30 ){ 
+        if( Jet_pt[ijet] > 30 ){
             Njets30 += 1;
             //if( !Jet_lep_overlap(ijet, 0.4) ) Njets30_LepIso04 += 1;
             HT30 += Jet_pt[ijet];
             HPx30 += Jet.Px();
             HPy30 += Jet.Py();
         }
-        if( Jet_pt[ijet] > 40 ){ 
+        if( Jet_pt[ijet] > 40 ){
             Njets40 += 1;
             //if( !Jet_lep_overlap(ijet, 0.4) ) Njets40_LepIso04 += 1;
             HT40 += Jet_pt[ijet];
             HPx40 += Jet.Px();
             HPy40 += Jet.Py();
         }
-        if( JetBTAG( ijet, JET_BTAG_WP ) ){ 
+        if( JetBTAG( ijet, JET_BTAG_WP ) ){
             Nbjets += 1;
             if( Jet_pt[ijet] > 30 ) Nbjets30 += 1;
             //if( !Jet_lep_overlap(ijet, 0.4) ){
@@ -219,10 +223,10 @@ void HEPHero::JetSelection(){
     MHT = sqrt(HPx*HPx + HPy*HPy);
     MHT30 = sqrt(HPx30*HPx30 + HPy30*HPy30);
     MHT40 = sqrt(HPx40*HPx40 + HPy40*HPy40);
-    MHT_trig = sqrt(HPx_trig*HPx_trig + HPy_trig*HPy_trig); 
-    
+    MHT_trig = sqrt(HPx_trig*HPx_trig + HPy_trig*HPy_trig);
+
     MDT = abs(MHT_trig - MET_pt);
-    
+
     LeadingJet_pt = 0;
     SubLeadingJet_pt = 0;
     if( Njets > 0 ) LeadingJet_pt = Jet_pt[selectedJet.at(0)];
@@ -284,6 +288,8 @@ void HEPHero::Get_Jet_Angular_Variables( int pt_cut ){
         if( chi_i < chiMin ) chiMin = chi_i;
         
     }
+    if( omegaMin == 999999 ) omegaMin = -1;
+    if( chiMin == 999999 ) chiMin = -1;
     
     if( pt_cut == 20 ){
         OmegaMin = omegaMin;
@@ -2140,16 +2146,544 @@ bool HEPHero::SignalMu( int iMu ){
 }
 
 
+//---------------------------------------------------------------------------------------------------------------
+// Regions OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::RegionsOD(){
+    RegionID = -1;
+
+    if( (Nbjets <= 1) &&
+        (Nmuons == 1) &&
+        (MuonL_MET_Mt < 75)
+      ){                                        // [Signal Region]
+        RegionID = 0;
+    }
+    else if( (Nbjets <= 1) &&
+        (Nmuons == 2) &&
+        (MuonL_MET_Mt < 75) &&
+        (LepLep_deltaM < 15)
+      ){                                        // [DY - Control Region]
+        RegionID = 1;
+    }
+    else if( (Nbjets >= 2) &&
+        (Nmuons == 1) &&
+        (MuonL_MET_Mt < 75)
+      ){                                        // [ttbar - Control Region]
+        RegionID = 2;
+    }
+    else if( (Nbjets <= 1) &&
+        (Nmuons == 1) &&
+        (MuonL_MET_Mt >= 75)
+      ){                                        // [Wjets - Control Region]
+        RegionID = 3;
+    }
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Lepton selection OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::LeptonSelectionOD(){
+
+    selectedMu.clear();
+    for( unsigned int imu = 0; imu < nMuon; ++imu ) {
+        if( abs(Muon_eta[imu]) >= MUON_ETA_CUT ) continue;
+        if( Muon_pt[imu] <= MUON_PT_CUT ) continue;
+        if( !Muon_tightId ) continue;
+        selectedMu.push_back(imu);
+    }
+
+    selectedTau.clear();
+    for( unsigned int itau = 0; itau < nTau; ++itau ) {
+        if( Tau_charge == 0 ) continue;
+        if( abs(Tau_eta[itau]) >= TAU_ETA_CUT ) continue;
+        if( Tau_pt[itau] <= TAU_PT_CUT ) continue;
+        if( !Tau_idDecayMode ) continue;
+        if( !Tau_idIsoTight ) continue;
+        if( !Tau_idAntiEleTight ) continue;
+        if( !Tau_idAntiMuTight ) continue;
+        selectedTau.push_back(itau);
+    }
+
+    Nmuons = selectedMu.size();
+    Ntaus = selectedTau.size();
+
+    Has_2OC_muons = false;
+    if( Nmuons == 2 ){
+        if( Muon_charge[selectedMu[0]]*Muon_charge[selectedMu[1]] < 0 ) Has_2OC_muons = true;
+        lep_1.SetPtEtaPhiM(Muon_pt[selectedMu[0]], Muon_eta[selectedMu[0]], Muon_phi[selectedMu[0]], Muon_mass[selectedMu[0]]);
+        lep_2.SetPtEtaPhiM(Muon_pt[selectedMu[1]], Muon_eta[selectedMu[1]], Muon_phi[selectedMu[1]], Muon_mass[selectedMu[1]]);
+        LepLep = lep_1 + lep_2;
+        LepLep_mass = LepLep.M();
+        LepLep_deltaM = abs( LepLep_mass - Z_pdg_mass );
+        LepLep_pt = LepLep.Pt();
+        LepLep_phi = LepLep.Phi();
+    }
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Muon-Tau pair selection OpenData
+//---------------------------------------------------------------------------------------------------------------
+bool HEPHero::MuonTauPairSelectionOD(){
+
+    bool has_good_pair = false;
+
+    IdxBestMu = -1;
+    float maxpt = -1;
+    for( unsigned int iselmu = 0; iselmu < selectedMu.size(); ++iselmu ) {
+        int imu = selectedMu[iselmu];
+
+        if( !((Muon_pt[imu] > maxpt) || (Muon_pt[imu] <= maxpt && IdxBestMu == -1)) ) continue;
+
+        IdxBestTau = -1;
+        float minIso = 999999999.;
+        for( unsigned int iseltau = 0; iseltau < selectedTau.size(); ++iseltau ) {
+            int itau = selectedTau[iseltau];
+
+            if( Muon_charge[imu]*Tau_charge[itau] > 0 ) continue;
+
+            if( Tau_relIso_all[itau] < minIso ){
+                maxpt = Muon_pt[imu];
+                IdxBestMu = imu;
+                minIso = Tau_relIso_all[itau];
+                IdxBestTau = itau;
+                has_good_pair = true;
+            }
+        }
+    }
+
+    return has_good_pair;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Jet lep overlap
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::Jet_lep_overlapOD( float deltaR_cut ){
+
+    Jet_LepOverlap.clear();
+    for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+        Jet_LepOverlap.push_back(false);
+    }
+
+    float drMin = 99999.;
+    int JetID = -1;
+    if( IdxBestTau >= 0 ){
+        for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+            double deta = fabs(Tau_eta[IdxBestTau] - Jet_eta[ijet]);
+            double dphi = fabs(Tau_phi[IdxBestTau] - Jet_phi[ijet]);
+            if( dphi > M_PI ) dphi = 2*M_PI - dphi;
+            double dr = sqrt( deta*deta + dphi*dphi );
+            if( dr < drMin ){
+                drMin = dr;
+                JetID = ijet;
+            }
+        }
+    }
+    if( (drMin < deltaR_cut) && (JetID >= 0) ) Jet_LepOverlap[JetID] = true;
+
+    for( unsigned int iselMu = 0; iselMu < selectedMu.size(); ++iselMu ) {
+        int imu = selectedMu.at(iselMu);
+        float drMin = 99999.;
+        int JetID = -1;
+        for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+            double deta = fabs(Muon_eta[imu] - Jet_eta[ijet]);
+            double dphi = fabs(Muon_phi[imu] - Jet_phi[ijet]);
+            if( dphi > M_PI ) dphi = 2*M_PI - dphi;
+            double dr = sqrt( deta*deta + dphi*dphi );
+            if( dr < drMin ){
+                drMin = dr;
+                JetID = ijet;
+            }
+        }
+        if( (drMin < deltaR_cut) && (JetID >= 0) ) Jet_LepOverlap[JetID] = true;
+    }
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Jet selection OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::JetSelectionOD(){
+
+    selectedJet.clear();
+
+    Jet_lep_overlap( JET_LEP_DR_ISO_CUT );
+
+    Nbjets = 0;
+    Njets = 0;
+    Njets30 = 0;
+    Njets_forward = 0;
+    Njets30_forward = 0;
+    Njets_ISR = 0;
+    HT = 0;
+    HT30 = 0;
+    float HPx = 0;
+    float HPy = 0;
+    float HPx30 = 0;
+    float HPy30 = 0;
+    for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {
+
+        if( Jet_pt[ijet] <= JET_PT_CUT ) continue;
+        if( Jet_LepOverlap[ijet] ) continue;
+        if( (Jet_pt[ijet] < 50) && (Jet_puId[ijet] == 0) ) continue;
+        if( abs(Jet_eta[ijet]) >= 4.7 ) continue;
+        if( abs(Jet_eta[ijet]) > 1.4 ){
+            Njets_forward += 1;
+            if( Jet_pt[ijet] > 30 ) Njets30_forward += 1;
+        }
+        if( abs(Jet_eta[ijet]) >= JET_ETA_CUT ) continue;
+        selectedJet.push_back(ijet);
+        TLorentzVector Jet;
+        Jet.SetPtEtaPhiE(Jet_pt[ijet], Jet_eta[ijet], Jet_phi[ijet], 0);
+
+        Njets += 1;
+        HT += Jet_pt[ijet];
+        HPx += Jet.Px();
+        HPy += Jet.Py();
+        if( Jet_pt[ijet] > 30 ){
+            Njets30 += 1;
+            HT30 += Jet_pt[ijet];
+            HPx30 += Jet.Px();
+            HPy30 += Jet.Py();
+        }
+        if( Jet_btag[ijet] > 0.8 ){
+            Nbjets += 1;
+        }
+        if( Jet_pt[ijet] > 26 ) Njets_ISR += 1;
+    }
+    MHT = sqrt(HPx*HPx + HPy*HPy);
+    MHT30 = sqrt(HPx30*HPx30 + HPy30*HPy30);
+
+    LeadingJet_pt = 0;
+    SubLeadingJet_pt = 0;
+    if( Njets > 0 ) LeadingJet_pt = Jet_pt[selectedJet.at(0)];
+    if( Njets > 1 ) SubLeadingJet_pt = Jet_pt[selectedJet.at(1)];
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Get TauTau variables
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::Jet_TauTau_VariablesOD(){
+
+    int idxMu = selectedMu[0];
+    int idxTau = IdxBestTau;
+
+    TauH_pt = Tau_pt[idxTau];
+    MuonL_pt = Muon_pt[idxMu];
+
+    TLorentzVector MuonL_L;
+    MuonL_L.SetPtEtaPhiM(Muon_pt[idxMu], Muon_eta[idxMu], Muon_phi[idxMu], Muon_mass[idxMu]);
+    TLorentzVector TauH_L;
+    TauH_L.SetPtEtaPhiM(Tau_pt[idxTau], Tau_eta[idxTau], Tau_phi[idxTau], Tau_mass[idxTau]);
+    TLorentzVector MET_L;
+    MET_L.SetPxPyPzE(MET_pt*cos(MET_phi), MET_pt*sin(MET_phi), 0., 0.);
+
+    TLorentzVector MuonL_MET_L;
+    MuonL_MET_L = MuonL_L + MET_L;
+
+    MuonL_MET_pt = MuonL_MET_L.Pt();
+    MuonL_MET_dphi = abs( Muon_phi[idxMu] - MET_phi );
+    if( MuonL_MET_dphi > M_PI ) MuonL_MET_dphi = 2*M_PI - MuonL_MET_dphi;
+    MuonL_MET_Mt = sqrt( 2*MuonL_pt*MET_pt*( 1 - cos( MuonL_MET_dphi ) ) );
+
+    TLorentzVector TauH_TauL_L;
+    TauH_TauL_L = MuonL_MET_L + TauH_L;
+
+    TauH_TauL_pt = TauH_TauL_L.Pt();
+    TauH_TauL_dphi = abs( MuonL_MET_L.Phi() - TauH_L.Phi() );
+    if( TauH_TauL_dphi > M_PI ) TauH_TauL_dphi = 2*M_PI - TauH_TauL_dphi;
+    TauH_TauL_Mt = sqrt( 2*MuonL_MET_L.Pt()*TauH_L.Pt()*( 1 - cos( TauH_TauL_dphi ) ) );
+
+    TLorentzVector TauH_MuonL_L;
+    TauH_MuonL_L = MuonL_L + TauH_L;
+
+    TauH_MuonL_pt = TauH_MuonL_L.Pt();
+    TauH_MuonL_M = TauH_MuonL_L.M();
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// MLP Model for signal discrimination OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::Signal_discriminatorsOD(){
+
+    MLP_score_torch = MLP_torch.predict({MuonL_pt, TauH_pt, TauH_MuonL_M, MuonL_MET_pt, MET_pt, MuonL_MET_dphi, TauH_TauL_pt, TauH_TauL_Mt, TauH_TauL_dphi});
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// MET Correction OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::METCorrectionOD(){
+
+    string dsName;
+    dsName = _datasetName.substr(0,_datasetName.length()-3);
+    string dsNameDY = dsName.substr(0,10);
+
+    MET_RAW_pt = MET_pt;
+    MET_RAW_phi = MET_phi;
+
+
+    //=====Recoil Correction=======================================================================
+    if( apply_met_recoil_corr && (dsNameDY == "DYJetsToLL") ){
+
+        Ux = -(MET_pt*cos(MET_phi) + LepLep_pt*cos(LepLep_phi));
+        Uy = -(MET_pt*sin(MET_phi) + LepLep_pt*sin(LepLep_phi));
+
+        U1 =  Ux*cos(LepLep_phi) + Uy*sin(LepLep_phi);
+        U2 = -Ux*sin(LepLep_phi) + Uy*cos(LepLep_phi);
+
+        vector<float> mc_u1_mean;
+        vector<float> mc_u1_mean_unc_up;
+        vector<float> mc_u1_mean_unc_down;
+        vector<float> diff_u1;
+        vector<float> diff_u1_unc_up;
+        vector<float> diff_u1_unc_down;
+        float sigma_ratio;
+        float sigma_ratio_unc_up;
+        float sigma_ratio_unc_down;
+        vector<float> ZRecoPt;
+
+        if( dataset_year == "12" ){
+            sigma_ratio = 1.048;
+            sigma_ratio_unc_up = 0.001;
+            sigma_ratio_unc_down = 0.002;
+
+            if( Njets_ISR == 0 ){
+                mc_u1_mean = {-5.056, -14.497, -24.959, -35.104, -44.962};
+                mc_u1_mean_unc_up = {0.003, 0.0, 0.018, 0.016, 0.001};
+                mc_u1_mean_unc_down = {0.001, 0.026, 0.0, 0.0, 0.026};
+
+                diff_u1 = {-2.816, -2.939, -3.063, -3.186, -3.31};
+                diff_u1_unc_up = {0.002, 0.005, 0.009, 0.013, 0.017};
+                diff_u1_unc_down = {0.0, 0.001, 0.003, 0.004, 0.006};
+
+                ZRecoPt = {0, 10, 20, 30, 40, 50};
+            }else if( Njets_ISR == 1 ){
+                mc_u1_mean = {-4.877, -14.777, -26.155, -36.372, -45.548, -55.747, -65.446, -75.291, -85.448, -95.87, -105.04, -116.201, -125.87, -135.819};
+                mc_u1_mean_unc_up = {0.031, 0.002, 0.001, 0.029, 0.0, 0.007, 0.002, 0.001, 0.029, 0.073, 0.002, 0.0, 0.002, 0.0};
+                mc_u1_mean_unc_down = {0.003, 0.05, 0.027, 0.003, 0.041, 0.003, 0.171, 0.007, 0.0, 0.003, 0.054, 0.001, 0.001, 0.015};
+
+                diff_u1 = {-4.985, -4.437, -4.016, -3.702, -3.475, -3.314, -3.198, -3.108, -3.022, -2.921, -2.784, -2.59, -2.319, -1.951};
+                diff_u1_unc_up = {0.008, 0.024, 0.036, 0.041, 0.039, 0.032, 0.025, 0.017, 0.011, 0.006, 0.005, 0.011, 0.038, 0.079};
+                diff_u1_unc_down = {0.015, 0.0, 0.0, 0.0, 0.001, 0.002, 0.004, 0.007, 0.012, 0.013, 0.007, 0.001, 0.004, 0.009};
+
+                ZRecoPt = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140};
+            }else if( Njets_ISR >= 2 ){
+                mc_u1_mean = {-66.018, -76.026, -85.608, -95.757, -105.263, -116.345};
+                mc_u1_mean_unc_up = {0.009, 0.088, 0.105, 0.003, 0.036, 0.026};
+                mc_u1_mean_unc_down = {0.109, 0.014, 0.014, 0.066, 0.048, 0.01};
+
+                diff_u1 = {-3.823, -2.554, -2.858, -3.767, -4.317, -3.54};
+                diff_u1_unc_up = {0.025, 0.015, 0.026, 0.034, 0.054, 0.016};
+                diff_u1_unc_down = {0.0, 0.074, 0.064, 0.068, 0.065, 0.01};
+
+                ZRecoPt = {60, 70, 80, 90, 100, 110, 120};
+            }
+        }
+
+        int idx = -1;
+        for (unsigned int i = 0; i < mc_u1_mean.size() ; i++){
+            if ( LepLep_pt >= ZRecoPt[i] && LepLep_pt < ZRecoPt[i+1]  ){
+                idx = i;
+                break;
+            }
+        }
+
+        if( _sysName_lateral == "Recoil" ){
+            if( _Universe <= 1 ){   // ratio up
+                sigma_ratio = sigma_ratio + sigma_ratio_unc_up;
+            }else{                  // ratio down
+                sigma_ratio = sigma_ratio - sigma_ratio_unc_down;
+            }
+        }
+
+        float U2_new = U2*sigma_ratio;
+        float Ux_new = - U2_new*sin(LepLep_phi);
+        float Uy_new = + U2_new*cos(LepLep_phi);
+
+        if( idx >= 0 ){
+
+            float diff_u1_value = diff_u1[idx];
+            float mc_u1_mean_value = mc_u1_mean[idx];
+
+            if( _sysName_lateral == "Recoil" ){
+                if( _Universe == 0 ){           // ratio up, diff increase
+                    if( diff_u1_value >= 0 ){
+                        diff_u1_value = diff_u1_value + diff_u1_unc_up[idx];
+                        mc_u1_mean_value = mc_u1_mean_value - mc_u1_mean_unc_down[idx];
+                    }else{
+                        diff_u1_value = diff_u1_value - diff_u1_unc_down[idx];
+                        mc_u1_mean_value = mc_u1_mean_value + mc_u1_mean_unc_up[idx];
+                    }
+                }else if( _Universe == 1 ){     // ratio up, diff decrease
+                    if( diff_u1_value >= 0 ){
+                        diff_u1_value = diff_u1_value - diff_u1_unc_down[idx];
+                        mc_u1_mean_value = mc_u1_mean_value + mc_u1_mean_unc_up[idx];
+                    }else{
+                        diff_u1_value = diff_u1_value + diff_u1_unc_up[idx];
+                        mc_u1_mean_value = mc_u1_mean_value - mc_u1_mean_unc_down[idx];
+                    }
+                }else if( _Universe == 2 ){     // ratio down, diff increase
+                    if( diff_u1_value >= 0 ){
+                        diff_u1_value = diff_u1_value + diff_u1_unc_up[idx];
+                        mc_u1_mean_value = mc_u1_mean_value - mc_u1_mean_unc_down[idx];
+                    }else{
+                        diff_u1_value = diff_u1_value - diff_u1_unc_down[idx];
+                        mc_u1_mean_value = mc_u1_mean_value + mc_u1_mean_unc_up[idx];
+                    }
+                }else if( _Universe == 3 ){     // ratio down, diff decrease
+                    if( diff_u1_value >= 0 ){
+                        diff_u1_value = diff_u1_value - diff_u1_unc_down[idx];
+                        mc_u1_mean_value = mc_u1_mean_value + mc_u1_mean_unc_up[idx];
+                    }else{
+                        diff_u1_value = diff_u1_value + diff_u1_unc_up[idx];
+                        mc_u1_mean_value = mc_u1_mean_value - mc_u1_mean_unc_down[idx];
+                    }
+                }
+            }
+
+            float U1_new = (mc_u1_mean_value+diff_u1_value) + (U1-mc_u1_mean_value)*sigma_ratio;
+            Ux_new += U1_new*cos(LepLep_phi);
+            Uy_new += U1_new*sin(LepLep_phi);
+
+        }else{
+            Ux_new += U1*cos(LepLep_phi);
+            Uy_new += U1*sin(LepLep_phi);
+        }
+
+        float CorrectedMET_x = -(Ux_new + LepLep_pt*cos(LepLep_phi));
+        float CorrectedMET_y = -(Uy_new + LepLep_pt*sin(LepLep_phi));
+
+        double CorrectedMET = sqrt(CorrectedMET_x*CorrectedMET_x+CorrectedMET_y*CorrectedMET_y);
+        double CorrectedMETPhi;
+        if(CorrectedMET_x==0 && CorrectedMET_y>0) CorrectedMETPhi = TMath::Pi();
+        else if(CorrectedMET_x==0 && CorrectedMET_y<0 ) CorrectedMETPhi = -TMath::Pi();
+        else if(CorrectedMET_x >0) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x);
+        else if(CorrectedMET_x <0 && CorrectedMET_y>0) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x) + TMath::Pi();
+        else if(CorrectedMET_x <0 && CorrectedMET_y<0) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x) - TMath::Pi();
+        else CorrectedMETPhi =0;
+
+        MET_pt = CorrectedMET;
+        MET_phi = CorrectedMETPhi;
+
+    }
+
+    MET_RECOIL_pt = MET_pt;
+    MET_RECOIL_phi = MET_phi;
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Pileup Correction OpenData
+//---------------------------------------------------------------------------------------------------------------
+float HEPHero::GetPileupWeightOD( string sysType ){
+
+    double pileup_weight = 1.;
+
+    string dsName = _datasetName.substr(0,_datasetName.length()-3);
+    string dsNameDY = dsName.substr(0,10);
+    if( (dataset_group != "Data") && (dsNameDY != "DYJetsToLL") ){
+
+        vector<float> NPV_Bkg;
+        vector<float> facBkg;
+        if( sysType == "nominal" ){
+            NPV_Bkg = { 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.,
+            14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25., 26.,
+            27., 28., 29., 30., 31., 32., 33., 34., 35., 36., 37., 38., 39.,
+            40., 41., 42., 43., 44., 45., 46., 70.};
+            facBkg = {0.60596421, 0.77569228, 0.88825352, 1.00762809, 1.12165009,
+            1.22203554, 1.30064631, 1.34465674, 1.35895262, 1.34339587,
+            1.31254424, 1.27193365, 1.22723794, 1.185854  , 1.14467599,
+            1.10458676, 1.06382983, 1.02145148, 0.97510731, 0.92408506,
+            0.86776156, 0.80618604, 0.74098505, 0.67491278, 0.60519701,
+            0.53878726, 0.47457879, 0.41269139, 0.35725551, 0.3059752 ,
+            0.25900109, 0.21655361, 0.18108055, 0.1525257 , 0.12465582,
+            0.09987348, 0.08263982, 0.06703216, 0.05517279, 0.04314179,
+            0.0365397 , 0.0259733 , 0.02333173, 0.01685579, 0.01369018,
+            0.00638677};
+        }
+
+        int idx = -1;
+        for (unsigned int i = 0; i < facBkg.size() ; i++){
+            if ( PV_npvs >= NPV_Bkg[i] && PV_npvs < NPV_Bkg[i+1]  ){
+                idx = i;
+                break;
+            }
+        }
+        if(idx >= 0) pileup_weight = facBkg[idx];
+    }
+
+    return pileup_weight;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Trigger Correction OpenData
+//---------------------------------------------------------------------------------------------------------------
+float HEPHero::GetTriggerWeightOD( string sysID ){
+
+    double trigger_weight = 1.;
+    if( dataset_group != "Data" ){
+
+        float LeadingTau_pt = Tau_pt[selectedTau[0]];
+        vector<float> TauPt_MC;
+        vector<float> facMC;
+        if( sysID == "nominal" ){
+            TauPt_MC = { 30.,  35.,  40.,  45.,  50.,  55.,  60.,  65.,  70.,  75.,  80.,
+                        85.,  90.,  95., 100., 105., 110., 115., 120., 160., 200., 240.,
+                        500.};
+            facMC = {1.11073889, 1.11503933, 1.11478038, 1.10477414, 1.10039739,
+                    1.09222083, 1.0880355 , 1.08310863, 1.07507577, 1.07052099,
+                    1.06339093, 1.06608262, 1.05500631, 1.04647864, 1.04974252,
+                    1.05710489, 1.0569654 , 1.07337116, 1.05810618, 1.08416867,
+                    1.07225847, 1.0741809};
+        }
+
+        int idx = -1;
+        for (unsigned int i = 0; i < facMC.size() ; i++){
+            if ( LeadingTau_pt >= TauPt_MC[i] && LeadingTau_pt < TauPt_MC[i+1]  ){
+                idx = i;
+                break;
+            }
+        }
+        if(idx >= 0) trigger_weight = facMC[idx];
+    }
+
+    return trigger_weight;
+}
 
 
 
+//---------------------------------------------------------------------------------------------------------------
+// Weight corrections OpenData
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::Weight_correctionsOD(){
 
+    pileup_wgt = 1.;
+    trigger_wgt = 1.;
 
+    if(dataset_group != "Data"){
 
+        if( apply_pileup_wgt ){
+            pileup_wgt = GetPileupWeightOD("nominal");
+            evtWeight *= pileup_wgt;
+        }
 
+        if( apply_trigger_wgt ){
+            trigger_wgt = GetTriggerWeightOD("nominal");
+            evtWeight *= trigger_wgt;
+        }
 
-
-
-
-
-
+    }
+}

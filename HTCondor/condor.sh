@@ -46,9 +46,11 @@ export MY_TORCH_PATH=/mnt/hadoop/cms/store/user/${USER}/libtorch
 fi
 
 ls
-source /cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/setup.sh
-python -m venv hepenv
-source hepenv/bin/activate
+if [ "$6" == "CERN" ]; then
+source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
+else
+source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
+fi
 cd HEPHero
 
 if [ "$6" == "CERN" ]; then
@@ -66,13 +68,8 @@ fi
 if [ "$8" == "--resubmit" ]; then
 python runSelection.py -j $1 -p $2 -t 0 $8
 else
-python runSelection.py -j $1 -p $2 -t 0 
+python runSelection.py -j $1 -p $2 -t 0
 fi
-
-#echo ${SELECTION}
-#echo ${JOB_NAME}
-#cd tools
-#python checker.py -s ${SELECTION} -n ${JOB_NAME}
 
 
 if [ "$6" == "CERN" ]; then

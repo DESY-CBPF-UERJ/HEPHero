@@ -1,4 +1,5 @@
 Data-taking     Year    HIPM    Luminosity[pb-1]    Unc_total[%]    Unc_uncorr[%]   Unc_fullcorr[%] Unc_full1718corr[%]
+2012            12      0       11467               0.0             0.0             0.0             0.0
 2016_preVFP     16      1       19521.2283          1.2             1.0             0.6             0.0 
 2016_postVFP    16      0       16812.1517          1.2             1.0             0.6             0.0   
 2017            17      0       41479.6805          2.3             2.0             0.9             0.6

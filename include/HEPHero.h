@@ -139,6 +139,19 @@ class HEPHero {
         void Weight_corrections();
         bool MC_processing();
 
+
+        //=====OPENDATA Tools======================================================================
+        void LeptonSelectionOD();
+        void JetSelectionOD();
+        float GetPileupWeightOD( string sysType );
+        float GetTriggerWeightOD( string sysID );
+        void Weight_correctionsOD();
+        bool MuonTauPairSelectionOD();
+        void Jet_lep_overlapOD( float deltaR_cut );
+        void Jet_TauTau_VariablesOD();
+        void RegionsOD();
+        void METCorrectionOD();
+        void Signal_discriminatorsOD();
     
     private:
         HEPHero() {}
@@ -491,6 +504,7 @@ class HEPHero {
         int Njets30_LepIso04;
         int Njets40_LepIso04;
         int Njets_forward;
+        int Njets30_forward;
         int Njets_tight;
         int Njets_ISR;
         int NPUjets;
@@ -514,6 +528,7 @@ class HEPHero {
         float FMax40;
         float LeadingJet_pt;
         float SubLeadingJet_pt;
+        Float_t Jet_JES_pt[100];
         
         //----MET------------------------------------------
         float MET_RAW_pt;
@@ -566,6 +581,9 @@ class HEPHero {
         float MUON_LOW_PT_CUT;
         int   MUON_ID_WP;
         int   MUON_ISO_WP;
+
+        float TAU_ETA_CUT;
+        float TAU_PT_CUT;
         
         float LEPTON_DR_ISO_CUT;
         
@@ -583,6 +601,7 @@ class HEPHero {
         vector<int> selectedEleLowPt;
         vector<int> selectedMu;
         vector<int> selectedMuLowPt;
+        vector<int> selectedTau;
         vector<int> selectedJet;
         vector<bool> Jet_LepOverlap;
         int RecoLepID;  // 11 - reco electron event, 13- reco muon event
@@ -637,6 +656,7 @@ class HEPHero {
         int NleptonsLowPt;
         int Nelectrons;
         int Nmuons;
+        int Ntaus;
         float Dijet_pt; 
         float Dijet_M;
         float Dijet_deltaEta;
@@ -655,6 +675,20 @@ class HEPHero {
         bool HEM_issue_jet_v2;
         bool HEM_issue_met;
         bool HEM_filter;
+
+        int IdxBestMu;
+        int IdxBestTau;
+        float TauH_pt;
+        float MuonL_pt;
+        float MuonL_MET_pt;
+        float MuonL_MET_dphi;
+        float MuonL_MET_Mt;
+        float TauH_TauL_pt;
+        float TauH_TauL_dphi;
+        float TauH_TauL_Mt;
+        float TauH_MuonL_M;
+        float TauH_MuonL_pt;
+        bool Has_2OC_muons;
         
         //float genHT;
         //float genPt;
@@ -665,7 +699,7 @@ class HEPHero {
         
     
     //=================================================================================================================
-    // INPUT TREE SETUP
+    // INPUT TREE SETUP - NANOAOD
     //=================================================================================================================
     private:
                
@@ -907,6 +941,7 @@ class HEPHero {
         Float_t MET_significance;
         Float_t MET_sumEt;
         Float_t MET_sumPtUnclustered;
+
    
         UInt_t  nMuon;                      //[50]  8    1
         Float_t Muon_dxy[50];
@@ -1022,7 +1057,7 @@ class HEPHero {
         Float_t SubJet_tau4[100];
         */
         
-        /*
+
         UInt_t  nTau;                       //[50]  7    1
         Float_t Tau_chargedIso[50];
         Float_t Tau_dxy[50];
@@ -1068,7 +1103,7 @@ class HEPHero {
         UChar_t Tau_idMVAoldDM2017v1[50];
         UChar_t Tau_idMVAoldDM2017v2[50];
         UChar_t Tau_idMVAoldDMdR032017v2[50];
-        */
+
         
         /*
         UInt_t  nTrigObj;                   //[100] 43   10
@@ -1208,6 +1243,35 @@ class HEPHero {
         Bool_t  HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;
         Bool_t  HLT_OldMu100;
         Bool_t  HLT_TkMu100;
+
+
+    //=================================================================================================================
+    // INPUT TREE SETUP - OPENDATA (extra branches)
+    //=================================================================================================================
+    private:
+        Float_t Tau_relIso_all[50];
+        Int_t Tau_genPartIdx[50];
+        Float_t Tau_idIsoRaw[50];
+        Bool_t Tau_idIsoVLoose[50];
+        Bool_t Tau_idIsoLoose[50];
+        Bool_t Tau_idIsoMedium[50];
+        Bool_t Tau_idIsoTight[50];
+        Bool_t Tau_idAntiEleLoose[50];
+        Bool_t Tau_idAntiEleMedium[50];
+        Bool_t Tau_idAntiEleTight[50];
+        Bool_t Tau_idAntiMuLoose[50];
+        Bool_t Tau_idAntiMuMedium[50];
+        Bool_t Tau_idAntiMuTight[50];
+
+        Float_t Jet_btag[100];
+
+        Float_t MET_sumet;
+        Float_t MET_CovXX;
+        Float_t MET_CovXY;
+        Float_t MET_CovYY;
+
+        Bool_t HLT_IsoMu24_eta2p1;
+        Bool_t HLT_IsoMu17_eta2p1_LooseIsoPFTau20;
         
 };
 

@@ -110,6 +110,9 @@ HEPHero::HEPHero( char *configFileName ) {
         if( key == "MUON_LOW_PT_CUT"            )   MUON_LOW_PT_CUT = atof(value.c_str()); 
         if( key == "MUON_ID_WP"                 )   MUON_ID_WP = atoi(value.c_str());
         if( key == "MUON_ISO_WP"                )   MUON_ISO_WP = atoi(value.c_str());
+
+        if( key == "TAU_ETA_CUT"                )   TAU_ETA_CUT = atof(value.c_str());
+        if( key == "TAU_PT_CUT"                 )   TAU_PT_CUT = atof(value.c_str());
         
         if( key == "LEPTON_DR_ISO_CUT"          )   LEPTON_DR_ISO_CUT = atof(value.c_str());
         
@@ -129,7 +132,7 @@ HEPHero::HEPHero( char *configFileName ) {
         
     }
     
-    
+
     //======GET DATASET INFORMATION================================================================
     if( _ANALYSIS == "GEN" ){
         // HEPHeroGEN
@@ -180,6 +183,8 @@ HEPHero::HEPHero( char *configFileName ) {
                 dataset_sample = "Electrons";
             }else if( _datasetName.substr(5,3) == "MET" ){
                 dataset_sample = "MET";
+            }else if( _datasetName.substr(5,8) == "TauPlusX" ){
+                dataset_sample = "TauPlusX";
             }
         }else{
             dataset_era = "No";
@@ -204,7 +209,7 @@ HEPHero::HEPHero( char *configFileName ) {
         cout << "era: " << dataset_era << endl; 
         cout << "sample: " << dataset_sample << endl;
     }
-    
+
     string s = _Files;
     string delimiter = "_";
     size_t pos = s.find(delimiter);
@@ -213,7 +218,8 @@ HEPHero::HEPHero( char *configFileName ) {
     _FilesID = atoi(file_start.c_str())*1000 + atoi(file_end.c_str());
     
     
-    //======CREATE OUTPUT DIRECTORY FOR THE DATASET================================================    
+    //======CREATE OUTPUT DIRECTORY FOR THE DATASET================================================
+    string raw_outputDirectory = _outputDirectory;
     _outputDirectory = _outputDirectory + "/" + _SELECTION + "/" + _datasetName + "_files_" + _Files + "/";
     mkdir(_outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     string sysDirectory = _outputDirectory + "/Systematics"; 
@@ -223,7 +229,7 @@ HEPHero::HEPHero( char *configFileName ) {
         mkdir(dotDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     
-        
+
     //======ADD THE INPUT TREES TO THE TCHAINS=====================================================
     if( _ANALYSIS != "GEN" ){
         gErrorIgnoreLevel = kError;
@@ -234,12 +240,13 @@ HEPHero::HEPHero( char *configFileName ) {
             if( _Machines == "CERN" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
             if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);  
             if( _Machines == "UERJ" ) inputFileName = "/mnt/hadoop/cms/" + (*itr);
+            if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-8) + (*itr);
             if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
             _inputTree -> Add( inputFileName.c_str() ); 
         }
     }
     
-    
+
     //======ADD ASCII FILE=========================================================================
     // HEPHeroGEN
     if( _ANALYSIS == "GEN" ) _ascii_file = new HepMC3::ReaderAsciiHepMC2(_inputFileNames.at(0));
@@ -264,7 +271,7 @@ HEPHero::HEPHero( char *configFileName ) {
     _sysFileName = sysDirectory + "/" + to_string(_sysID_lateral) + "_" + to_string(_Universe) + ".json";
     _sysFileJson.open( _sysFileName.c_str(), ios::out );
     
-    
+
 }
 
 
@@ -275,7 +282,7 @@ bool HEPHero::Init() {
     
     //======SET HISTOGRAMS STYLE===================================================================
     setStyle(1.0,true,0.15);
-    
+
     if( _ANALYSIS != "GEN" ){
         //======SET THE BRANCH ADDRESSES===============================================================
         _inputTree->SetBranchAddress("run", &run );
@@ -376,8 +383,37 @@ bool HEPHero::Init() {
         _inputTree->SetBranchAddress("Muon_pfRelIso03_chg", &Muon_pfRelIso03_chg );
         _inputTree->SetBranchAddress("Muon_pfIsoId", &Muon_pfIsoId );
         _inputTree->SetBranchAddress("Muon_highPtId", &Muon_highPtId );
-        
-        
+
+
+        //-----------------------------------------------------------------------------------------------------------------------
+        _inputTree->SetBranchAddress("nTau", &nTau );                       //[50]  7    1
+        _inputTree->SetBranchAddress("Tau_chargedIso", &Tau_chargedIso );
+        _inputTree->SetBranchAddress("Tau_dxy", &Tau_dxy );
+        _inputTree->SetBranchAddress("Tau_dz", &Tau_dz );
+        _inputTree->SetBranchAddress("Tau_eta", &Tau_eta );
+        _inputTree->SetBranchAddress("Tau_leadTkDeltaEta", &Tau_leadTkDeltaEta );
+        _inputTree->SetBranchAddress("Tau_leadTkDeltaPhi", &Tau_leadTkDeltaPhi );
+        _inputTree->SetBranchAddress("Tau_leadTkPtOverTauPt", &Tau_leadTkPtOverTauPt );
+        _inputTree->SetBranchAddress("Tau_mass", &Tau_mass );
+        _inputTree->SetBranchAddress("Tau_neutralIso", &Tau_neutralIso );
+        _inputTree->SetBranchAddress("Tau_phi", &Tau_phi );
+        _inputTree->SetBranchAddress("Tau_pt", &Tau_pt );
+        _inputTree->SetBranchAddress("Tau_puCorr", &Tau_puCorr );
+        _inputTree->SetBranchAddress("Tau_charge", &Tau_charge );
+        _inputTree->SetBranchAddress("Tau_decayMode", &Tau_decayMode );
+        _inputTree->SetBranchAddress("Tau_jetIdx", &Tau_jetIdx );
+        _inputTree->SetBranchAddress("Tau_idAntiEle", &Tau_idAntiEle );
+        _inputTree->SetBranchAddress("Tau_idAntiEle2018", &Tau_idAntiEle2018 );
+        _inputTree->SetBranchAddress("Tau_idAntiEleDeadECal", &Tau_idAntiEleDeadECal );
+        _inputTree->SetBranchAddress("Tau_idAntiMu", &Tau_idAntiMu );
+        _inputTree->SetBranchAddress("Tau_idDecayMode", &Tau_idDecayMode );
+        _inputTree->SetBranchAddress("Tau_idDecayModeNewDMs", &Tau_idDecayModeNewDMs );
+        _inputTree->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe );
+        _inputTree->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet );
+        _inputTree->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu );
+        _inputTree->SetBranchAddress("Tau_idMVAnewDM2017v2", &Tau_idMVAnewDM2017v2 );
+
+
         //-----------------------------------------------------------------------------------------------------------------------
         _inputTree->SetBranchAddress("nCorrT1METJet", &nCorrT1METJet );
         _inputTree->SetBranchAddress("CorrT1METJet_area", &CorrT1METJet_area );
@@ -603,7 +639,7 @@ bool HEPHero::Init() {
         
         //-----------------------------------------------------------------------------------------------------------------------
         if( dataset_group != "Data" ) {
-            _inputTree->SetBranchAddress("genWeight", &genWeight );
+            if( _ANALYSIS != "OPENDATA" ) _inputTree->SetBranchAddress("genWeight", &genWeight );
             
             _inputTree->SetBranchAddress("Electron_genPartIdx", &Electron_genPartIdx );
             _inputTree->SetBranchAddress("Muon_genPartIdx", &Muon_genPartIdx );
@@ -650,9 +686,37 @@ bool HEPHero::Init() {
             _inputTree->SetBranchAddress("L1PreFiringWeight_Nom", &L1PreFiringWeight_Nom );
             _inputTree->SetBranchAddress("L1PreFiringWeight_Up", &L1PreFiringWeight_Up );
         }
+
+        //-----------------------------------------------------------------------------------------------------------------------
+        if( _ANALYSIS == "OPENDATA" ) {
+            genWeight = 1.;
+            _inputTree->SetBranchAddress("Tau_relIso_all", &Tau_relIso_all );
+            _inputTree->SetBranchAddress("Tau_genPartIdx", &Tau_genPartIdx );
+            _inputTree->SetBranchAddress("Tau_idIsoRaw", &Tau_idIsoRaw );
+            _inputTree->SetBranchAddress("Tau_idIsoVLoose", &Tau_idIsoVLoose );
+            _inputTree->SetBranchAddress("Tau_idIsoLoose", &Tau_idIsoLoose );
+            _inputTree->SetBranchAddress("Tau_idIsoMedium", &Tau_idIsoMedium );
+            _inputTree->SetBranchAddress("Tau_idIsoTight", &Tau_idIsoTight );
+            _inputTree->SetBranchAddress("Tau_idAntiEleLoose", &Tau_idAntiEleLoose );
+            _inputTree->SetBranchAddress("Tau_idAntiEleMedium", &Tau_idAntiEleMedium );
+            _inputTree->SetBranchAddress("Tau_idAntiEleTight", &Tau_idAntiEleTight );
+            _inputTree->SetBranchAddress("Tau_idAntiMuLoose", &Tau_idAntiMuLoose );
+            _inputTree->SetBranchAddress("Tau_idAntiMuMedium", &Tau_idAntiMuMedium );
+            _inputTree->SetBranchAddress("Tau_idAntiMuTight", &Tau_idAntiMuTight );
+
+            _inputTree->SetBranchAddress("Jet_btag", &Jet_btag );
+
+            _inputTree->SetBranchAddress("MET_sumet", &MET_sumet );
+            _inputTree->SetBranchAddress("MET_CovXX", &MET_CovXX );
+            _inputTree->SetBranchAddress("MET_CovXY", &MET_CovXY );
+            _inputTree->SetBranchAddress("MET_CovYY", &MET_CovYY );
+
+            _inputTree->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24 );
+            _inputTree->SetBranchAddress("HLT_IsoMu24_eta2p1", &HLT_IsoMu24_eta2p1 );
+            _inputTree->SetBranchAddress("HLT_IsoMu17_eta2p1_LooseIsoPFTau20", &HLT_IsoMu17_eta2p1_LooseIsoPFTau20 );
+        }
     }
 
-    
     return true;
 }
 
@@ -699,7 +763,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         }
         if( _NumberEntries > _NumMaxEvents && _NumMaxEvents > 0 ) _NumberEntries = _NumMaxEvents;
     }
-    
+
     
     //======PRINT INFO ABOUT THE SELECTION PROCESS=================================================
     cout << endl;
@@ -711,7 +775,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     cout << "Number of entries considered: " << _NumberEntries << endl;
     cout << "-----------------------------------------------------------------------------------" << endl;
     cout << endl;
-    
+
     if( _sysID_lateral == 0 ) {
         _CutflowFileName = _outputDirectory + "cutflow.txt";
         _CutflowFile.open( _CutflowFileName.c_str(), ios::out );
@@ -733,7 +797,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
     //======PRE-OBJECTS SETUP======================================================================
     PreObjects();
-    
+
     //======SETUP SELECTION========================================================================
     if( false );
     // SETUP YOUR SELECTION HERE
@@ -741,7 +805,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
       cout << "Unknown selection requested. Exiting. " << endl;
       return;
     }
-    
+
     //======SETUP STATISTICAL ERROR================================================================
     vector<double> cutflowOld(50, 0.);
     for( int icut = 0; icut < 50; ++icut ){

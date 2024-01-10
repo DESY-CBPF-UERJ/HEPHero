@@ -79,3 +79,12 @@ for period,year,path in zip(periods,years,paths):
         Signal_17 = Signal
     elif period == "18":
         Signal_18 = Signal
+
+
+# OPEN DATA
+openpath = 'Datasets/Files/opendata/signal_12/'
+
+Signal_12 = [
+    ["Signal_VBF_12"]                  + ['1201000', openpath+"Signal_VBF.txt"],
+    ["Signal_GluGlu_12"]               + ['1201010', openpath+"Signal_GluGlu.txt"],
+]

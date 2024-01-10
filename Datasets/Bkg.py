@@ -87,9 +87,9 @@ for period,year,path in zip(periods,years,paths):
         ["TTWZ_"+period]                             + [year+'0700'+APVID, path+"TTWZ.txt"],
         ["TTZZ_"+period]                             + [year+'0701'+APVID, path+"TTZZ.txt"],
         ["TTWW_"+period]                             + [year+'0702'+APVID, path+"TTWW.txt"],
-        ["TWZToLL_thad_Wlept_"+period]               + [year+'0800'+APVID, path+"TWZToLL_thad_Wlept.txt"],
-        ["TWZToLL_tlept_Whad_"+period]               + [year+'0801'+APVID, path+"TWZToLL_tlept_Whad.txt"],
-        ["TWZToLL_tlept_Wlept_"+period]              + [year+'0802'+APVID, path+"TWZToLL_tlept_Wlept.txt"],
+        #["TWZToLL_thad_Wlept_"+period]               + [year+'0800'+APVID, path+"TWZToLL_thad_Wlept.txt"],
+        #["TWZToLL_tlept_Whad_"+period]               + [year+'0801'+APVID, path+"TWZToLL_tlept_Whad.txt"],
+        #["TWZToLL_tlept_Wlept_"+period]              + [year+'0802'+APVID, path+"TWZToLL_tlept_Wlept.txt"],
         ["TTWJetsToLNu_"+period]                     + [year+'1000'+APVID, path+"TTWJetsToLNu.txt"],
         ["TTWJetsToQQ_"+period]                      + [year+'1001'+APVID, path+"TTWJetsToQQ.txt"],
         ["TTZToQQ_"+period]                          + [year+'1002'+APVID, path+"TTZToQQ.txt"],
@@ -156,9 +156,20 @@ for period,year,path in zip(periods,years,paths):
         DYPt50ToInf_18 = DYPt50ToInf
 
 
+# OPEN DATA
+openpath = 'Datasets/Files/opendata/bkg_12/'
 
-
-
+DYJetsToLL_12 = [
+    ["DYJetsToLL_12"]                  + ['1202000', openpath+"DYJetsToLL.txt"],
+]
+TTbar_12 = [
+    ["TTbar_12"]                       + ['1203000', openpath+"TTbar.txt"],
+]
+WJetsToLNu_12 = [
+    ["W1JetsToLNu_12"]                 + ['1204000', openpath+"W1JetsToLNu.txt"],
+    ["W2JetsToLNu_12"]                 + ['1204010', openpath+"W2JetsToLNu.txt"],
+    ["W3JetsToLNu_12"]                 + ['1204020', openpath+"W3JetsToLNu.txt"],
+]
 
 
 

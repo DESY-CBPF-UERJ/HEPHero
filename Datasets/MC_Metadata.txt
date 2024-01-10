@@ -130,13 +130,16 @@ QCD_Pt-1000ToInf                                1.043               0.155       
 tZq_ll                                          0.07561             0.0002088           unknown
 WJetsToLNu                                      53870.0             129.7               LO
 WGToLNuG                                        412.7               1.027               LO
+Signal_GluGlu                                   19.6                -                   -
+Signal_VBF                                      1.55                -                   -
+DYJetsToLL                                      3503.7              -                   -
+TTbar                                           225.2               -                   -
+W1JetsToLNu                                     6381.2              -                   -
+W2JetsToLNu                                     2039.8              -                   -
+W3JetsToLNu                                     612.5               -                   -
 Source > > https://cms-gen-dev.cern.ch/xsdb/
 Source[*] > > https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns
 Source[**] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWG
 Source[new1] > > https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
 Source[new2] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
 Source[new3] > > https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
-    
-    
-    
-    

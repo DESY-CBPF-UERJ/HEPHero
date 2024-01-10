@@ -8,7 +8,7 @@ services:
     devices:
       - "/dev/fuse"
     volumes:
-      - /cvmfs:/cvmfs:shared
+      - /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch:shared
       - /var/lib/cvmfs:/var/lib/cvmfs:shared
     environment:
       - CVMFS_CLIENT_PROFILE=single

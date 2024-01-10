@@ -84,6 +84,15 @@ with open("runSelection_temp.py", "w") as newfile:
         for dataset in sm.datasets:
             newfile.write(str(dataset) + ",\n")
         newfile.write("]\n")
+    elif args.analysis == "OPENDATA":
+        newfile.write("sys.path.insert(0, 'Datasets')\n")
+        newfile.write("from Signal import *\n")
+        newfile.write("from Bkg import *\n")
+        newfile.write("from Data import *\n")
+        newfile.write("datasets = []\n")
+        newfile.write("\n")
+        for dataset in sm.datasets:
+            newfile.write("datasets.extend(" + dataset + "_12" + ")\n")
     else:
         newfile.write("sys.path.insert(0, 'Datasets')\n")
         newfile.write("from Signal import *\n")

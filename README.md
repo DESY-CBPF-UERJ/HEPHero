@@ -8,6 +8,7 @@ Set up your environment: (only once in your life)
 CERN - add the lines below to the file **/afs/cern.ch/user/${USER:0:1}/${USER}/.bashrc** and restart your session.   
 DESY - add the lines below to the file **/afs/desy.de/user/${USER:0:1}/${USER}/.zshrc** and restart your session. (Create the file if it doesn't exist)   
 UERJ - add the lines below to the file **/home/${USER}/.bashrc** and restart your session.   
+PC (Personal Computer) - add the lines below to the file **/home/${USER}/.bashrc** and restart your session.
 
 ```bash
 export HEP_OUTPATH=<place the full path to a directory that will store the outputs>
@@ -17,6 +18,8 @@ export MACHINES=<place the organization name, owner of the computing resources>
 alias hepenv='source /afs/cern.ch/work/g/gcorreia/public/hepenv_setup.sh'  #(CERN)
 alias hepenv='source /afs/desy.de/user/g/gcorreia/public/hepenv_setup.sh'  #(DESY)
 alias hepenv='source /mnt/hadoop/cms/store/user/gcorreia/hepenv_setup.sh'  #(UERJ)
+alias hepenv='source $HEP_OUTPATH/hepenv_setup.sh'                         #(PC)
+alias cernenv='source $HEP_OUTPATH/container_setup.sh'                     #(PC)
 ```
 
 Possible outpaths:   
@@ -24,6 +27,7 @@ Possible outpaths:
 * `At CERN, use a folder inside your eos area` 
 * `At DESY, use a folder inside your dust area`
 * `At UERJ, you must create and define your outpath as: /home/username/output`
+* `At PC, use any folder inside your home area`
 
 Possible redirectors (only used at CERN):   
 
@@ -52,14 +56,20 @@ export MACHINES=DESY
 ```
 
 ```bash
-export HEP_OUTPATH=/home/gcorea/output  
+export HEP_OUTPATH=/home/gcorea/output
 export REDIRECTOR=None
 export MACHINES=UERJ
 ```
 
+```bash
+export HEP_OUTPATH=/home/gcorea/output
+export REDIRECTOR=None
+export MACHINES=PC
+```
+
 # Quick start
 
-Inside your private area (NOT in the eos or dust area and NOT inside a CMSSW release), download the code. 
+Inside your private or home area (NOT in the eos or dust area and NOT inside a CMSSW release), download the code.
 
 ```bash
 git clone git@github.com:DESY-CBPF-UERJ/HEPHero.git
@@ -231,6 +241,63 @@ Dissociate **TrigEff** from the framework (the anafile is not deleted):
 ./rmSelection.sh TrigEff
 ```
 
+# PC setup
+
+Run the HEPHero in your personal computer is usefull for local development and working with opendata. To use the HEPHero in your PC, you need to download the list of files below from the link: https://cernbox.cern.ch/s/LNGQ6aDRQ9gzZNu. Then, place them inside the **HEP_OUTPATH** directory.
+
+* `hepenv_setup.sh`
+* `container_setup.sh`
+* `libtorch_fix`
+* `centos7-core_latest.sif`
+
+The Cern Virtual Machine - File System (CernVM-FS) provides a scalable, reliable and low-maintenance software distribution service. It was developed to assist High Energy Physics (HEP) collaborations to deploy software on the worldwide-distributed computing infrastructure used to run data processing applications. Installing and setting up CVMFS:
+```bash
+wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
+sudo dpkg -i cvmfs-release-latest_all.deb
+rm -f cvmfs-release-latest_all.deb
+sudo apt-get update
+sudo apt-get install cvmfs
+sudo cvmfs_config setup
+systemctl restart autofs
+```
+Write the content below in the file: **/etc/cvmfs/default.local**
+```bash
+CVMFS_REPOSITORIES=sft.cern.ch
+CVMFS_HTTP_PROXY=DIRECT
+CVMFS_CLIENT_PROFILE=single
+```
+Finish the setup typing:
+```bash
+sudo cvmfs_config setup
+cvmfs_config probe
+```
+
+After having followed the steps above, everytime you desire to run the HEPHero framework in your PC, you need to create the container with the cern environment, typing:
+```bash
+cernenv
+```
+Inside the container, you will be moved to the **HEP_OUTPATH** directory. There, you must set up the hepenv environment (the **hepenv** command decribed above doesn't work in the PC setup) using the commnand below:
+```bash
+source hepenv_setup.sh
+```
+Now, the setup is completed and you can go to the HEPHero directory and run the framework. To leave the container, you must type:
+```bash
+exit
+```
+
+# CMS OPENDATA
+
+To be able to work with the CMS open data, you need to download the list of datasets below (root files) from the links: https://cernbox.cern.ch/s/LNGQ6aDRQ9gzZNu or https://opendata.web.cern.ch/record/12350. Then, place them inside the **HEP_OUTPATH** directory.
+
+* `GluGluToHToTauTau.root`
+* `VBF_HToTauTau.root`
+* `DYJetsToLL.root`
+* `TTbar.root`
+* `W1JetsToLNu.root`
+* `W2JetsToLNu.root`
+* `W3JetsToLNu.root`
+* `Run2012B_TauPlusX.root`
+* `Run2012C_TauPlusX.root`
 
 # Local development with Docker
 

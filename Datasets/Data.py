@@ -140,7 +140,12 @@ Data_MET_18 = [
 ]
 
 
+# OPEN DATA
+openpath = 'Datasets/Files/opendata/data_12/'
 
-
+Data_12 = [
+    ["Data_TauPlusX_B_12"]               + ['1200000', openpath+"TauPlusX_B.txt"],
+    ["Data_TauPlusX_C_12"]               + ['1200010', openpath+"TauPlusX_C.txt"],
+]
 
 
