@@ -319,8 +319,14 @@ docker build -t hephero_standalone .
 docker run -it --rm --name hephero -v /cvmfs:/cvmfs:shared hephero_standalone
 ```
 
-If you want to make the data inside the container persistent (in order to access root files not shipped in the container or edit anafiles) you can add the `-v` flag to the hephero mountpoint:
+If you want to make the data inside the container persistent (in order to access root files not shipped in the container or edit anafiles) you can use the `--mount` with HEPHero's mountpoint:
 
 ```bash
-docker run -it --rm --name hephero -v /cvmfs:/cvmfs:shared -v ./HEPHero:/home/hero/HEPHero hephero_standalone
+docker run -it --rm --name hephero -v /cvmfs:/cvmfs:shared --mount type=volume,dst=/home/hero/HEPHero,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=/path/in/host/to/mount/hephero/folder hephero_standalone
+```
+
+Remember that unlink bind mounts, the mount operation do not create the mount folder automatically, so you shold create the folder before running the container:
+
+```bash
+mkdir -p /path/in/host/to/mount/hephero/folder
 ```
