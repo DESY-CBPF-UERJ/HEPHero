@@ -1174,6 +1174,7 @@ void HEPHero::VerticalSysSizes( ){
         get_Scale_sfs = false;
         get_ISR_sfs = false;
         get_FSR_sfs = false;
+        get_TopPt_sfs = false;
         get_Pileup_sfs = false;
         get_ElectronID_sfs = false;
         get_MuonID_sfs = false;
@@ -1199,6 +1200,9 @@ void HEPHero::VerticalSysSizes( ){
             }else if( sysName == "FSR" ){ 
                 sys_vertical_size.push_back(2);
                 get_FSR_sfs = true;
+            }else if( sysName == "TopPt" ){
+                sys_vertical_size.push_back(1);
+                get_TopPt_sfs = true;
             }else if( sysName == "Pileup" ){ 
                 sys_vertical_size.push_back(2);
                 get_Pileup_sfs = true;
@@ -1328,7 +1332,14 @@ void HEPHero::VerticalSys(){
             }   
             sys_vertical_sfs.insert(pair<string, vector<float>>("FSR", FSR_sfs));
         }
-        
+
+        //-----------------------------------------------------------------------------------
+        if( get_TopPt_sfs ){
+            vector<float> TopPt_sfs;
+            TopPt_sfs.push_back(1./top_pt_wgt);
+            sys_vertical_sfs.insert(pair<string, vector<float>>("TopPt", TopPt_sfs));
+        }
+
         //-----------------------------------------------------------------------------------
         if( get_Pileup_sfs ){
             vector<float> Pileup_sfs;

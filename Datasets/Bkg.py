@@ -56,9 +56,11 @@ for period,year,path in zip(periods,years,paths):
     TTFullLep = [
         ["TTTo2L2Nu_"+period]                        + [year+'0300'+APVID, path+"TTTo2L2Nu.txt"],
     ]
+
     TTSemiLep = [
         ["TTToSemiLeptonic_"+period]                 + [year+'0301'+APVID, path+"TTToSemiLeptonic.txt"],
     ]
+
     ST = [
         ["ST_tW_top_"+period]                        + [year+'0400'+APVID, path+"ST_tW_top.txt"],
         ["ST_tW_antitop_"+period]                    + [year+'0401'+APVID, path+"ST_tW_antitop.txt"],
@@ -66,11 +68,13 @@ for period,year,path in zip(periods,years,paths):
         ["ST_t-channel_antitop_"+period]             + [year+'0403'+APVID, path+"ST_t-channel_antitop.txt"],
         ["ST_s-channel_"+period]                     + [year+'0404'+APVID, path+"ST_s-channel.txt"],
     ]
+
     VZ = [
         ["ZZTo2L2Nu_"+period]                        + [year+'0501'+APVID, path+"ZZTo2L2Nu.txt"],
         ["ZZTo4L_"+period]                           + [year+'0502'+APVID, path+"ZZTo4L.txt"],
         ["WZTo3LNu_"+period]                         + [year+'0512'+APVID, path+"WZTo3LNu.txt"],
     ]
+
     ResidualSM = [
         #["ZZ_Inclusive_"+period]                     + [year+'0500'+APVID, path+"ZZ.txt"],
         #["ZZ_Others_"+period]                        + [year+'0500'+APVID, path+"ZZ.txt"],
@@ -105,21 +109,83 @@ for period,year,path in zip(periods,years,paths):
         #["WminusH_HToZZTo4L_"+period]                + [year+'1501'+APVID, path+"WminusH_HToZZTo4L.txt"],
         #["ZH_HToBB_ZToLL_"+period]                   + [year+'1600'+APVID, path+"ZH_HToBB_ZToLL.txt"],
         #["ZH_HToZZ_"+period]                         + [year+'1601'+APVID, path+"ZH_HToZZ.txt"],
-        #["QCD_Pt-15To20_"+period]                    + [year+'1800'+APVID, path+"QCD_Pt-15To20.txt"],
-        #["QCD_Pt-20To30_"+period]                    + [year+'1801'+APVID, path+"QCD_Pt-20To30.txt"],
-        #["QCD_Pt-30To50_"+period]                    + [year+'1802'+APVID, path+"QCD_Pt-30To50.txt"],
-        #["QCD_Pt-50To80_"+period]                    + [year+'1803'+APVID, path+"QCD_Pt-50To80.txt"],
-        #["QCD_Pt-80To120_"+period]                   + [year+'1804'+APVID, path+"QCD_Pt-80To120.txt"],
-        #["QCD_Pt-120To170_"+period]                  + [year+'1805'+APVID, path+"QCD_Pt-120To170.txt"],
-        #["QCD_Pt-170To300_"+period]                  + [year+'1806'+APVID, path+"QCD_Pt-170To300.txt"],
-        #["QCD_Pt-300To470_"+period]                  + [year+'1807'+APVID, path+"QCD_Pt-300To470.txt"],
-        #["QCD_Pt-470To600_"+period]                  + [year+'1808'+APVID, path+"QCD_Pt-470To600.txt"],
-        #["QCD_Pt-600To800_"+period]                  + [year+'1809'+APVID, path+"QCD_Pt-600To800.txt"],
-        #["QCD_Pt-800To1000_"+period]                 + [year+'1810'+APVID, path+"QCD_Pt-800To1000.txt"],
-        #["QCD_Pt-1000ToInf_"+period]                 + [year+'1811'+APVID, path+"QCD_Pt-1000ToInf.txt"],
+        #["QCD_Mu_Pt-15To20_"+period]                 + [year+'1800'+APVID, path+"QCD_Mu_Pt-15To20.txt"],
+        #["QCD_Mu_Pt-20To30_"+period]                 + [year+'1801'+APVID, path+"QCD_Mu_Pt-20To30.txt"],
+        #["QCD_Mu_Pt-30To50_"+period]                 + [year+'1802'+APVID, path+"QCD_Mu_Pt-30To50.txt"],
+        #["QCD_Mu_Pt-50To80_"+period]                 + [year+'1803'+APVID, path+"QCD_Mu_Pt-50To80.txt"],
+        #["QCD_Mu_Pt-80To120_"+period]                + [year+'1804'+APVID, path+"QCD_Mu_Pt-80To120.txt"],
+        #["QCD_Mu_Pt-120To170_"+period]               + [year+'1805'+APVID, path+"QCD_Mu_Pt-120To170.txt"],
+        #["QCD_Mu_Pt-170To300_"+period]               + [year+'1806'+APVID, path+"QCD_Mu_Pt-170To300.txt"],
+        #["QCD_Mu_Pt-300To470_"+period]               + [year+'1807'+APVID, path+"QCD_Mu_Pt-300To470.txt"],
+        #["QCD_Mu_Pt-470To600_"+period]               + [year+'1808'+APVID, path+"QCD_Mu_Pt-470To600.txt"],
+        #["QCD_Mu_Pt-600To800_"+period]               + [year+'1809'+APVID, path+"QCD_Mu_Pt-600To800.txt"],
+        #["QCD_Mu_Pt-800To1000_"+period]              + [year+'1810'+APVID, path+"QCD_Mu_Pt-800To1000.txt"],
+        #["QCD_Mu_Pt-1000ToInf_"+period]              + [year+'1811'+APVID, path+"QCD_Mu_Pt-1000ToInf.txt"],
         #["WJetsToLNu_"+period]                       + [year+'1900'+APVID, path+"WJetsToLNu.txt"],
         #["WGToLNuG_"+period]                         + [year+'1901'+APVID, path+"WGToLNuG.txt"],
     ]
+
+    Bkg_4b = [
+        #["QCD_Pt_15to30_"+period]                    + [year+'1800'+APVID, path+"QCD_Pt_15to30.txt"],
+        #["QCD_Pt_30to50_"+period]                    + [year+'1802'+APVID, path+"QCD_Pt_30to50.txt"],
+        #["QCD_Pt_50to80_"+period]                    + [year+'1803'+APVID, path+"QCD_Pt_50to80.txt"],
+        #["QCD_Pt_80to120_"+period]                   + [year+'1804'+APVID, path+"QCD_Pt_80to120.txt"],
+        #["QCD_Pt_120to170_"+period]                  + [year+'1805'+APVID, path+"QCD_Pt_120to170.txt"],
+        #["QCD_Pt_170to300_"+period]                  + [year+'1806'+APVID, path+"QCD_Pt_170to300.txt"],
+        #["QCD_Pt_300to470_"+period]                  + [year+'1807'+APVID, path+"QCD_Pt_300to470.txt"],
+        #["QCD_Pt_470to600_"+period]                  + [year+'1808'+APVID, path+"QCD_Pt_470to600.txt"],
+        #["QCD_Pt_600to800_"+period]                  + [year+'1809'+APVID, path+"QCD_Pt_600to800.txt"],
+        #["QCD_Pt_800to1000_"+period]                 + [year+'1810'+APVID, path+"QCD_Pt_800to1000.txt"],
+        #["QCD_Pt_1000to1400_"+period]                + [year+'1811'+APVID, path+"QCD_Pt_1000to1400.txt"],
+        #["QCD_Pt_1400to1800_"+period]                + [year+'1812'+APVID, path+"QCD_Pt_1400to1800.txt"],
+        #["QCD_Pt_1800to2400_"+period]                + [year+'1813'+APVID, path+"QCD_Pt_1800to2400.txt"],
+        #["QCD_Pt_2400to3200_"+period]                + [year+'1814'+APVID, path+"QCD_Pt_2400to3200.txt"],
+        #["QCD_Pt_3200toInf_"+period]                 + [year+'1815'+APVID, path+"QCD_Pt_3200toInf.txt"],
+        #["WJetsToLNu_"+period]                       + [year+'1900'+APVID, path+"WJetsToLNu.txt"],
+        ["ZH_HToBB_ZToNuNu_"+period]                 + [year+'1602'+APVID, path+"ZH_HToBB_ZToNuNu.txt"],
+        ["ZZTo2Q2Nu_"+period]                        + [year+'0505'+APVID, path+"ZZTo2Q2Nu.txt"],
+        ["ttHTobb_"+period]                          + [year+'1301'+APVID, path+"ttHTobb.txt"],
+        ["TTToHadronic_"+period]                     + [year+'0302'+APVID, path+"TTToHadronic.txt"],
+        ["TTToSemiLeptonic_"+period]                 + [year+'0301'+APVID, path+"TTToSemiLeptonic.txt"],
+        ["TTTo2L2Nu_"+period]                        + [year+'0300'+APVID, path+"TTTo2L2Nu.txt"],
+        ["WZ_Inclusive_"+period]                     + [year+'0510'+APVID, path+"WZ.txt"],
+        ["ZZ_Inclusive_"+period]                     + [year+'0500'+APVID, path+"ZZ.txt"],
+        ["WHJet_HToBB_WToLNu_"+period]               + [year+'0530'+APVID, path+"WHJet_HToBB_WToLNu.txt"],
+        #["QCD_B_HT100to200_"+period]                 + [year+'1800'+APVID, path+"QCD_B_HT100to200.txt"],
+        #["QCD_B_HT200to300_"+period]                 + [year+'1801'+APVID, path+"QCD_B_HT200to300.txt"],
+        #["QCD_B_HT300to500_"+period]                 + [year+'1802'+APVID, path+"QCD_B_HT300to500.txt"],
+        #["QCD_B_HT500to700_"+period]                 + [year+'1803'+APVID, path+"QCD_B_HT500to700.txt"],
+        #["QCD_B_HT700to1000_"+period]                + [year+'1804'+APVID, path+"QCD_B_HT700to1000.txt"],
+        #["QCD_B_HT1000to1500_"+period]               + [year+'1805'+APVID, path+"QCD_B_HT1000to1500.txt"],
+        #["QCD_B_HT1500to2000_"+period]               + [year+'1806'+APVID, path+"QCD_B_HT1500to2000.txt"],
+        #["QCD_B_HT2000toInf_"+period]                + [year+'1807'+APVID, path+"QCD_B_HT2000toInf.txt"],
+        #["WJetsToLNu_Pt-Inclusive_"+period]          + [year+'1901'+APVID, path+"WJetsToLNu_Pt-Inclusive.txt"],
+        ["WJetsToLNu_Pt-100To250_"+period]           + [year+'1902'+APVID, path+"WJetsToLNu_Pt-100To250.txt"],
+        ["WJetsToLNu_Pt-250To400_"+period]           + [year+'1903'+APVID, path+"WJetsToLNu_Pt-250To400.txt"],
+        ["WJetsToLNu_Pt-400To600_"+period]           + [year+'1904'+APVID, path+"WJetsToLNu_Pt-400To600.txt"],
+        ["WJetsToLNu_Pt-600ToInf_"+period]           + [year+'1905'+APVID, path+"WJetsToLNu_Pt-600ToInf.txt"],
+        #["WJetsToLNu_0J_"+period]                    + [year+'1906'+APVID, path+"WJetsToLNu_0J.txt"],
+        #["WJetsToLNu_1J_"+period]                    + [year+'1907'+APVID, path+"WJetsToLNu_1J.txt"],
+        #["WJetsToLNu_2J_"+period]                    + [year+'1908'+APVID, path+"WJetsToLNu_2J.txt"],
+        ["QCD_HT50to100_"+period]                    + [year+'1800'+APVID, path+"QCD_HT50to100.txt"],
+        ["QCD_HT100to200_"+period]                   + [year+'1801'+APVID, path+"QCD_HT100to200.txt"],
+        ["QCD_HT200to300_"+period]                   + [year+'1802'+APVID, path+"QCD_HT200to300.txt"],
+        ["QCD_HT300to500_"+period]                   + [year+'1803'+APVID, path+"QCD_HT300to500.txt"],
+        ["QCD_HT500to700_"+period]                   + [year+'1804'+APVID, path+"QCD_HT500to700.txt"],
+        ["QCD_HT700to1000_"+period]                  + [year+'1805'+APVID, path+"QCD_HT700to1000.txt"],
+        ["QCD_HT1000to1500_"+period]                 + [year+'1806'+APVID, path+"QCD_HT1000to1500.txt"],
+        ["QCD_HT1500to2000_"+period]                 + [year+'1807'+APVID, path+"QCD_HT1500to2000.txt"],
+        ["QCD_HT2000toInf_"+period]                  + [year+'1808'+APVID, path+"QCD_HT2000toInf.txt"],
+        ["Z1JetsToNuNu_PtZ-50To150_"+period]         + [year+'2000'+APVID, path+"Z1JetsToNuNu_PtZ-50To150.txt"],
+        ["Z1JetsToNuNu_PtZ-150To250_"+period]        + [year+'2001'+APVID, path+"Z1JetsToNuNu_PtZ-150To250.txt"],
+        ["Z1JetsToNuNu_PtZ-250To400_"+period]        + [year+'2002'+APVID, path+"Z1JetsToNuNu_PtZ-250To400.txt"],
+        ["Z1JetsToNuNu_PtZ-400ToInf_"+period]        + [year+'2003'+APVID, path+"Z1JetsToNuNu_PtZ-400ToInf.txt"],
+        ["Z2JetsToNuNu_PtZ-50To150_"+period]         + [year+'2004'+APVID, path+"Z2JetsToNuNu_PtZ-50To150.txt"],
+        ["Z2JetsToNuNu_PtZ-150To250_"+period]        + [year+'2005'+APVID, path+"Z2JetsToNuNu_PtZ-150To250.txt"],
+        ["Z2JetsToNuNu_PtZ-250To400_"+period]        + [year+'2006'+APVID, path+"Z2JetsToNuNu_PtZ-250To400.txt"],
+        ["Z2JetsToNuNu_PtZ-400ToInf_"+period]        + [year+'2007'+APVID, path+"Z2JetsToNuNu_PtZ-400ToInf.txt"],
+    ]
+
     
     
     if period == "APV_16":
@@ -130,6 +196,7 @@ for period,year,path in zip(periods,years,paths):
         TTFullLep_preVFP_16 = TTFullLep
         DYPt0To50_preVFP_16 = DYPt0To50
         DYPt50ToInf_preVFP_16 = DYPt50ToInf
+        Bkg_4b_preVFP_16 = Bkg_4b
     elif period == "16":
         ResidualSM_postVFP_16 = ResidualSM
         VZ_postVFP_16 = VZ
@@ -138,6 +205,7 @@ for period,year,path in zip(periods,years,paths):
         TTFullLep_postVFP_16 = TTFullLep
         DYPt0To50_postVFP_16 = DYPt0To50
         DYPt50ToInf_postVFP_16 = DYPt50ToInf
+        Bkg_4b_postVFP_16 = Bkg_4b
     elif period == "17":
         ResidualSM_17 = ResidualSM
         VZ_17 = VZ
@@ -146,6 +214,7 @@ for period,year,path in zip(periods,years,paths):
         TTFullLep_17 = TTFullLep
         DYPt0To50_17 = DYPt0To50
         DYPt50ToInf_17 = DYPt50ToInf
+        Bkg_4b_17 = Bkg_4b
     elif period == "18":
         ResidualSM_18 = ResidualSM
         VZ_18 = VZ
@@ -154,6 +223,7 @@ for period,year,path in zip(periods,years,paths):
         TTFullLep_18 = TTFullLep
         DYPt0To50_18 = DYPt0To50
         DYPt50ToInf_18 = DYPt50ToInf
+        Bkg_4b_18 = Bkg_4b
 
 
 # OPEN DATA

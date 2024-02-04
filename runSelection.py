@@ -89,6 +89,7 @@ vertical_systematics = {
 'Scales': [62, 7, [], []],
 'ISR': [63, 2, [], []],
 'FSR': [64, 2, [], []],
+'TopPt': [65, 1, [], []],
 }
 
 
@@ -432,7 +433,7 @@ else:
                         if machines == "UERJ":
                             file_path = "/mnt/hadoop/cms/" + line
                         if analysis == "OPENDATA":
-                            file_path = hep_outpath + "/" + line
+                            file_path = hep_outpath[:-7] + "/opendata/" + line
 
                         if os.path.isfile(file_path) or dataset[1][2:4] == "99":
                             NumFiles += 1

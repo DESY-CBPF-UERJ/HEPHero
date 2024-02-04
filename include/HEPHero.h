@@ -377,6 +377,7 @@ class HEPHero {
         bool get_Scale_sfs;
         bool get_ISR_sfs;
         bool get_FSR_sfs;
+        bool get_TopPt_sfs;
         bool get_Pileup_sfs;
         bool get_ElectronID_sfs;
         bool get_MuonID_sfs;
@@ -703,7 +704,6 @@ class HEPHero {
     //=================================================================================================================
     private:
                
-        //UInt_t  nFatJet;                    //[50]  7    3
         //UInt_t  nFsrPhoton;                 //[50]  3    0
         //UInt_t  nGenJetAK8;                 //[50]  9    3
         //UInt_t  nSubGenJetAK8;              //[100] 16   4
@@ -905,7 +905,20 @@ class HEPHero {
         Int_t   Jet_genJetIdx[100];
         Int_t   Jet_hadronFlavour[100];
         Int_t   Jet_partonFlavour[100];
-   
+
+        UInt_t  nFatJet;                    //[50]  7    3
+        Float_t FatJet_eta[50];
+        Float_t FatJet_phi[50];
+        Float_t FatJet_pt[50];
+        Float_t FatJet_mass[50];
+        Float_t FatJet_deepTagMD_ZHbbvsQCD[50];
+        Float_t FatJet_deepTagMD_ZbbvsQCD[50];
+        Float_t FatJet_deepTagMD_HbbvsQCD[50];
+        Float_t FatJet_deepTag_H[50];
+        Float_t FatJet_deepTag_ZvsQCD[50];
+        Float_t FatJet_deepTagMD_bbvsLight[50];
+        Float_t FatJet_btagDDBvL[50];
+
         Float_t LHE_HT;
         Float_t LHE_Vpt;
         UChar_t LHE_Njets;

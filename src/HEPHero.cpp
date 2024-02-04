@@ -240,7 +240,7 @@ HEPHero::HEPHero( char *configFileName ) {
             if( _Machines == "CERN" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
             if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);  
             if( _Machines == "UERJ" ) inputFileName = "/mnt/hadoop/cms/" + (*itr);
-            if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-8) + (*itr);
+            if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-15) + "/opendata/" + (*itr);
             if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
             _inputTree -> Add( inputFileName.c_str() ); 
         }
@@ -444,6 +444,18 @@ bool HEPHero::Init() {
         _inputTree->SetBranchAddress("Jet_rawFactor", &Jet_rawFactor );
         _inputTree->SetBranchAddress("Jet_muonSubtrFactor", &Jet_muonSubtrFactor );
         
+        _inputTree->SetBranchAddress("nFatJet", &nFatJet );
+        _inputTree->SetBranchAddress("FatJet_eta", &FatJet_eta );
+        _inputTree->SetBranchAddress("FatJet_phi", &FatJet_phi );
+        _inputTree->SetBranchAddress("FatJet_pt", &FatJet_pt );
+        _inputTree->SetBranchAddress("FatJet_mass", &FatJet_mass );
+        _inputTree->SetBranchAddress("FatJet_deepTagMD_ZHbbvsQCD", &FatJet_deepTagMD_ZHbbvsQCD );
+        _inputTree->SetBranchAddress("FatJet_deepTagMD_ZbbvsQCD", &FatJet_deepTagMD_ZbbvsQCD );
+        _inputTree->SetBranchAddress("FatJet_deepTagMD_HbbvsQCD", &FatJet_deepTagMD_HbbvsQCD );
+        _inputTree->SetBranchAddress("FatJet_deepTag_H", &FatJet_deepTag_H );
+        _inputTree->SetBranchAddress("FatJet_deepTag_ZvsQCD", &FatJet_deepTag_ZvsQCD );
+        _inputTree->SetBranchAddress("FatJet_deepTagMD_bbvsLight", &FatJet_deepTagMD_bbvsLight );
+        _inputTree->SetBranchAddress("FatJet_btagDDBvL", &FatJet_btagDDBvL );
 
         //-----------------------------------------------------------------------------------------------------------------------
         _inputTree->SetBranchAddress("MET_phi", &MET_phi );
@@ -832,6 +844,8 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         int timer_steps;
         if( _ANALYSIS == "GEN" ){ 
             timer_steps = 1000;
+        }else if( _ANALYSIS == "OPENDATA" ){
+            timer_steps = 500000;
         }else{
             timer_steps = 10000;
         }

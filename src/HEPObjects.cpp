@@ -206,14 +206,14 @@ void HEPHero::PreObjects() {
             string dsNameDY = dsName.substr(0,10);
             if( dsNameDY == "DYJetsToLL" ) dsName = "DYJetsToLL";
 
-            string dsNameTop = dsName.substr(0,3);
-            if( dsNameTop == "TTT" or dsNameTop == "ST_" ) dsName = "Top";
+            //string dsNameTop = dsName.substr(0,3);
+            //if( dsNameTop == "TTT" or dsNameTop == "ST_" ) dsName = "Top";
 
-            string dsNameVV = dsName.substr(0,6);
-            if( dsNameVV == "WZTo3L" or dsNameVV == "ZZTo2L" or dsNameVV == "ZZTo4L" ) dsName = "VV";
+            //string dsNameVV = dsName.substr(0,6);
+            //if( dsNameVV == "WZTo3L" or dsNameVV == "ZZTo2L" or dsNameVV == "ZZTo4L" ) dsName = "VV";
 
             btag_eff.readFile(btag_eff_file);
-            if( dataset_group != "Data" ) btag_eff.calib(dsName, "Top");
+            if( dataset_group != "Data" ) btag_eff.calib(dsName, "TTTo2L2Nu");
 
             // Choose btag algo
             // https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18
