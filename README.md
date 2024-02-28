@@ -282,9 +282,9 @@ Now, the setup is completed and you can go to the HEPHero directory and run the 
 exit
 ```
 
-# CMS OPENDATA
+# Work with CMS opendata using HEPHero inside a container
 
-To be able to work with the CMS open data, you need to download the list of datasets below (root files) from the links: https://cernbox.cern.ch/s/LNGQ6aDRQ9gzZNu or https://opendata.web.cern.ch/record/12350. Then, place them inside the **HEP_OUTPATH** directory.
+Create a **work_directory** to be the base directory of your CMS opendata analysis. Inside the **work_directory**, create another directory with name **opendata** and inside of it, download the list of datasets below (root files) from the links: https://cernbox.cern.ch/s/hseBba66wpQhPsZ or https://opendata.web.cern.ch/record/12350.
 
 * `GluGluToHToTauTau.root`
 * `VBF_HToTauTau.root`
@@ -296,6 +296,19 @@ To be able to work with the CMS open data, you need to download the list of data
 * `Run2012B_TauPlusX.root`
 * `Run2012C_TauPlusX.root`
 
+Install docker and pull the image **gilsoncs/cms-opendata-docker** from docker hub:
+```bash
+docker pull gilsoncs/cms-opendata-docker
+```
+
+Inside the **work_directory** (important), start the container:
+```bash
+docker run -it -P --device /dev/fuse --cap-add SYS_ADMIN -v $PWD:/home/work -e CVMFS_MOUNTS="sft.cern.ch cms.cern.ch" --security-opt apparmor:unconfined gilsoncs/cms-opendata-docker
+```
+The starting procedure can take a while depending on the speed of your internet connection.
+
+
+<!---
 # Self-contained HEPHero container
 
 HEPHero framework can be fitted in a Docker container in order to be system agnostic, in order to fully work you need to mount `CVMFS` (CERN VM File System) in you own computer, the following command is used to mount in you root repository using the `cvmfs/service` docker image.
@@ -327,3 +340,4 @@ Remember that unlike bind mounts, the mount operation do not create the mount fo
 ```bash
 mkdir -p /path/in/host/to/mount/hephero/folder
 ```
+-->
