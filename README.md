@@ -237,7 +237,7 @@ Resubmit your jobs:
 
 
 
-
+<!---
 # PC setup
 
 Run the HEPHero in your personal computer is usefull for local development and working with opendata. To use the HEPHero in your PC, you need to download the list of files below from the link: https://cernbox.cern.ch/s/LNGQ6aDRQ9gzZNu. Then, place them inside the **HEP_OUTPATH** directory.
@@ -281,6 +281,8 @@ Now, the setup is completed and you can go to the HEPHero directory and run the 
 ```bash
 exit
 ```
+-->
+
 
 # Work with CMS opendata using HEPHero inside a container
 
