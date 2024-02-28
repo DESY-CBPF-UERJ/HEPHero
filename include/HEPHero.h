@@ -150,8 +150,12 @@ class HEPHero {
         void Jet_lep_overlapOD( float deltaR_cut );
         void Jet_TauTau_VariablesOD();
         void RegionsOD();
+        void JESvariationOD();
         void METCorrectionOD();
         void Signal_discriminatorsOD();
+        void VerticalSysSizesOD();
+        void VerticalSysOD();
+
     
     private:
         HEPHero() {}
@@ -689,7 +693,14 @@ class HEPHero {
         float TauH_TauL_Mt;
         float TauH_MuonL_M;
         float TauH_MuonL_pt;
+        float TauH_MuonL_dr;
         bool Has_2OC_muons;
+        float LeadingJet_MuonL_dr;
+        float LeadingJet_TauL_dphi;
+        float LeadingJet_TauH_dr;
+        float LeadingJet_TauHMuonL_dr;
+
+
         
         //float genHT;
         //float genPt;

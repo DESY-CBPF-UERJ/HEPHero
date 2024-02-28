@@ -70,9 +70,9 @@ add_library(HighFive_libdeps INTERFACE IMPORTED)
 
 set_target_properties(HighFive_libdeps PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "BOOST_ALL_NO_LIB;H5_USE_BOOST"
-  INTERFACE_INCLUDE_DIRECTORIES "/cvmfs/sft.cern.ch/lcg/releases/hdf5/1.10.6-a3b1e/x86_64-centos7-gcc9-opt/include;/cvmfs/sft.cern.ch/lcg/releases/zlib/1.2.11-8af4c/x86_64-centos7-gcc9-opt/include;/usr/include;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/include"
-  INTERFACE_LINK_LIBRARIES "/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/libhdf5.so;/usr/lib64/libpthread.so;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/libz.so;/usr/lib64/libdl.so;/usr/lib64/libm.so"
-  INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "/cvmfs/sft.cern.ch/lcg/releases/hdf5/1.10.6-a3b1e/x86_64-centos7-gcc9-opt/include;/cvmfs/sft.cern.ch/lcg/releases/zlib/1.2.11-8af4c/x86_64-centos7-gcc9-opt/include;/usr/include;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/cvmfs/sft.cern.ch/lcg/releases/hdf5/1.10.6-a3b1e/x86_64-centos7-gcc10-opt/include;/cvmfs/sft.cern.ch/lcg/releases/zlib/1.2.11-8af4c/x86_64-centos7-gcc10-opt/include;/usr/include;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc10-opt/include"
+  INTERFACE_LINK_LIBRARIES "/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc10-opt/lib/libhdf5.so;/usr/lib64/libpthread.so;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc10-opt/lib/libz.so;/usr/lib64/libdl.so;/usr/lib64/libm.so"
+  INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "/cvmfs/sft.cern.ch/lcg/releases/hdf5/1.10.6-a3b1e/x86_64-centos7-gcc10-opt/include;/cvmfs/sft.cern.ch/lcg/releases/zlib/1.2.11-8af4c/x86_64-centos7-gcc10-opt/include;/usr/include;/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc10-opt/include"
 )
 
 if(CMAKE_VERSION VERSION_LESS 3.0.0)

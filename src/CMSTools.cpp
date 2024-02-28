@@ -515,7 +515,6 @@ float HEPHero::GetPileupWeight( float Pileup_nTrueInt, string sysType ){
     }
     string dsNameDY = dsName.substr(0,10);
     
-    
     if( (dsNameDY == "DYJetsToLL") && (sysType != "nominal") ){
         
         float syst_SF;
@@ -660,7 +659,8 @@ float HEPHero::GetPrefiringWeight( string sysID ){
 //---------------------------------------------------------------------------------------------------------------
 void HEPHero::JESvariation(){
     
-    if( (_sysName_lateral == "JES")  && (dataset_group != "Data") ){
+    //if( (_sysName_lateral == "JES") && (dataset_group != "Data") ){
+    if( ((_sysName_lateral == "JES") || ((_sysName_lateral == "Recoil") && (_Universe > 3)))  && (dataset_group != "Data") ){
         METCorrectionFromJES.SetXYZT(0.,0.,0.,0.);
         
         for( unsigned int ijet = 0; ijet < nJet; ++ijet ) {

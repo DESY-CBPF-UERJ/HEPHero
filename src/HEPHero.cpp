@@ -805,7 +805,8 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
 
     //======VERTICAL SYSTEMATICS SIZE==============================================================
-    if( _ANALYSIS != "GEN" ) VerticalSysSizes( );
+    if( _ANALYSIS == "OPENDATA" ) VerticalSysSizesOD( );
+    else if( _ANALYSIS != "GEN" ) VerticalSysSizes( );
     
     //======PRE-OBJECTS SETUP======================================================================
     PreObjects();
@@ -910,7 +911,8 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
               
               
         //======RUN SYSTEMATIC PRODUCTION=================================================
-        if( _ANALYSIS != "GEN" ) VerticalSys();
+        if( _ANALYSIS == "OPENDATA" ) VerticalSysOD();
+        else if( _ANALYSIS != "GEN" ) VerticalSys();
         
         // PRODUCE THE SYSTEMATIC OF YOUR SELECTION HERE
 

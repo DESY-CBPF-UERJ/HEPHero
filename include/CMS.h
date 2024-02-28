@@ -134,7 +134,7 @@ class JES {
 //-------------------------------------------------------------------------
 class NN_Keras {
     private:
-        fdeep::model NN_model = fdeep::load_model("Metadata/ML/Keras/model_temp.json");
+        fdeep::model NN_model = fdeep::load_model("include/keras_initial_model.json");
         rapidjson::Document preprocessing;
     public:
         void readFiles( string model_file, string preprocessing_file ){

@@ -93,7 +93,16 @@ Set up the runSelection.py to one of the available setups (HHDM,EFT,GEN,...) ins
 python setup.py -a HHDM
 ```
 
-You can check for different cases [**m**= 0(signal), 1-4(bkg all years), 5(data)] if your code is working as intended using the test datasets:
+Create a template (if it doesn't exist) for a new anafile called **Test** and integrate it to the framework:
+```bash
+./addSelection.sh Test
+```
+Dissociate **Test** from the framework (the anafile is not deleted):
+```bash
+./rmSelection.sh Test
+```
+
+You can check for different cases [**m**= 0(signal), 1-4(bkg all years), 5(data)] if your anafile is working as intended using the test datasets:
 
 ```bash
 python runSelection.py -c m
@@ -227,19 +236,7 @@ Resubmit your jobs:
 ```
 
 
-# Working with anafiles
 
-Create a template for a new anafile called **TrigEff** and integrate it to the framework: 
-
-```bash
-./addSelection.sh TrigEff
-```
-
-Dissociate **TrigEff** from the framework (the anafile is not deleted):
-
-```bash
-./rmSelection.sh TrigEff
-```
 
 # PC setup
 

@@ -3,7 +3,7 @@ project(HEPHero)
 
 include_directories(include)
 
-set(SOURCES src/RunAnalysis.cpp src/HEPHero.cpp src/correction.cc src/formula_ast.cc src/RoccoR.cc src/RecoilCorrector.cc src/HEPTools.cpp src/GENTools.cpp src/CMSTools.cpp src/ANATools.cpp src/HEPObjects.cpp
+set(SOURCES src/RunAnalysis.cpp src/HEPHero.cpp src/correction.cc src/formula_ast.cc src/RoccoR.cc src/RecoilCorrector.cc src/HEPTools.cpp src/GENTools.cpp src/CMSTools.cpp src/ANATools.cpp src/OPENDATATools.cpp src/HEPObjects.cpp
 src/HepMC3/GenCrossSection.cc
 src/HepMC3/GenEvent.cc
 src/HepMC3/GenHeavyIon.cc

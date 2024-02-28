@@ -171,6 +171,16 @@ void HEPHero::PreObjects() {
                 jes_L1L2L3Res_name = "Summer19UL18_V5_MC_L1L2L3Res_AK4PFchs";
                 jes_Unc_name = "Summer19UL18_V5_MC_Total_AK4PFchs";
                 if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL18_V5_MC_"+_SysSubSource+"_AK4PFchs";
+        }else if( dataset_year == "12" ){
+            jer_SF_corr_name = "Summer19UL17_JRV2_MC_ScaleFactor_AK4PFchs";
+                jer_PtRes_corr_name = "Summer19UL17_JRV2_MC_PtResolution_AK4PFchs";
+                jes_L1_name = "Summer19UL17_V5_MC_L1FastJet_AK4PFchs";
+                jes_L2_name = "Summer19UL17_V5_MC_L2Relative_AK4PFchs";
+                jes_L3_name = "Summer19UL17_V5_MC_L3Absolute_AK4PFchs";
+                jes_Res_name = "Summer19UL17_V5_MC_L2L3Residual_AK4PFchs";
+                jes_L1L2L3Res_name = "Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs";
+                jes_Unc_name = "Summer19UL17_V5_MC_Total_AK4PFchs";
+                if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL17_V5_MC_"+_SysSubSource+"_AK4PFchs";
         }
         
         if( apply_jer_corr ){
@@ -267,7 +277,7 @@ void HEPHero::PreObjects() {
 
         //----MACHINE LEARNING-------------------------------------------------------------------------
         MLP_keras.readFiles( model_keras_file, preprocessing_keras_file );
-        MLP_torch.readFile( model_torch_file ); 
+        MLP_torch.readFile( model_torch_file );
         
     }else if( _ANALYSIS == "OPENDATA" ){
         GetMCMetadata();
@@ -275,6 +285,24 @@ void HEPHero::PreObjects() {
         //----OUTPUT INFO------------------------------------------------------------------------------
         _outputTree->Branch( "evtWeight", &evtWeight );
         HDF_insert( "evtWeight", &evtWeight );
+
+
+        //----JERC-------------------------------------------------------------------------------------
+        auto jet_jerc_set = correction::CorrectionSet::from_file(jet_jerc_file.c_str());
+
+        string jes_Unc_name;
+        if( dataset_year == "12" ){
+            jes_Unc_name = "Summer19UL17_V5_MC_Total_AK4PFchs";
+            if( _sysName_lateral == "JES" ) jes_Unc_name = "Summer19UL17_V5_MC_"+_SysSubSource+"_AK4PFchs";
+        }
+
+        jet_JES_Unc = jet_jerc_set->at(jes_Unc_name);
+
+
+        //----MACHINE LEARNING-------------------------------------------------------------------------
+        //MLP_keras.readFiles( model_keras_file, preprocessing_keras_file );
+        MLP_torch.readFile( model_torch_file );
+
     }
     
 }
