@@ -284,7 +284,7 @@ exit
 -->
 
 
-# Work with CMS opendata using HEPHero inside a container
+# Working with CMS opendata using HEPHero inside a container
 
 Create a **work_directory** to be the base directory of your CMS opendata analysis. Inside the **work_directory**, create another directory with name **opendata** and inside of it, download the list of datasets below (root files) from the links: https://cernbox.cern.ch/s/hseBba66wpQhPsZ or https://opendata.web.cern.ch/record/12350.
 
