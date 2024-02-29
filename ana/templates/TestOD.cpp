@@ -23,12 +23,14 @@ void HEPHero::SetupTestOD() {
     _cutFlow.insert(pair<string,double>("01_Trigger", 0) );
     _cutFlow.insert(pair<string,double>("02_FilterGoodEvents", 0) );
     _cutFlow.insert(pair<string,double>("03_HasMuonTauPair", 0) );
-    _cutFlow.insert(pair<string,double>("04_QCDsuppression", 0) );
-    _cutFlow.insert(pair<string,double>("05_MuonL_pt", 0) );
-    _cutFlow.insert(pair<string,double>("06_MuonL_MET_Mt", 0) );
-    _cutFlow.insert(pair<string,double>("07_TauH_MuonL_M", 0) );
-    _cutFlow.insert(pair<string,double>("08_Selected", 0) );
-    _cutFlow.insert(pair<string,double>("09_Corrected", 0) );
+    _cutFlow.insert(pair<string,double>("04_Njets", 0) );
+    _cutFlow.insert(pair<string,double>("05_Hadronic_pt", 0) );
+    _cutFlow.insert(pair<string,double>("06_QCDsuppression", 0) );
+    _cutFlow.insert(pair<string,double>("07_MuonL_MET", 0) );
+    _cutFlow.insert(pair<string,double>("08_TauH_MuonL_M", 0) );
+    _cutFlow.insert(pair<string,double>("09_TauH_TauL_pt", 0) );
+    _cutFlow.insert(pair<string,double>("10_Selected", 0) );
+    _cutFlow.insert(pair<string,double>("11_Corrected", 0) );
 
 
     //======SETUP HISTOGRAMS=======================================================================
@@ -36,8 +38,8 @@ void HEPHero::SetupTestOD() {
     //makeHist( "histogram2DName", 40, 0., 40., 100, 0., 50., "xlabel",  "ylabel", "zlabel", "COLZ" );   [example]
 
     //======SETUP SYSTEMATIC HISTOGRAMS============================================================
-    //sys_regions = { 0, 1, 2 }; [example] // Choose regions as defined in RegionID. Empty vector means that all events will be used.
-    //makeSysHist( "histogram1DSysName", 40, 0., 40., "xlabel", "ylabel" );   [example]
+    sys_regions = { 0, 1, 2, 3 }; // Choose regions as defined in RegionID. Empty vector means that all events will be used.
+    makeSysHist( "MLP4_score", 100, 0., 1., "MLP4_score", "Number of events");
     //makeSysHist( "histogram2DSysName", 40, 0., 40., 100, 0., 50., "xlabel",  "ylabel", "zlabel", "COLZ" );   [example]
 
     //======SETUP OUTPUT BRANCHES==================================================================
@@ -80,7 +82,15 @@ void HEPHero::SetupTestOD() {
     HDF_insert( "LepLep_deltaM", &LepLep_deltaM );
     HDF_insert( "Has_2OC_muons", &Has_2OC_muons );
 
-    HDF_insert( "MLP_score_torch", &MLP_score_torch );
+    HDF_insert( "TauH_MuonL_dr", &TauH_MuonL_dr );
+    HDF_insert( "LeadingJet_MuonL_dr", &LeadingJet_MuonL_dr );
+    HDF_insert( "LeadingJet_TauL_dphi", &LeadingJet_TauL_dphi );
+    HDF_insert( "LeadingJet_TauH_dr", &LeadingJet_TauH_dr );
+    HDF_insert( "LeadingJet_TauHMuonL_dr", &LeadingJet_TauHMuonL_dr );
+
+    HDF_insert( "MLP4_score_torch", &MLP4_score_torch );
+
+    HDF_insert( "HLT_IsoMu24", &HLT_IsoMu24 );
 
 
 
@@ -110,7 +120,7 @@ bool HEPHero::TestODRegion() {
     //-------------------------------------------------------------------------
     // Filter Good Events
     //-------------------------------------------------------------------------
-    if( !(((selectedMu.size() == 1) || (selectedMu.size() == 2)) && (selectedTau.size() >= 1)) ) return false;
+    if( !((selectedMu.size() >= 1) && (selectedTau.size() >= 1)) ) return false;
     _cutFlow.at("02_FilterGoodEvents") += evtWeight;
 
     bool Has_MuonTau_pair = MuonTauPairSelectionOD();
@@ -122,60 +132,57 @@ bool HEPHero::TestODRegion() {
     _cutFlow.at("03_HasMuonTauPair") += evtWeight;
 
     JetSelectionOD();
+
+    //-------------------------------------------------------------------------
+    // Jets multuplicity
+    //-------------------------------------------------------------------------
+    if( !(Njets >= 1) ) return false;
+    _cutFlow.at("04_Njets") += evtWeight;
+
+    //-------------------------------------------------------------------------
+    // Hadronic pt
+    //-------------------------------------------------------------------------
+    if( !((LeadingJet_pt > 60) && (MHT30 > 60)) ) return false;
+    _cutFlow.at("05_Hadronic_pt") += evtWeight;
+
     Get_Jet_Angular_Variables( 30 );
+    METCorrectionOD();
 
     //-------------------------------------------------------------------------
     // QCD suppression
     //-------------------------------------------------------------------------
-    //if( !(OmegaMin30 > 0.3) ) return false;
-    _cutFlow.at("04_QCDsuppression") += evtWeight;
+    if( !(OmegaMin30 > 0.5) ) return false;
+    _cutFlow.at("06_QCDsuppression") += evtWeight;
 
-    METCorrectionOD();
     Jet_TauTau_VariablesOD();
 
     //-------------------------------------------------------------------------
-    // MuonL_pt
+    // MuonL_MET
     //-------------------------------------------------------------------------
-    //if( !(MuonL_pt < 170) ) return false;
-    _cutFlow.at("05_MuonL_pt") += evtWeight;
-
-    //-------------------------------------------------------------------------
-    // MuonL_MET_Mt
-    //-------------------------------------------------------------------------
-    //if( !(MuonL_MET_Mt < 100) ) return false;
-    _cutFlow.at("06_MuonL_MET_Mt") += evtWeight;
+    if( !((MuonL_MET_dphi < 0.7) && (MuonL_MET_pt > 120)) ) return false;
+    _cutFlow.at("07_MuonL_MET") += evtWeight;
 
     //-------------------------------------------------------------------------
     // TauH_MuonL_M
     //-------------------------------------------------------------------------
-    //if( !((TauH_MuonL_M > 80) && (TauH_MuonL_M < 260)) ) return false;
-    _cutFlow.at("07_TauH_MuonL_M") += evtWeight;
+    if( !(TauH_MuonL_M > 80) ) return false;
+    _cutFlow.at("08_TauH_MuonL_M") += evtWeight;
 
+    //-------------------------------------------------------------------------
+    // TauH_TauL_pt
+    //-------------------------------------------------------------------------
+    if( !(TauH_TauL_pt > 30) ) return false;
+    _cutFlow.at("09_TauH_TauL_pt") += evtWeight;
 
-    //RegionsOD();
-    //if( !((RegionID >= 0) && (RegionID <= 3)) ) return false;     // 0=SR, 1=DY-CR, 2=ttbar-CR, 3=Wjets-CR
-    _cutFlow.at("08_Selected") += evtWeight;
+    RegionsOD();
+    if( !((RegionID >= 0) && (RegionID <= 3)) ) return false;   // 0=SR, 1=Wjets-CR, 2=ttbar-CR, 3=DY-CR
+    _cutFlow.at("10_Selected") += evtWeight;
 
     Weight_correctionsOD();
-    _cutFlow.at("09_Corrected") += evtWeight;
+    _cutFlow.at("11_Corrected") += evtWeight;
 
-    //cout << _EventPosition << " " << endl;
+    Signal_discriminatorsOD();
 
-    /*
-    MLP_score_torch = 0;
-    if( (RegionID == 0) && (MET_pt > 5) && (MET_pt < 150) && (MuonL_MET_dphi > 0) && (MuonL_MET_dphi < 2.5) && (MuonL_MET_pt > 30) && (MuonL_MET_pt < 250) && (MuonL_pt > 45) && (MuonL_pt < 120) && (TauH_MuonL_M > 80) && (TauH_MuonL_M < 240) && (TauH_pt > 45) && (TauH_pt < 120) && (TauH_TauL_dphi > 0) && (TauH_TauL_dphi < 3.13) && (TauH_TauL_Mt > 10) && (TauH_TauL_Mt < 300) && (TauH_TauL_pt > 10) && (TauH_TauL_pt < 200) ){
-        cout << "MET_pt " << MET_pt << endl;
-        cout << "MuonL_MET_dphi " << MuonL_MET_dphi << endl;
-        cout << "MuonL_MET_pt " << MuonL_MET_pt << endl;
-        cout << "MuonL_pt " << MuonL_pt << endl;
-        cout << "TauH_MuonL_M " << TauH_MuonL_M << endl;
-        cout << "TauH_pt " << TauH_pt << endl;
-        cout << "TauH_TauL_dphi " << TauH_TauL_dphi << endl;
-        cout << "TauH_TauL_Mt " << TauH_TauL_Mt << endl;
-        cout << "TauH_TauL_pt " << TauH_TauL_pt << endl;
-        Signal_discriminatorsOD();
-    }
-    */
 
     return true;
 }
@@ -220,7 +227,7 @@ void HEPHero::TestODSelection() {
 //-------------------------------------------------------------------------------------------------
 void HEPHero::TestODSystematic() {
 
-    //FillSystematic( "histogram1DSysName", var, evtWeight );  [Example]
+    FillSystematic( "MLP4_score", MLP4_score_torch, evtWeight );
     //FillSystematic( "histogram2DSysName", var1, var2, evtWeight );  [Example]
 }
 
