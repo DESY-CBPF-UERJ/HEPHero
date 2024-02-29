@@ -57,7 +57,7 @@ elif [ "$1" == "local" ]
 then
     python runSelection.py -j 0 --start
     ijob=0
-    while [[ $ijob < $2 ]]
+    while (( $ijob < $2 ))
     do
       python runSelection.py -j $ijob
       ijob=$(( ijob+1 ))
