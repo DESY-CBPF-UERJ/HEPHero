@@ -245,6 +245,18 @@ void HEPHero::Get_Jet_Angular_Variables( int pt_cut ){
         cout << "Sorry, for angular variables the only cuts acceptable are 20, 30, or 40. Let's consider your cut equal to 20 GeV!" << endl;
         pt_cut = 20;
     }
+
+    double HPx = 0;
+    double HPy = 0;
+    for( unsigned int iselJet = 0; iselJet < selectedJet.size(); ++iselJet ) {
+        int iJet = selectedJet.at(iselJet);
+        if( Jet_pt[iJet] < pt_cut ) continue;
+        TLorentzVector Jet;
+        Jet.SetPtEtaPhiE(Jet_pt[iJet], Jet_eta[iJet], Jet_phi[iJet], 0);
+        HPx += Jet.Px();
+        HPy += Jet.Py();
+    }
+    double MHT_i = sqrt(HPx*HPx + HPy*HPy);
   
     float omegaMin = 999999;
     float chiMin = 999999;
@@ -252,17 +264,6 @@ void HEPHero::Get_Jet_Angular_Variables( int pt_cut ){
     for( unsigned int iselJet = 0; iselJet < selectedJet.size(); ++iselJet ) {
         int iJet = selectedJet.at(iselJet);
         if( Jet_pt[iJet] < pt_cut ) continue;
-        double HPx = 0;
-        double HPy = 0;
-        for( unsigned int iselJet2 = 0; iselJet2 < selectedJet.size(); ++iselJet2 ) {
-            int iJet2 = selectedJet.at(iselJet2);
-            if( Jet_pt[iJet2] < pt_cut ) continue;
-            TLorentzVector Jet;
-            Jet.SetPtEtaPhiE(Jet_pt[iJet2], Jet_eta[iJet2], Jet_phi[iJet2], 0);
-            HPx += Jet.Px();
-            HPy += Jet.Py();
-        }
-        double MHT_i = sqrt(HPx*HPx + HPy*HPy);
         
         double dPhi_i = abs( Jet_phi[iJet] - atan2(-HPy,-HPx) );
         if( dPhi_i > M_PI ) dPhi_i  = 2*M_PI-dPhi_i ;

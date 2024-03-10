@@ -118,6 +118,68 @@ bool HEPHero::MuonTauPairSelectionOD(){
 }
 
 
+/---------------------------------------------------------------------------------------------------------------
+// Jet angular variables opendata
+//---------------------------------------------------------------------------------------------------------------
+void HEPHero::Get_Jet_Angular_VariablesOD( int pt_cut ){
+
+    if( (pt_cut != 20) && (pt_cut != 30) && (pt_cut != 40) ){
+        cout << "Sorry, for angular variables the only cuts acceptable are 20, 30, or 40. Let's consider your cut equal to 20 GeV!" << endl;
+        pt_cut = 20;
+    }
+
+    float omegaMin = 999999;
+    float chiMin = 999999;
+    float fMax = 0;
+    for( unsigned int iselJet = 0; iselJet < selectedJet.size(); ++iselJet ) {
+        int iJet = selectedJet.at(iselJet);
+        if( Jet_pt[iJet] < pt_cut ) continue;
+
+        double dPhi_i = abs( Jet_phi[iJet] - atan2(-MET_pt*sin(MET_phi),-MET_pt*cos(MET_phi)) );
+        if( dPhi_i > M_PI ) dPhi_i  = 2*M_PI-dPhi_i ;
+
+        double f_i = Jet_pt[iJet]/MET_pt;
+        if( f_i > fMax ) fMax = f_i;
+
+        double M1 = dPhi_i;
+        if( dPhi_i > M_PI/2 ) M1  = M_PI/2 ;
+
+        double M2 = f_i;
+        if( f_i > -cos(dPhi_i) ) M2 = -cos(dPhi_i);
+
+        double MAX = f_i + cos(dPhi_i);
+        if( MAX < 0 ) MAX = 0;
+
+        double M3 = f_i;
+        if( M3 > MAX ) M3 = MAX;
+
+        double omega_i = atan2(sin(M1),f_i);
+        if( omega_i < omegaMin ) omegaMin = omega_i;
+
+        double chi_i = atan2(sqrt(1+M2*M2+2*M2*cos(dPhi_i)),M3);
+        if( chi_i < chiMin ) chiMin = chi_i;
+
+    }
+    if( omegaMin == 999999 ) omegaMin = -1;
+    if( chiMin == 999999 ) chiMin = -1;
+
+    if( pt_cut == 20 ){
+        OmegaMin = omegaMin;
+        ChiMin = chiMin;
+        FMax = fMax;
+    }else if( pt_cut == 30 ){
+        OmegaMin30 = omegaMin;
+        ChiMin30 = chiMin;
+        FMax30 = fMax;
+    }else if( pt_cut == 40 ){
+        OmegaMin40 = omegaMin;
+        ChiMin40 = chiMin;
+        FMax40 = fMax;
+    }
+
+}
+
+
 //---------------------------------------------------------------------------------------------------------------
 // JES uncertainty
 //---------------------------------------------------------------------------------------------------------------

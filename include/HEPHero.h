@@ -149,6 +149,7 @@ class HEPHero {
         bool MuonTauPairSelectionOD();
         void Jet_lep_overlapOD( float deltaR_cut );
         void Jet_TauTau_VariablesOD();
+        void Get_Jet_Angular_VariablesOD( int pt_cut );
         void RegionsOD();
         void JESvariationOD();
         void METCorrectionOD();
