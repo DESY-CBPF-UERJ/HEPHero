@@ -388,7 +388,9 @@ void HEPHero::Signal_discriminatorsOD(){
 
     //MLP_score_keras = MLP_keras.predict({MuonL_pt, MET_pt, TauH_MuonL_M, MuonL_MET_pt, MuonL_MET_dphi, MuonL_MET_Mt, TauH_TauL_Mt, LeadingJet_TauHMuonL_dr});
 
-    MLP_score_torch = MLP_torch.predict({MuonL_pt, MET_pt, TauH_MuonL_M, MuonL_MET_pt, MuonL_MET_dphi, MuonL_MET_Mt, TauH_TauL_Mt, LeadingJet_TauHMuonL_dr});
+    //MLP_score_torch = MLP_torch.predict({MuonL_pt, MET_pt, TauH_MuonL_M, MuonL_MET_pt, MuonL_MET_dphi, MuonL_MET_Mt, TauH_TauL_Mt, LeadingJet_TauHMuonL_dr});
+
+    MLP_score_torch = MLP_torch.predict({MuonL_pt, TauH_MuonL_M, MuonL_MET_dphi});
 
     MLP4_score_torch = pow(1.e4,MLP_score_torch)/1.e4;
 
