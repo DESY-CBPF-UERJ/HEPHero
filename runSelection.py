@@ -17,8 +17,8 @@ import numpy as np
 #-------------------------------------------------------------------------------------
 # Main Setup
 #-------------------------------------------------------------------------------------
-selection = 'TestOD'
-analysis = 'OPENDATA'
+selection = 'Test'
+analysis = 'HHDM'
 treeName = 'Events'
 LumiWeights = 1
 
@@ -28,15 +28,42 @@ analysis_parameters = {
 'JET_ID_WP                  ': 6,
 'JET_PUID_WP                ': 7,
 'JET_BTAG_WP                ': 3,
-'JET_LEP_DR_ISO_CUT         ': 0.5,
-'MUON_ETA_CUT               ': 2.1,
-'MUON_PT_CUT                ': 45,
-'TAU_ETA_CUT                ': 2.3,
-'TAU_PT_CUT                 ': 45,
+'JET_LEP_DR_ISO_CUT         ': 0.4,
+'ELECTRON_GAP_LOWER_CUT     ': 1.444,
+'ELECTRON_GAP_UPPER_CUT     ': 1.566,
+'ELECTRON_ETA_CUT           ': 2.4,
+'ELECTRON_PT_CUT            ': 20,
+'ELECTRON_LOW_PT_CUT        ': 15,
+'ELECTRON_ID_WP             ': 4,
+'MUON_ETA_CUT               ': 2.4,
+'MUON_PT_CUT                ': 20,
+'MUON_LOW_PT_CUT            ': 15,
+'MUON_ID_WP                 ': 1,
+'MUON_ISO_WP                ': 3,
+'LEADING_LEP_PT_CUT         ': 40,
+'LEPLEP_PT_CUT              ': 40,
+'LEPLEP_DR_CUT              ': 3.2,
+'LEPLEP_DM_CUT              ': 25,
+'MET_CUT                    ': 65,
+'MET_DY_UPPER_CUT           ': 100,
+'MET_LEPLEP_DPHI_CUT        ': 0.8,
+'MET_LEPLEP_MT_CUT          ': 90,
 }
 
 corrections = {  # 0-don't apply, 1-apply
 'PILEUP_WGT                 ': 1,
+'ELECTRON_ID_WGT            ': 1,
+'MUON_ID_WGT                ': 1,
+'JET_PUID_WGT               ': 1,
+'BTAG_WGT                   ': 1,
+'TRIGGER_WGT                ': 1,
+'PREFIRING_WGT              ': 1,
+'JER_CORR                   ': 1,
+'MET_XY_CORR                ': 1,
+'MET_RECOIL_CORR            ': 1,
+'TOP_PT_WGT                 ': 1,
+'W_PT_WGT                   ': 1,
+'MUON_ROC_CORR              ': 1,
 }
 
 
@@ -45,11 +72,26 @@ corrections = {  # 0-don't apply, 1-apply
 #-------------------------------------------------------------------------------------
 lateral_systematics = {
 'CV': [0, 1, [], []],
+'JER': [28, 2, [], []],
+'UncMET': [29, 2, [], []],
+'Recoil': [30, 4, ['02'], []],
 'JES': [41, 2, [], ['Total']],
 }
 
 vertical_systematics = {
 'Pileup': [50, 2, [], []],
+'EleID': [51, 2, [], []],
+'MuID': [52, 2, [], []],
+'JetPU': [53, 2, [], []],
+'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
+'Trig': [58, 2, [], []],
+'PreFir': [59, 2, [], []],
+'PDF': [60, 100, [], []],
+'Scales': [62, 7, [], []],
+'ISR': [63, 2, [], []],
+'FSR': [64, 2, [], []],
+'TopPt': [65, 1, [], []],
+'WPt': [66, 1, [], []],
 }
 
 
@@ -57,9 +99,9 @@ vertical_systematics = {
 # Jobs setup
 #-------------------------------------------------------------------------------------
 NumMaxEvents = -1
-NumFilesPerJob_Data = 5
-NumFilesPerJob_Signal = 5
-NumFilesPerJob_Bkg = 5
+NumFilesPerJob_Data = 2
+NumFilesPerJob_Signal = 50
+NumFilesPerJob_Bkg = 1
 
 
 #-------------------------------------------------------------------------------------
@@ -71,19 +113,115 @@ from Bkg import *
 from Data import *
 datasets = []
 
-datasets.extend(Data_12)
-datasets.extend(Signal_12)
-datasets.extend(DYJetsToLL_12)
-datasets.extend(TTbar_12)
-datasets.extend(WJetsToLNu_12)
+datasets.extend(Data_Lep_preVFP_16)
+#datasets.extend(Data_MET_preVFP_16)
+datasets.extend(Signal_preVFP_16)
+datasets.extend(DYPt50ToInf_preVFP_16)
+datasets.extend(DYPt0To50_preVFP_16)
+datasets.extend(TTFullLep_preVFP_16)
+datasets.extend(TTSemiLep_preVFP_16)
+datasets.extend(ST_preVFP_16)
+datasets.extend(VZ_preVFP_16)
+datasets.extend(ResidualSM_preVFP_16)
+
+datasets.extend(Data_Lep_postVFP_16)
+#datasets.extend(Data_MET_postVFP_16)
+datasets.extend(Signal_postVFP_16)
+datasets.extend(DYPt50ToInf_postVFP_16)
+datasets.extend(DYPt0To50_postVFP_16)
+datasets.extend(TTFullLep_postVFP_16)
+datasets.extend(TTSemiLep_postVFP_16)
+datasets.extend(ST_postVFP_16)
+datasets.extend(VZ_postVFP_16)
+datasets.extend(ResidualSM_postVFP_16)
+
+datasets.extend(Data_Lep_17)
+#datasets.extend(Data_MET_17)
+datasets.extend(Signal_17)
+datasets.extend(DYPt50ToInf_17)
+datasets.extend(DYPt0To50_17)
+datasets.extend(TTFullLep_17)
+datasets.extend(TTSemiLep_17)
+datasets.extend(ST_17)
+datasets.extend(VZ_17)
+datasets.extend(ResidualSM_17)
+
+datasets.extend(Data_Lep_18)
+#datasets.extend(Data_MET_18)
+datasets.extend(Signal_18)
+datasets.extend(DYPt50ToInf_18)
+datasets.extend(DYPt0To50_18)
+datasets.extend(TTFullLep_18)
+datasets.extend(TTSemiLep_18)
+datasets.extend(ST_18)
+datasets.extend(VZ_18)
+datasets.extend(ResidualSM_18)
 
 
 #-------------------------------------------------------------------------------------
 # Metadata
 #-------------------------------------------------------------------------------------
 metadata = {
-'NN_model_torch_12        ': 'Metadata/ML/OpenData/Torch/2012/model_scripted.pt',
-'JERC_12                  ': 'Metadata/POG/OpenData/JME/2012/jet_jerc.json.gz',
+'NN_prep_keras_XX         ': 'Metadata/ML/Keras/preprocessing.json',
+'NN_model_keras_XX        ': 'Metadata/ML/Keras/NN_4_100_elu_adam/model.json',
+'NN_model_torch_HIPM_16   ': 'Metadata/ML/Torch/DeepCSV/2016preVFP/model_scripted.pt',
+'NN_model_torch_NORMAL_16 ': 'Metadata/ML/Torch/DeepCSV/2016postVFP/model_scripted.pt',
+'NN_model_torch_17        ': 'Metadata/ML/Torch/DeepCSV/2017/model_scripted.pt',
+'NN_model_torch_18        ': 'Metadata/ML/Torch/DeepCSV/2018/model_scripted.pt',
+'lumi_certificate_16      ': 'Metadata/certificates/Cert_271036-284044_13TeV_Legacy2016_Collisions16.json',
+'lumi_certificate_17      ': 'Metadata/certificates/Cert_294927-306462_13TeV_UL2017_Collisions17.json',
+'lumi_certificate_18      ': 'Metadata/certificates/Cert_314472-325175_13TeV_Legacy2018_Collisions18.json',
+'pdf_type_XX              ': 'Metadata/PDF/pdf_type.json',
+'pileup_HIPM_16           ': 'Metadata/POG/LUM/2016preVFP_UL/puWeights.json.gz',
+'pileup_NORMAL_16         ': 'Metadata/POG/LUM/2016postVFP_UL/puWeights.json.gz',
+'pileup_17                ': 'Metadata/POG/LUM/2017_UL/puWeights.json.gz',
+'pileup_18                ': 'Metadata/POG/LUM/2018_UL/puWeights.json.gz',
+'electron_HIPM_16         ': 'Metadata/POG/EGM/2016preVFP_UL/electron.json.gz',
+'electron_NORMAL_16       ': 'Metadata/POG/EGM/2016postVFP_UL/electron.json.gz',
+'electron_17              ': 'Metadata/POG/EGM/2017_UL/electron.json.gz',
+'electron_18              ': 'Metadata/POG/EGM/2018_UL/electron.json.gz',
+'muon_HIPM_16             ': 'Metadata/POG/MUO/2016preVFP_UL/muon_Z.json.gz',
+'muon_NORMAL_16           ': 'Metadata/POG/MUO/2016postVFP_UL/muon_Z.json.gz',
+'muon_17                  ': 'Metadata/POG/MUO/2017_UL/muon_Z.json.gz',
+'muon_18                  ': 'Metadata/POG/MUO/2018_UL/muon_Z.json.gz',
+'btag_SF_HIPM_16          ': 'Metadata/POG/BTV/2016preVFP_UL/btagging.json.gz',
+'btag_SF_NORMAL_16        ': 'Metadata/POG/BTV/2016postVFP_UL/btagging.json.gz',
+'btag_SF_17               ': 'Metadata/POG/BTV/2017_UL/btagging.json.gz',
+'btag_SF_18               ': 'Metadata/POG/BTV/2018_UL/btagging.json.gz',
+'btag_eff_HIPM_16         ': 'Metadata/btag_eff/DeepCSVLoose/2016preVFP.json',
+'btag_eff_NORMAL_16       ': 'Metadata/btag_eff/DeepCSVLoose/2016postVFP.json',
+'btag_eff_17              ': 'Metadata/btag_eff/DeepCSVLoose/2017.json',
+'btag_eff_18              ': 'Metadata/btag_eff/DeepCSVLoose/2018.json',
+'trigger_16               ': 'Metadata/trigger/SF_2016_ttbar.json',
+'trigger_17               ': 'Metadata/trigger/SF_2017_ttbar.json',
+'trigger_18               ': 'Metadata/trigger/SF_2018_ttbar.json',
+'JES_MC_HIPM_16           ': 'Metadata/JES/JES_MC_16_preVFP.txt',
+'JES_MC_NORMAL_16         ': 'Metadata/JES/JES_MC_16_postVFP.txt',
+'JES_MC_17                ': 'Metadata/JES/JES_MC_17.txt',
+'JES_MC_18                ': 'Metadata/JES/JES_MC_18.txt',
+'JER_MC_HIPM_16           ': 'Metadata/JER/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt',
+'JER_SF_MC_HIPM_16        ': 'Metadata/JER/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt',
+'JER_MC_NORMAL_16         ': 'Metadata/JER/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt',
+'JER_SF_MC_NORMAL_16      ': 'Metadata/JER/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK4PFchs.txt',
+'JER_MC_17                ': 'Metadata/JER/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt',
+'JER_SF_MC_17             ': 'Metadata/JER/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt',
+'JER_MC_18                ': 'Metadata/JER/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt',
+'JER_SF_MC_18             ': 'Metadata/JER/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt',
+'jet_puID_HIPM_16         ': 'Metadata/POG/JME/2016preVFP_UL/jmar.json.gz',
+'jet_puID_NORMAL_16       ': 'Metadata/POG/JME/2016postVFP_UL/jmar.json.gz',
+'jet_puID_17              ': 'Metadata/POG/JME/2017_UL/jmar.json.gz',
+'jet_puID_18              ': 'Metadata/POG/JME/2018_UL/jmar.json.gz',
+'JERC_HIPM_16             ': 'Metadata/POG/JME/2016preVFP_UL/jet_jerc.json.gz',
+'JERC_NORMAL_16           ': 'Metadata/POG/JME/2016postVFP_UL/jet_jerc.json.gz',
+'JERC_17                  ': 'Metadata/POG/JME/2017_UL/jet_jerc.json.gz',
+'JERC_18                  ': 'Metadata/POG/JME/2018_UL/jet_jerc.json.gz',
+'mu_RoccoR_HIPM_16        ': 'Metadata/mu_Rochester/RoccoR2016aUL.txt',
+'mu_RoccoR_NORMAL_16      ': 'Metadata/mu_Rochester/RoccoR2016bUL.txt',
+'mu_RoccoR_17             ': 'Metadata/mu_Rochester/RoccoR2017UL.txt',
+'mu_RoccoR_18             ': 'Metadata/mu_Rochester/RoccoR2018UL.txt',
+'Z_recoil_16              ': 'Metadata/boson_recoil/Z/TypeI-PFMet_Run2016_legacy.root',
+'Z_recoil_17              ': 'Metadata/boson_recoil/Z/Type1_PFMET_2017.root',
+'Z_recoil_18              ': 'Metadata/boson_recoil/Z/TypeI-PFMet_Run2018.root',
 }
 
 

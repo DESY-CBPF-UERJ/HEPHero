@@ -123,6 +123,7 @@ class HEPHero {
         float GetTriggerWeight( string sysID );
         float GetPrefiringWeight( string sysID );
         float GetTopPtWeight();
+        float GetWPtWeight();
         float GetVJetsHTWeight();
         void JESvariation();
         void JERvariation();
@@ -366,6 +367,10 @@ class HEPHero {
         //----TOP------------------------------------------
         bool    apply_top_pt_wgt;
         double  top_pt_wgt;
+
+        //----WZ-------------------------------------------
+        bool    apply_w_pt_wgt;
+        double  w_pt_wgt;
         
         //----VJets----------------------------------------
         bool    apply_vjets_HT_wgt;
@@ -383,6 +388,7 @@ class HEPHero {
         bool get_ISR_sfs;
         bool get_FSR_sfs;
         bool get_TopPt_sfs;
+        bool get_WPt_sfs;
         bool get_Pileup_sfs;
         bool get_ElectronID_sfs;
         bool get_MuonID_sfs;
@@ -534,6 +540,8 @@ class HEPHero {
         float FMax40;
         float LeadingJet_pt;
         float SubLeadingJet_pt;
+        float ThirdLeadingJet_pt;
+        float FourthLeadingJet_pt;
         Float_t Jet_JES_pt[100];
         
         //----MET------------------------------------------

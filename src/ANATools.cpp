@@ -19,7 +19,7 @@ void HEPHero::Regions(){
     }
     else if( (RecoLepID < 100) && 
         (Nbjets == 0) &&
-        (MET_pt < 100)
+        (MET_pt < 140)
       ){                                        // [DY - Control Region]
         RegionID = 1;
     }
@@ -43,7 +43,27 @@ void HEPHero::Regions(){
       ){                                        // [ZZ - Control Region] 
         RegionID = 4;
     }
-    
+    else if( (RecoLepID < 100) &&
+        (Nbjets == 0) &&
+        (MET_pt < 300)
+      ){                                        // [DY Recoil - Control Region]
+        RegionID = 5;
+    }
+    else if( (RecoLepID > 30000) && (RecoLepID < 39999) &&
+        (ttbar_reco == 0) &&
+        (Nbjets == 0) &&
+        (LepLep_deltaM < 10) &&
+        (MET_Lep3_Mt > 50) //&& (MET_Lep3_Mt < 100)
+      ){                                        // [WZ 0 b-jets - Control Region]
+        RegionID = 6;
+    }
+    else if( (RecoLepID > 40000) && (RecoLepID < 49999) &&
+        (ttbar_reco == 0) &&
+        (Nbjets == 0) &&
+        (Lep3Lep4_M > 10)
+      ){                                        // [ZZ 0 b-jets - Control Region]
+        RegionID = 7;
+    }
 }
 
 
@@ -230,8 +250,12 @@ void HEPHero::JetSelection(){
 
     LeadingJet_pt = 0;
     SubLeadingJet_pt = 0;
-    if( Njets > 0 ) LeadingJet_pt = Jet_pt[selectedJet.at(0)];
-    if( Njets > 1 ) SubLeadingJet_pt = Jet_pt[selectedJet.at(1)];
+    ThirdLeadingJet_pt = 0;
+    FourthLeadingJet_pt = 0;
+    if( Njets >= 1 ) LeadingJet_pt = Jet_pt[selectedJet.at(0)];
+    if( Njets >= 2 ) SubLeadingJet_pt = Jet_pt[selectedJet.at(1)];
+    if( Njets >= 3 ) ThirdLeadingJet_pt = Jet_pt[selectedJet.at(2)];
+    if( Njets >= 4 ) FourthLeadingJet_pt = Jet_pt[selectedJet.at(3)];
     
 }
 

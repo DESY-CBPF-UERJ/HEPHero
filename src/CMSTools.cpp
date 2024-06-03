@@ -1065,6 +1065,65 @@ float HEPHero::GetTopPtWeight(){
 }
 
 
+
+//---------------------------------------------------------------------------------------------------------------
+// MCsamples processing
+//---------------------------------------------------------------------------------------------------------------
+float HEPHero::GetWPtWeight(){
+
+    float pt_weight = 1.;
+    string dsName6 = _datasetName.substr(0,6);
+    if( (dsName6 == "WZTo3L") && (dataset_group != "Data") ){
+
+        vector<int> W_daughters;
+        for( unsigned int ipart = 0; ipart < nGenPart; ++ipart ) {
+            if( (abs(GenPart_pdgId[ipart]) >= 11) && (abs(GenPart_pdgId[ipart]) <= 16) && (abs(GenPart_pdgId[GenPart_genPartIdxMother[ipart]]) == 24) ){
+                W_daughters.push_back(ipart);
+            }
+        }
+
+        if( W_daughters.size() == 4 ){
+            if( (abs(GenPart_pdgId[W_daughters[0]]) == 11) && (abs(GenPart_pdgId[W_daughters[1]]) == 11) ) W_daughters.erase(W_daughters.begin(),W_daughters.begin()+2);
+            if( (abs(GenPart_pdgId[W_daughters[2]]) == 11) && (abs(GenPart_pdgId[W_daughters[3]]) == 11) ) W_daughters.erase(W_daughters.begin()+2,W_daughters.begin()+4);
+        }
+
+        float W_charge = -1.;
+        if( (GenPart_pdgId[W_daughters[0]] == -11) || (GenPart_pdgId[W_daughters[0]] == -13) || (GenPart_pdgId[W_daughters[0]] == -15) || (GenPart_pdgId[W_daughters[1]] == -11) || (GenPart_pdgId[W_daughters[1]] == -13) || (GenPart_pdgId[W_daughters[1]] == -15) ){
+            W_charge = 1.;
+        }
+
+        TLorentzVector W_dau1;
+        TLorentzVector W_dau2;
+        W_dau1.SetPtEtaPhiM(GenPart_pt[W_daughters[0]], GenPart_eta[W_daughters[0]], GenPart_phi[W_daughters[0]], GenPart_mass[W_daughters[0]]);
+        W_dau2.SetPtEtaPhiM(GenPart_pt[W_daughters[1]], GenPart_eta[W_daughters[1]], GenPart_phi[W_daughters[1]], GenPart_mass[W_daughters[1]]);
+
+        TLorentzVector W_part = W_dau1 + W_dau2;
+        float W_pt = W_part.Pt();
+
+        vector<float> intervals = {25, 35, 50, 70, 90, 110, 130, 160, 200, 300};
+        vector<float> k_factors;
+        if( W_charge > 0 ){
+            k_factors = {0.96773208, 0.99251315, 1.00993565, 1.02432459, 1.03293558, 1.05039964, 1.0413764, 1.07347302, 1.08221239};
+        }else{
+            k_factors = {0.93163252, 0.98802125, 1.01016316, 1.03190894, 1.04062135, 1.07619106, 1.14103155, 1.13462869, 1.24623567};
+        }
+
+        int idx = -1;
+        for (unsigned int i = 0; i < k_factors.size() ; i++){
+            if ( W_pt >= intervals[i] && W_pt < intervals[i+1]  ){
+                idx = i;
+                break;
+            }
+        }
+        if( idx >= 0 ) pt_weight = k_factors[idx];
+
+    }
+
+    return pt_weight;
+}
+
+
+
 //---------------------------------------------------------------------------------------------------------------
 // Get V+Jets HT Weight (LO->NLO)
 // It is recommended to be used in regions with (HT > 250 GeV). If DY the Zmass must be in the range: (80 < Zmass < 100)
@@ -1107,6 +1166,7 @@ void HEPHero::Weight_corrections(){
     trigger_wgt = 1.;
     prefiring_wgt = 1.;
     top_pt_wgt = 1.;
+    w_pt_wgt = 1.;
     vjets_HT_wgt = 1.;
     jet_puid_wgt = 1.;
     
@@ -1151,6 +1211,11 @@ void HEPHero::Weight_corrections(){
             top_pt_wgt = GetTopPtWeight();
             evtWeight *= top_pt_wgt;
         }
+
+        if( apply_w_pt_wgt ){
+            w_pt_wgt = GetWPtWeight();
+            evtWeight *= w_pt_wgt;
+        }
         
         if( apply_vjets_HT_wgt ){  
             vjets_HT_wgt = GetVJetsHTWeight();
@@ -1175,6 +1240,7 @@ void HEPHero::VerticalSysSizes( ){
         get_ISR_sfs = false;
         get_FSR_sfs = false;
         get_TopPt_sfs = false;
+        get_WPt_sfs = false;
         get_Pileup_sfs = false;
         get_ElectronID_sfs = false;
         get_MuonID_sfs = false;
@@ -1203,6 +1269,9 @@ void HEPHero::VerticalSysSizes( ){
             }else if( sysName == "TopPt" ){
                 sys_vertical_size.push_back(1);
                 get_TopPt_sfs = true;
+            }else if( sysName == "WPt" ){
+                sys_vertical_size.push_back(1);
+                get_WPt_sfs = true;
             }else if( sysName == "Pileup" ){ 
                 sys_vertical_size.push_back(2);
                 get_Pileup_sfs = true;
@@ -1338,6 +1407,13 @@ void HEPHero::VerticalSys(){
             vector<float> TopPt_sfs;
             TopPt_sfs.push_back(1./top_pt_wgt);
             sys_vertical_sfs.insert(pair<string, vector<float>>("TopPt", TopPt_sfs));
+        }
+
+        //-----------------------------------------------------------------------------------
+        if( get_WPt_sfs ){
+            vector<float> WPt_sfs;
+            WPt_sfs.push_back(1./w_pt_wgt);
+            sys_vertical_sfs.insert(pair<string, vector<float>>("WPt", WPt_sfs));
         }
 
         //-----------------------------------------------------------------------------------
