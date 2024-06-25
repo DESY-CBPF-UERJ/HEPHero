@@ -424,7 +424,7 @@ void HEPHero::METCorrection(){
     
     //=====JES Variation===========================================================================
     //if( (_sysName_lateral == "JES") && (dataset_group != "Data") && !(apply_met_recoil_corr && (dsNameDY == "DYJetsToLL")) ){
-    if( (_sysName_lateral == "JES") && (dataset_group != "Data") ){
+    if( (_sysName_lateral == "JES") && (dataset_group != "Data") ){ //JES->MET shape unc + JES->Jets unc if using recoil
         TLorentzVector METLV;
         METLV.SetPtEtaPhiM(MET_pt, 0., MET_phi, 0.);
         METLV += METCorrectionFromJES;

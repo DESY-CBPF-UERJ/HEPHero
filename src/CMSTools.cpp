@@ -1067,7 +1067,7 @@ float HEPHero::GetTopPtWeight(){
 
 
 //---------------------------------------------------------------------------------------------------------------
-// MCsamples processing
+// NLO -> NNLO k-factors for WZ (Valid for Gen Wpt > 25 GeV)
 //---------------------------------------------------------------------------------------------------------------
 float HEPHero::GetWPtWeight(){
 
@@ -1100,7 +1100,7 @@ float HEPHero::GetWPtWeight(){
         TLorentzVector W_part = W_dau1 + W_dau2;
         float W_pt = W_part.Pt();
 
-        vector<float> intervals = {25, 35, 50, 70, 90, 110, 130, 160, 200, 300};
+        vector<float> intervals = {0, 35, 50, 70, 90, 110, 130, 160, 200, 30000}; //{25, 35, 50, 70, 90, 110, 130, 160, 200, 300};
         vector<float> k_factors;
         if( W_charge > 0 ){
             k_factors = {0.96773208, 0.99251315, 1.00993565, 1.02432459, 1.03293558, 1.05039964, 1.0413764, 1.07347302, 1.08221239};
