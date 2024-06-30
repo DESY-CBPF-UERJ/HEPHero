@@ -68,10 +68,15 @@ else
         Proxy_file=/afs/cern.ch/user/${USER:0:1}/${USER}/private/x509up
         voms-proxy-init --voms cms
         cp /tmp/x509up_u$(id -u) ${Proxy_file}
+        #rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $(pwd) ${HEP_OUTPATH}
     fi
     
     if [ "${machines}" == "DESY" ]; then
         Proxy_file=None
+        #source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
+        #Proxy_file=/afs/desy.de/user/${USER:0:1}/${USER}/private/x509up
+        #voms-proxy-init --voms cms
+        #cp /tmp/x509up_u$(id -u) ${Proxy_file}
     fi
     
     if [ "${machines}" == "UERJ" ]; then

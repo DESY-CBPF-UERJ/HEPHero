@@ -43,6 +43,7 @@ void HEPHero::Regions(){
       ){                                        // [ZZ - Control Region] 
         RegionID = 4;
     }
+    /*
     else if( (RecoLepID < 100) &&
         (Nbjets == 0) &&
         (MET_pt < 300)
@@ -64,6 +65,7 @@ void HEPHero::Regions(){
       ){                                        // [ZZ 0 b-jets - Control Region]
         RegionID = 7;
     }
+    */
 }
 
 

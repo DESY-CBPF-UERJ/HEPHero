@@ -22,13 +22,21 @@ export REDIRECTOR=$5
 export MACHINES=$6
 
 if [ "$6" == "CERN" ]; then
-rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $3 .
+#rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $3 .
+#cp -rf $HEP_OUTPATH/HEPHero .
+#rsync -azh $HEP_OUTPATH/HEPHero .
+git clone https://github.com/DESY-CBPF-UERJ/HEPHero.git
+cd HEPHero
+cp ana/templates/Test.cpp ana
+./addSelection.sh Test
+cd ..
 export MY_TORCH_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/libtorch
 fi    
     
 if [ "$6" == "DESY" ]; then
 cd ../..
 export MY_TORCH_PATH=/afs/desy.de/user/${USER:0:1}/${USER}/libtorch
+source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 fi
 
 if [ "$6" == "UERJ" ]; then
@@ -46,7 +54,7 @@ export MY_TORCH_PATH=/mnt/hadoop/cms/store/user/${USER}/libtorch
 fi
 
 ls
-if [ "$6" == "CERN" ]; then
+if [ "$6" == "CERN" ] || [ "$6" == "DESY" ]; then
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 else
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-centos7-gcc11-opt/setup.sh
@@ -55,7 +63,7 @@ cd HEPHero
 
 if [ "$6" == "CERN" ]; then
 rm CMakeCache.txt
-cmake .
+cmake $(pwd)
 make -j 4
 fi
 

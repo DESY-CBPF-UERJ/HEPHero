@@ -101,7 +101,7 @@ vertical_systematics = {
 NumMaxEvents = -1
 NumFilesPerJob_Data = 2
 NumFilesPerJob_Signal = 50
-NumFilesPerJob_Bkg = 4
+NumFilesPerJob_Bkg = 5
 
 
 #-------------------------------------------------------------------------------------
@@ -113,38 +113,38 @@ from Bkg import *
 from Data import *
 datasets = []
 
-#datasets.extend(Data_Lep_preVFP_16)
+datasets.extend(Data_Lep_preVFP_16)
 #datasets.extend(Data_MET_preVFP_16)
-#datasets.extend(Signal_preVFP_16)
-#datasets.extend(DYPt50ToInf_preVFP_16)
-#datasets.extend(DYPt0To50_preVFP_16)
-#datasets.extend(TTFullLep_preVFP_16)
-#datasets.extend(TTSemiLep_preVFP_16)
-#datasets.extend(ST_preVFP_16)
-#datasets.extend(VZ_preVFP_16)
-#datasets.extend(ResidualSM_preVFP_16)
+datasets.extend(Signal_preVFP_16)
+datasets.extend(DYPt50ToInf_preVFP_16)
+datasets.extend(DYPt0To50_preVFP_16)
+datasets.extend(TTFullLep_preVFP_16)
+datasets.extend(TTSemiLep_preVFP_16)
+datasets.extend(ST_preVFP_16)
+datasets.extend(VZ_preVFP_16)
+datasets.extend(ResidualSM_preVFP_16)
 
-#datasets.extend(Data_Lep_postVFP_16)
+datasets.extend(Data_Lep_postVFP_16)
 #datasets.extend(Data_MET_postVFP_16)
-#datasets.extend(Signal_postVFP_16)
-#datasets.extend(DYPt50ToInf_postVFP_16)
-#datasets.extend(DYPt0To50_postVFP_16)
-#datasets.extend(TTFullLep_postVFP_16)
-#datasets.extend(TTSemiLep_postVFP_16)
-#datasets.extend(ST_postVFP_16)
-#datasets.extend(VZ_postVFP_16)
-#datasets.extend(ResidualSM_postVFP_16)
+datasets.extend(Signal_postVFP_16)
+datasets.extend(DYPt50ToInf_postVFP_16)
+datasets.extend(DYPt0To50_postVFP_16)
+datasets.extend(TTFullLep_postVFP_16)
+datasets.extend(TTSemiLep_postVFP_16)
+datasets.extend(ST_postVFP_16)
+datasets.extend(VZ_postVFP_16)
+datasets.extend(ResidualSM_postVFP_16)
 
-#datasets.extend(Data_Lep_17)
+datasets.extend(Data_Lep_17)
 #datasets.extend(Data_MET_17)
-#datasets.extend(Signal_17)
-#datasets.extend(DYPt50ToInf_17)
-#datasets.extend(DYPt0To50_17)
-#datasets.extend(TTFullLep_17)
-#datasets.extend(TTSemiLep_17)
-#datasets.extend(ST_17)
-#datasets.extend(VZ_17)
-#datasets.extend(ResidualSM_17)
+datasets.extend(Signal_17)
+datasets.extend(DYPt50ToInf_17)
+datasets.extend(DYPt0To50_17)
+datasets.extend(TTFullLep_17)
+datasets.extend(TTSemiLep_17)
+datasets.extend(ST_17)
+datasets.extend(VZ_17)
+datasets.extend(ResidualSM_17)
 
 datasets.extend(Data_Lep_18)
 #datasets.extend(Data_MET_18)
