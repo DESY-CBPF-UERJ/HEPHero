@@ -73,6 +73,14 @@ for period,year,path in zip(periods,years,paths):
         ["ZZTo2L2Nu_"+period]                        + [year+'0501'+APVID, path+"ZZTo2L2Nu.txt"],
         ["ZZTo4L_"+period]                           + [year+'0502'+APVID, path+"ZZTo4L.txt"],
         ["WZTo3LNu_"+period]                         + [year+'0512'+APVID, path+"WZTo3LNu.txt"],
+        #["ggToZZTo2e2mu_"+period]                    + [year+'0503'+APVID, path+"ggToZZTo2e2mu.txt"],
+        #["ggToZZTo2e2nu_"+period]                    + [year+'0504'+APVID, path+"ggToZZTo2e2nu.txt"],
+        #["ggToZZTo2e2tau_"+period]                   + [year+'0505'+APVID, path+"ggToZZTo2e2tau.txt"],
+        #["ggToZZTo2mu2nu_"+period]                   + [year+'0506'+APVID, path+"ggToZZTo2mu2nu.txt"],
+        #["ggToZZTo2mu2tau_"+period]                  + [year+'0507'+APVID, path+"ggToZZTo2mu2tau.txt"],
+        #["ggToZZTo4e_"+period]                       + [year+'0508'+APVID, path+"ggToZZTo4e.txt"],
+        #["ggToZZTo4mu_"+period]                      + [year+'0509'+APVID, path+"ggToZZTo4mu.txt"],
+        #["ggToZZTo4tau_"+period]                     + [year+'0510'+APVID, path+"ggToZZTo4tau.txt"],
     ]
 
     ResidualSM = [

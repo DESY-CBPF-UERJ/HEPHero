@@ -22,14 +22,18 @@ export REDIRECTOR=$5
 export MACHINES=$6
 
 if [ "$6" == "CERN" ]; then
-#rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $3 .
+rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $3 .
+#=======
 #cp -rf $HEP_OUTPATH/HEPHero .
+#=======
 #rsync -azh $HEP_OUTPATH/HEPHero .
-git clone https://github.com/DESY-CBPF-UERJ/HEPHero.git
-cd HEPHero
-cp ana/templates/Test.cpp ana
-./addSelection.sh Test
-cd ..
+#=======
+#git clone https://github.com/DESY-CBPF-UERJ/HEPHero.git
+#cd HEPHero
+#cp ana/templates/Test.cpp ana
+#./addSelection.sh Test
+#cd ..
+#=======
 export MY_TORCH_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/libtorch
 fi    
     

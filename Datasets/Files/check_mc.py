@@ -28,8 +28,8 @@ elif args.version == "9":
 campaign = "RunIISummer20UL"+args.period+"*NanoAOD*"+args.version+"*106X*/NANOAODSIM"
 
 datasets = [
-"DYJetsToLL_LHEFilterPtZ-*_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",    
-"DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",					
+"DYJetsToLL_LHEFilterPtZ-*_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+"DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
 #"DYJetsToLL_Pt-*_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",
 "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
 "DYJetsToLL_M-50_HT-*_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
@@ -54,7 +54,7 @@ datasets = [
 "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8",
 "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8",
 ##"ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8",
-##"TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8", 
+##"TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8",
 ##"TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8",
 "TTWW_TuneCP5_13TeV-madgraph-pythia8",
 "TTWZ_TuneCP5_13TeV-madgraph-pythia8",
@@ -75,8 +75,8 @@ datasets = [
 "GluGluHToZZTo2L2Q_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8",
 "GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8",
 "WplusH_HToZZTo2L2X_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
-"WplusH_HToZZTo4L_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8", 
-"WminusH_HToZZTo2L2X_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8", 
+"WplusH_HToZZTo4L_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
+"WminusH_HToZZTo2L2X_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
 "WminusH_HToZZTo4L_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
 "ZH_HToBB_ZToLL_M-125_TuneCP5_13TeV-powheg-pythia8",
 "ZH_HToZZ_4LFilter_M125_TuneCP5_13TeV_powheg2-minlo-HZJ_JHUGenV7011_pythia8",
@@ -147,6 +147,14 @@ datasets = [
 "Z2JetsToNuNu_M-50_LHEFilterPtZ-150To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",
 "Z2JetsToNuNu_M-50_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",
 "Z2JetsToNuNu_M-50_LHEFilterPtZ-400ToInf_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+"GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo2e2nu_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo2e2tau_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo2mu2nu_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo2mu2tau_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8",
+"GluGluToContinToZZTo4tau_TuneCP5_13TeV-mcfm701-pythia8",
 #Signal
 "bbHToZaToLLChiChi_2HDMa"
 ]

@@ -181,6 +181,14 @@ Z2JetsToNuNu_PtZ-50To150                        308.2               9.738       
 Z2JetsToNuNu_PtZ-150To250                       29.28               0.7514              unknown
 Z2JetsToNuNu_PtZ-250To400                       4.96                0.112               unknown
 Z2JetsToNuNu_PtZ-400ToInf                       0.8318              0.01576             unknown
+ggToZZTo2e2mu                                   0.003292            -                   -
+ggToZZTo2e2nu                                   0.01773             -                   -
+ggToZZTo2e2tau                                  0.003294            -                   -
+ggToZZTo2mu2nu                                  0.01773             -                   -
+ggToZZTo2mu2tau                                 0.003294            -                   -
+ggToZZTo4e                                      0.001619            -                   -
+ggToZZTo4mu                                     0.001608            -                   -
+ggToZZTo4tau                                    0.001626            -                   -
 Signal_GluGlu                                   19.6                -                   -
 Signal_VBF                                      1.55                -                   -
 DYJetsToLL                                      3503.7              -                   -
