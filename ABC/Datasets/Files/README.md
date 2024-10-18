@@ -14,19 +14,16 @@ voms-proxy-init --voms cms
 
 # Check datasets
 
-# Check datasets
-
-Check if datsets of the analysis are available in a specific **year** and **version**:
+Check if datsets of the analysis are available in a specific **year**:
 ```bash
-python check_data.py -y period
-python check_mc.py -y period -v version
+python check_data.py -y year
+python check_mc.py -y year
 ```
 
 For simulation, the NANOAOD **version** can be specified as well:
 ```bash
-python check_mc.py -y period -v version
+python check_mc.py -y year -v version
 ```
-
 years = 16, 17, 18, 22, 23
 versions = 9, 12
 
