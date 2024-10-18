@@ -24,8 +24,9 @@ For simulation, the NANOAOD **version** can be specified as well:
 ```bash
 python check_mc.py -y year -v version
 ```
-years = 16, 17, 18, 22, 23 __
-versions = 9, 12 __
+years = 16, 17, 18, 22, 23
+
+versions = 9, 12
 
 # Get dataset paths
 
@@ -37,7 +38,8 @@ python get_data_16.py -v version
 python get_data_17.py -v version
 python get_data_18.py -v version
 ```
-A **period** consists of one **year** plus a **dti** (data taking interval) in the format **dti_year**: __
+A **period** consists of one **year** plus a **dti** (data taking interval) in the format **dti_year**:
+
 periods = 0_16, 1_16, 0_17, 0_18, 0_22, 1_22, 0_23, 1_23
 
 
