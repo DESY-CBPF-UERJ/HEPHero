@@ -1,4 +1,4 @@
-# ![HEPHERO](Metadata/logoframe.svg)
+# ![HEPHERO](logoframe.svg)
 
 **HEPHero - Framework for the DESY-CBPF-UERJ collaboration**
 
@@ -80,17 +80,16 @@ Source the hepenv environment before work with the HEPHero:
 hepenv
 ```
 
-Enter in the HEPHero directory and compile the code (running cmake is necessary only at the first time):
+Set up the runSelection.py to one of the available analysis folders inside the HEPHero directory:
+```bash
+python setAnalysis.py -a bbZDM_Lep_R2
+```
 
+Enter in the HEPHero directory and compile the code (running cmake is necessary only at the first time):
 ```bash
 cd HEPHero
 cmake .
 make -j 8
-```
-
-Set up the runSelection.py to one of the available setups (HHDM,EFT,GEN,...) inside the directory "setups":
-```bash
-python setup.py -a HHDM
 ```
 
 Create a template (if it doesn't exist) for a new anafile called **Test** and integrate it to the framework:
@@ -158,14 +157,14 @@ First, go to **tools** directory.
 cd tools
 ```
 
-Check integrity of jobs of the selection **Test** and year **2016**:
+Check integrity of jobs of the selection **Test** and period **0_16**:
 
 ```
-python checker.py -s Test -p 16
+python checker.py -s Test -p 0_16
 ```
 Check a specific dataset:
 ```
-python checker.py -s Test -p 16 -d TTTo2L2Nu
+python checker.py -s Test -p 0_16 -d TTTo2L2Nu
 ```
 
 If you want to remove bad jobs, type:
@@ -177,45 +176,44 @@ python remove_jobs.py -s Test -l <list of bad jobs>
 Once all jobs are good, you can group them by typing:
 
 ```
-python grouper.py -s Test -p 16
+python grouper.py -s Test -p 0_16
 ```
 
-If it is **2016 APV**, type:
+Example for all periods of Run 2:
 
 ```
-python checker.py -s Test -p 16 --apv
-python grouper.py -s Test -p 16 --apv
+python checker.py -s Test -p 0_16
+python checker.py -s Test -p 1_16
+python checker.py -s Test -p 0_17
+python checker.py -s Test -p 0_18
 ```
 
 If your anafile was set to produce systematic histograms, you need to add the syst flag to check and group as well the json files where are stored the histograms. Examples:
 
 ```
-python checker.py -s Test -p 16 --apv --syst
-python grouper.py -s Test -p 16 --apv --syst
-
-python checker.py -s Test -p 18 --syst
-python grouper.py -s Test -p 18 --syst
+python checker.py -s Test -p 0_16 --syst
+python grouper.py -s Test -p 0_16 --syst
 ```
 
 By default, checker and grouper use the number of CPUs available minus 2. You can force a specific number. For example, using 5 CPUs:
 ```
-python checker.py -s Test -p 16 -c 5
-python grouper.py -s Test -p 16 -c 5
+python checker.py -s Test -p 0_16 -c 5
+python grouper.py -s Test -p 0_16 -c 5
 ```
 
 If the code is crashing, the debug flag can help you to identify the problematic folder:
 ```
-python checker.py -s Test -p 16 --debug
-python grouper.py -s Test -p 16 --debug
+python checker.py -s Test -p 0_16 --debug
+python grouper.py -s Test -p 0_16 --debug
 ```
 In the checker, the problematic dataset is known. In order to save time, it is recommended to use the debug flag in combination with the name of the dataset you want to investigate.
 ```
-python checker.py -s Test -p 16 -d TTTo2L2Nu --debug
+python checker.py -s Test -p 0_16 -d TTTo2L2Nu --debug
 ```
 
 # Resubmiting condor jobs
 
-If there are bad jobs in the output directory, they will be written in the **tools/resubmit_YY.txt** file, where **YY** is the year associated with the job. If you desire to resubmit the bad jobs listed in these files, you can use the flag ""--resubmit"" as in the commands below.
+If there are bad jobs in the output directory, they will be written in the **tools/resubmit_X.txt** file, where **X** is the period associated with the job. If you desire to resubmit the bad jobs listed in these files, you can use the flag ""--resubmit"" as in the commands below.
 
 Know how many jobs the code is setted to process in the resubmission:
 
@@ -284,6 +282,8 @@ exit
 -->
 
 
+
+<!---
 # Working with CMS opendata using HEPHero inside a container
 
 Create a **work_directory** to be the base directory of your CMS opendata analysis. Inside the **work_directory**, create another directory with name **opendata** and inside of it, download the list of datasets below (root files) from the links: https://cernbox.cern.ch/s/hseBba66wpQhPsZ or https://opendata.web.cern.ch/record/12350.
@@ -308,6 +308,8 @@ Inside the **work_directory** (important), start the container:
 docker run -it -P --device /dev/fuse --cap-add SYS_ADMIN -v $PWD:/home/work -e CVMFS_MOUNTS="sft.cern.ch cms.cern.ch" --security-opt apparmor:unconfined gilsoncs/cms-opendata-docker
 ```
 The starting procedure can take a while depending on the speed of your internet connection.
+-->
+
 
 
 <!---

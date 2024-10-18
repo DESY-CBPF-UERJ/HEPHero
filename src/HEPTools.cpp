@@ -1,42 +1,133 @@
-#include "HEPHero.h"
+#include "HEPBase.h"
+
+
+//---------------------------------------------------------------------------------------------------------------
+// PRINT INFO ABOUT THE SELECTION PROCESS
+//---------------------------------------------------------------------------------------------------------------
+void HEPBase::WriteCutflowInfo(){
+
+    if( _applyEventWeights || dataset_group == "Data"){
+        luminosity = DATA_LUMI;
+        lumi_total_unc = DATA_LUMI_TOTAL_UNC;
+        for( unsigned int ilumi = 0; ilumi < DATA_LUMI_TAGS_UNC.size(); ++ilumi ) {
+            lumi_values_unc.push_back(DATA_LUMI_VALUES_UNC.at(ilumi));
+        }
+    }else{
+        luminosity = SumGenWeights/PROC_XSEC;
+        lumi_total_unc = 0;
+        for( unsigned int ilumi = 0; ilumi < DATA_LUMI_TAGS_UNC.size(); ++ilumi ) {
+            lumi_values_unc.push_back(0);
+        }
+    }
+
+    if( _sysID_lateral == 0 ) {
+        _CutflowFile.open( _CutflowFileName.c_str(), ios::app );
+        _CutflowFile << "-----------------------------------------------------------------------------------" << endl;
+        _CutflowFile << "Luminosity: " << luminosity << " pb-¹" << endl;
+
+        _CutflowFile.width(25); _CutflowFile << left << "Lumi. Unc. Tags:" << setw(10) << "total" << " = ";
+        for( unsigned int ilumi = 0; ilumi < DATA_LUMI_TAGS_UNC.size(); ++ilumi ) {
+            _CutflowFile << setw(10) << DATA_LUMI_TAGS_UNC.at(ilumi) << " ";
+        }
+        _CutflowFile << endl;
+
+        _CutflowFile.width(25); _CutflowFile << left << "Lumi. Unc. Values [%]:" << setw(10) << lumi_total_unc << " = ";
+        for( unsigned int ilumi = 0; ilumi < DATA_LUMI_TAGS_UNC.size(); ++ilumi ) {
+            _CutflowFile << setw(10) << lumi_values_unc.at(ilumi) << " ";
+        }
+        _CutflowFile << endl;
+
+        _CutflowFile << "Cross section: " << setprecision(16) << PROC_XSEC << " pb" << endl;
+        _CutflowFile << "Sum of genWeights: " << setprecision(16) << SumGenWeights << endl;
+        _CutflowFile << "-----------------------------------------------------------------------------------" << endl;
+        _CutflowFile.width(20); _CutflowFile << left << " Cutflow" << " " << setw(20) << setprecision(16) << "Selected Events"
+        << " " << setw(20) << setprecision(12) << "Stat. Error" << setw(15) << setprecision(6) << "Efficiency (%)" << endl;
+        _CutflowFile << "-----------------------------------------------------------------------------------" << endl;
+        int icut = 0;
+        for( map<string,double>::iterator itr = _cutFlow.begin(); itr != _cutFlow.end(); ++itr ) {
+            _CutflowFile.width(20); _CutflowFile << left << "|" + (*itr).first << " " << setw(20) << setprecision(16) << (*itr).second
+            << " " << setw(20) << setprecision(12) << _StatisticalError.at(icut)
+            << setw(15) << setprecision(6) << (*itr).second*100./SumGenWeights << endl;
+            ++icut;
+        }
+        _CutflowFile.close();
+    }
+}
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Get Medatada associated to the MC dataset
+//---------------------------------------------------------------------------------------------------------------
+void HEPBase::GetMCMetadata(){
+
+    bool foundMetadata = false;
+    PROC_XSEC = 0;
+    ifstream metadataFile( MCmetaFileName.c_str(), ios::in );
+    string dsName = _datasetName.substr(0,_datasetName.length()-5);
+    while( metadataFile.good() ) {
+        string name, xs, xs_unc, source;
+        metadataFile >> name >> ws >> xs >> ws >> xs_unc >> ws >> source;
+        if( metadataFile.eof() ) break;
+        if( name == dsName ) {
+            PROC_XSEC = atof( xs.c_str() );
+            string delimiter = "/";
+            size_t pos = xs_unc.find(delimiter);
+            if( (dsName.length() > 6) && (dsName.length() > pos) ){
+                string xs_unc_up = xs_unc.substr(0, pos);
+                string xs_unc_down = xs_unc.erase(0, pos + delimiter.length());
+                PROC_XSEC_UNC_UP = atof( xs_unc_up.c_str() );
+                PROC_XSEC_UNC_DOWN = atof( xs_unc_down.c_str() );
+            }else{
+                PROC_XSEC_UNC_UP = 0;
+                PROC_XSEC_UNC_DOWN = 0;
+            }
+            foundMetadata = true;
+            break;
+        }
+    }
+
+    if( (!foundMetadata) && (dataset_group != "Data") ) {
+        cout << "Did not find dataset " << dsName << " in " << MCmetaFileName << ". The xsec was set to zero: " << PROC_XSEC << endl;
+    }
+}
 
 
 //---------------------------------------------------------------------------------------------------------------
 // Setup HDF maps
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::HDF_insert( string varname, int* variable ) {
+void HEPBase::HDF_insert( string varname, int* variable ) {
     _hdf_int.insert( pair<string, int*>( varname, variable ) );
     vector<int> evtVec;
     _hdf_evtVec_int.insert( pair<string, vector<int>>( varname, evtVec ) );
 }
-void HEPHero::HDF_insert( string varname, float* variable ) {
+void HEPBase::HDF_insert( string varname, float* variable ) {
     _hdf_float.insert( pair<string, float*>( varname, variable ) );
     vector<float> evtVec;
     _hdf_evtVec_float.insert( pair<string, vector<float>>( varname, evtVec ) );
 }
-void HEPHero::HDF_insert( string varname, double* variable ) {
+void HEPBase::HDF_insert( string varname, double* variable ) {
     _hdf_double.insert( pair<string, double*>( varname, variable ) );
     vector<double> evtVec;
     _hdf_evtVec_double.insert( pair<string, vector<double>>( varname, evtVec ) );
 }
 
-void HEPHero::HDF_insert( string varname, bool* variable ) {
+void HEPBase::HDF_insert( string varname, bool* variable ) {
     _hdf_bool.insert( pair<string, bool*>( varname, variable ) );
     vector<int> evtVec;
     _hdf_evtVec_bool.insert( pair<string, vector<int>>( varname, evtVec ) );
 }
-void HEPHero::HDF_insert( string varname, unsigned int* variable ) {
+void HEPBase::HDF_insert( string varname, unsigned int* variable ) {
     _hdf_uint.insert( pair<string, unsigned int*>( varname, variable ) );
     vector<int> evtVec;
     _hdf_evtVec_uint.insert( pair<string, vector<int>>( varname, evtVec ) );
 }
-void HEPHero::HDF_insert( string varname, unsigned char* variable ) {
+void HEPBase::HDF_insert( string varname, unsigned char* variable ) {
     _hdf_uchar.insert( pair<string, unsigned char*>( varname, variable ) );
     vector<int> evtVec;
     _hdf_evtVec_uchar.insert( pair<string, vector<int>>( varname, evtVec ) );
 }
 
-void HEPHero::HDF_insert( string varname, vector<int>* variable ) {
+void HEPBase::HDF_insert( string varname, vector<int>* variable ) {
     _hdf_intVec.insert( pair<string, vector<int>*>( varname, variable ) );
     vector<vector<int>> evtVec;
     _hdf_evtVec_intVec.insert( pair<string, vector<vector<int>>>( varname, evtVec ) );
@@ -45,7 +136,7 @@ void HEPHero::HDF_insert( string varname, vector<int>* variable ) {
     _hdf_intVec_mean.insert(pair<string,double>(varname, 0) );
     _hdf_intVec_std.insert(pair<string,double>(varname, 0) );
 }
-void HEPHero::HDF_insert( string varname, vector<float>* variable ) {
+void HEPBase::HDF_insert( string varname, vector<float>* variable ) {
     _hdf_floatVec.insert( pair<string, vector<float>*>( varname, variable ) );
     vector<vector<float>> evtVec;
     _hdf_evtVec_floatVec.insert( pair<string, vector<vector<float>>>( varname, evtVec ) );
@@ -54,7 +145,7 @@ void HEPHero::HDF_insert( string varname, vector<float>* variable ) {
     _hdf_floatVec_mean.insert(pair<string,double>(varname, 0) );
     _hdf_floatVec_std.insert(pair<string,double>(varname, 0) );
 }
-void HEPHero::HDF_insert( string varname, vector<double>* variable ) {
+void HEPBase::HDF_insert( string varname, vector<double>* variable ) {
     _hdf_doubleVec.insert( pair<string, vector<double>*>( varname, variable ) );
     vector<vector<double>> evtVec;
     _hdf_evtVec_doubleVec.insert( pair<string, vector<vector<double>>>( varname, evtVec ) );
@@ -69,7 +160,7 @@ void HEPHero::HDF_insert( string varname, vector<double>* variable ) {
 //---------------------------------------------------------------------------------------------------------------
 // Fill HDF maps of event-vectors
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::HDF_fill() {
+void HEPBase::HDF_fill() {
     
     for( map<string,vector<int>>::iterator itr_h = _hdf_evtVec_int.begin(); itr_h != _hdf_evtVec_int.end(); ++itr_h ) {
         (*itr_h).second.push_back(*_hdf_int.at((*itr_h).first));
@@ -117,7 +208,7 @@ void HEPHero::HDF_fill() {
 //---------------------------------------------------------------------------------------------------------------
 // Fill HDF maps of event-vectors
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::HDF_write() {
+void HEPBase::HDF_write() {
     
     for( map<string,vector<int>>::iterator itr_h = _hdf_evtVec_int.begin(); itr_h != _hdf_evtVec_int.end(); ++itr_h ) {
         _hdf_file->createDataSet("scalars/"+(*itr_h).first, (*itr_h).second);
@@ -253,7 +344,7 @@ void HEPHero::HDF_write() {
 //---------------------------------------------------------------------------------------------------------------
 // makeSysHist
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::makeSysHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption, double xAxisOffset, double yAxisOffset ) {
+void HEPBase::makeSysHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption, double xAxisOffset, double yAxisOffset ) {
     
     vector<int> sysRegions;
     if( sys_regions.size() > 0 ){
@@ -296,7 +387,7 @@ void HEPHero::makeSysHist( string nametitle, int nbins, double xmin, double xmax
 }
 
 
-void HEPHero::makeSysHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption, double xAxisOffset, double yAxisOffset, double zAxisOffset ) {
+void HEPBase::makeSysHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption, double xAxisOffset, double yAxisOffset, double zAxisOffset ) {
     
     vector<int> sysRegions;
     if( sys_regions.size() > 0 ){
@@ -346,7 +437,7 @@ void HEPHero::makeSysHist( string nametitle, int nbinsx, double xmin, double xma
 //---------------------------------------------------------------------------------------------------------------
 // FillSystematic
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::FillSystematic( string varName, double varEntry, double evtWeight ){
+void HEPBase::FillSystematic( string varName, double varEntry, double evtWeight ){
     
     vector<int> sysRegions;
     vector<bool> regionFlags;
@@ -385,7 +476,7 @@ void HEPHero::FillSystematic( string varName, double varEntry, double evtWeight 
 }
 
 
-void HEPHero::FillSystematic( string varName, double xvarEntry, double yvarEntry, double evtWeight ){
+void HEPBase::FillSystematic( string varName, double xvarEntry, double yvarEntry, double evtWeight ){
     
     vector<int> sysRegions;
     vector<bool> regionFlags;
@@ -427,7 +518,7 @@ void HEPHero::FillSystematic( string varName, double xvarEntry, double yvarEntry
 //---------------------------------------------------------------------------------------------------------------
 // makeHist
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::makeHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption, double xAxisOffset, double yAxisOffset, double zAxisOffset ) {
+void HEPBase::makeHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption, double xAxisOffset, double yAxisOffset, double zAxisOffset ) {
 
     TH2D hist(nametitle.c_str(), nametitle.c_str(), nbinsx, xmin, xmax, nbinsy, ymin, ymax );
     hist.GetXaxis()->SetTitle( xtitle.c_str() );
@@ -441,7 +532,7 @@ void HEPHero::makeHist( string nametitle, int nbinsx, double xmin, double xmax, 
 
 }
 
-void HEPHero::makeHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption, double xAxisOffset, double yAxisOffset ) {
+void HEPBase::makeHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption, double xAxisOffset, double yAxisOffset ) {
 
     TH1D hist(nametitle.c_str(), nametitle.c_str(), nbins, xmin, xmax );
     hist.GetXaxis()->SetTitle( xtitle.c_str() );
@@ -456,7 +547,7 @@ void HEPHero::makeHist( string nametitle, int nbins, double xmin, double xmax, s
 //---------------------------------------------------------------------------------------------------------------
 // MakeEfficiencyPlot
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::MakeEfficiencyPlot( TH1D hpass, TH1D htotal, string triggerName ) {
+void HEPBase::MakeEfficiencyPlot( TH1D hpass, TH1D htotal, string triggerName ) {
     TCanvas c("","");
     TGraphAsymmErrors geff;
     geff.BayesDivide( &hpass, &htotal );
@@ -478,7 +569,7 @@ void HEPHero::MakeEfficiencyPlot( TH1D hpass, TH1D htotal, string triggerName ) 
 //---------------------------------------------------------------------------------------------------------------
 // setStyle
 //--------------------------------------------------------------------------------------------------------------- 
-void HEPHero::setStyle( double ytoff, bool marker, double left_margin ) {
+void HEPBase::setStyle( double ytoff, bool marker, double left_margin ) {
 // use plain black on white colors
 Int_t icol=0;
 gStyle->SetFrameBorderMode(icol);

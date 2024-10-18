@@ -1,0 +1,25 @@
+target_sources(RunAnalysis PRIVATE src/HEPTools.cpp src/GENTools.cpp src/HEPHeroA.cpp src/RunAnalysis.cpp
+src/HepMC3/GenCrossSection.cc
+src/HepMC3/GenEvent.cc
+src/HepMC3/GenHeavyIon.cc
+src/HepMC3/GenParticle.cc
+src/HepMC3/GenPdfInfo.cc
+src/HepMC3/GenRunInfo.cc
+src/HepMC3/GenVertex.cc
+src/HepMC3/HEPEVT_Wrapper.cc
+src/HepMC3/LHEFAttributes.cc
+src/HepMC3/Print.cc
+src/HepMC3/ReaderAscii.cc
+src/HepMC3/ReaderAsciiHepMC2.cc
+src/HepMC3/ReaderHEPEVT.cc
+src/HepMC3/ReaderLHEF.cc
+src/HepMC3/ReaderPlugin.cc
+src/HepMC3/Setup.cc
+src/HepMC3/WriterAscii.cc
+src/HepMC3/WriterAsciiHepMC2.cc
+src/HepMC3/WriterHEPEVT.cc
+src/HepMC3/WriterPlugin.cc
+src/HepMC3/WriterDOT.cc
+src/HepMC3/Relatives.cc
+src/HepMC3/Selector.cc
+)

@@ -6,9 +6,6 @@ import json
 import sys
 import h5py
 import argparse
-sys.path.insert(0, '../Datasets')
-from Samples import *
-
 from itertools import repeat
 import concurrent.futures
 import multiprocessing
@@ -22,8 +19,6 @@ parser.add_argument("-c", "--cpu")
 parser.set_defaults(cpu=None)
 parser.add_argument("--syst", dest='syst', action='store_true')
 parser.set_defaults(syst=False)
-parser.add_argument("--apv", dest='apv', action='store_true')
-parser.set_defaults(apv=False)
 parser.add_argument("--debug", dest='debug', action='store_true')
 parser.set_defaults(debug=False)
 
@@ -31,6 +26,9 @@ args = parser.parse_args()
 
 with open('analysis.txt') as f:
     analysis = f.readline()
+
+sys.path.insert(0, '../'+analysis+'/Datasets')
+from Samples import *
     
 outpath = os.environ.get("HEP_OUTPATH")
 basedir = os.path.join(outpath, analysis, args.selection)
@@ -49,18 +47,15 @@ print('Analysis = ' + analysis)
 print('Selection = ' + args.selection)
 print('Period = ' + period)
 print('Systematics = ' + str(args.syst))
-print('APV = ' + str(args.apv))
 print('Outpath = ' + basedir)
 print('CPUs = ' + str(cpu_count))
 print('')
 
-samples = get_samples( basedir, period, args.apv )
+samples = get_samples( basedir, period )
 
 
 comb_path = os.path.join(basedir, "datasets")
 period_path = os.path.join(comb_path, period)
-if( args.apv ):
-    period_path = os.path.join(comb_path, "APV_"+period)
 
 if not os.path.exists(comb_path):
     os.makedirs(comb_path)
@@ -103,7 +98,7 @@ systematics = dict(zip(list_keys, list_values))
 
 sample_keys = samples.keys()
 
-def __group_datasets( sample_keys, samples, basedir, period, args_syst, systematics, args_apv, args_debug ):
+def __group_datasets( sample_keys, samples, basedir, period, args_syst, systematics, args_debug ):
     if args_debug:
         print("\n ->", sample_keys)
     datasets = sample_keys
@@ -112,12 +107,6 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     if len(datasets) > 5:
         datasets_era = datasets[-1]
         datasets_group = datasets[:4]
-    preVFP_eras = ["B", "C", "D", "E"]
-    postVFP_eras = ["F", "G", "H"]
-    if period == "16" and not args_apv and datasets_group == "Data" and (datasets_era in preVFP_eras or 'HIPM_F' in datasets):
-        return
-    if period == "16" and args_apv and datasets_group == "Data" and datasets_era in postVFP_eras and 'HIPM' not in datasets:
-        return
     #print(datasets)
     # Initialize source list (object which will store the systematic histograms)
     if args_syst:
@@ -158,10 +147,9 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     for dataset in samples[datasets]:
         if args_debug:
             print(dataset)
-        dataset_year = dataset.split("_files_")[0]
-        dataset_year = dataset_year.split("_")[-1]
-        dataset_tag = dataset.split("_"+dataset_year)[0][-3:]
-        if (dataset_year == period):
+        dataset_name = dataset.split("_files_")[0]
+        dataset_period = dataset_name.split("_")[-2]+"_"+dataset_name.split("_")[-1]
+        if (dataset_period == period):
             cutflow = os.path.join(basedir, dataset, "cutflow.txt")
             if os.path.isfile(cutflow):
                 with open(cutflow) as cf:
@@ -172,11 +160,15 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                             PROC_XSEC = float(line.split()[2])
                         if line[:17] == "Sum of genWeights" :
                             SUM_GEN_WGT += float(line.split()[3])
-                        if line[:17] == "Lumi. Uncertainty" :
-                            DATA_LUMI_TOTAL_UNC = float(line.split()[2])
-                            DATA_LUMI_UNCORR_UNC = float(line.split()[4])
-                            DATA_LUMI_FC_UNC = float(line.split()[5])
-                            DATA_LUMI_FC1718_UNC = float(line.split()[6])
+                        if line[:17] == "Lumi. Unc. Values" :
+                            DATA_LUMI_TOTAL_UNC = float(line.split()[4])
+                            DATA_LUMI_VALUES_UNC = []
+                            for i in range(6, len(line.split())):
+                                DATA_LUMI_VALUES_UNC.append(float(line.split()[i]))
+                        if line[:15] == "Lumi. Unc. Tags" :
+                            DATA_LUMI_TAGS_UNC = []
+                            for i in range(5, len(line.split())):
+                                DATA_LUMI_TAGS_UNC.append(line.split()[i])
 
                 hdf_file = os.path.join(basedir, dataset, "selection.h5")
                 f = h5py.File(hdf_file, "r")
@@ -274,7 +266,7 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     for dataset in samples[datasets]:
         if args_debug:
             print(dataset, "metadata_std")
-        if (dataset_year == period):
+        if (dataset_period == period):
             hdf_file = os.path.join(basedir, dataset, "selection.h5")
             f = h5py.File(hdf_file, "r")
             if len(np.array(f["scalars/evtWeight"])) > 0:
@@ -310,6 +302,7 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     
     
     f_out.create_dataset("metadata/lumiWeight", data=dataScaleWeight)
+    f_out.create_dataset("metadata/Luminosity", data=DATA_LUMI)
     f_out.create_dataset("metadata/CrossSection", data=PROC_XSEC)
     f_out.create_dataset("metadata/SumGenWeights", data=SUM_GEN_WGT)
     
@@ -345,9 +338,8 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                             source_list[isource][iuniverse][variable]["Unc"] = (x*dataScaleWeight).tolist()
                             output_sys_dict[variable] = source_list[isource][iuniverse][variable]
                             output_sys_dict[variable]["LumiUnc"] = DATA_LUMI_TOTAL_UNC
-                            output_sys_dict[variable]["LumiUncorrUnc"] = DATA_LUMI_UNCORR_UNC
-                            output_sys_dict[variable]["LumiFCUnc"] = DATA_LUMI_FC_UNC
-                            output_sys_dict[variable]["LumiFC1718Unc"] = DATA_LUMI_FC1718_UNC
+                            output_sys_dict[variable]["LumiValuesUnc"] = DATA_LUMI_VALUES_UNC
+                            output_sys_dict[variable]["LumiTagsUnc"] = DATA_LUMI_TAGS_UNC
         
         with open(os.path.join(period_path, f"{datasets}.json"), 'w') as json_file:            
             json.dump(output_sys_dict, json_file)
@@ -356,10 +348,10 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
     
 if args.debug:
     for ds in sample_keys:
-        __group_datasets( ds, samples, basedir, period, args.syst, systematics, args.apv, args.debug )
+        __group_datasets( ds, samples, basedir, period, args.syst, systematics, args.debug )
 else:    
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count) as executor:
-        result = list(tqdm(executor.map(__group_datasets, sample_keys, repeat(samples), repeat(basedir), repeat(period), repeat(args.syst), repeat(systematics), repeat(args.apv), repeat(args.debug)), total=len(sample_keys)))   
+        result = list(tqdm(executor.map(__group_datasets, sample_keys, repeat(samples), repeat(basedir), repeat(period), repeat(args.syst), repeat(systematics), repeat(args.debug)), total=len(sample_keys)))
         
         
     datasets_path = os.path.join(basedir, "datasets")

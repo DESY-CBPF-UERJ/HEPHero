@@ -5,9 +5,6 @@ import json
 import sys
 import h5py
 import argparse
-sys.path.insert(0, '../Datasets')
-from Samples import *
-
 import numpy as np
 from itertools import repeat
 import concurrent.futures
@@ -24,8 +21,6 @@ parser.add_argument("-d", "--datasets")
 parser.set_defaults(datasets=None)
 parser.add_argument("--syst", dest='syst', action='store_true')
 parser.set_defaults(syst=False)
-parser.add_argument("--apv", dest='apv', action='store_true')
-parser.set_defaults(apv=False)
 parser.add_argument("--debug", dest='debug', action='store_true')
 parser.set_defaults(debug=False)
 
@@ -33,6 +28,11 @@ args = parser.parse_args()
 
 with open('analysis.txt') as f:
     analysis = f.readline()
+
+
+sys.path.insert(0, '../'+analysis+'/Datasets')
+from Samples import *
+
     
 outpath = os.environ.get("HEP_OUTPATH")
 basedir = os.path.join(outpath, analysis, args.selection)
@@ -51,13 +51,12 @@ print('Analysis = ' + analysis)
 print('Selection = ' + args.selection)
 print('Period = ' + period)
 print('Systematics = ' + str(args.syst))
-print('APV = ' + str(args.apv))
 print('Outpath = ' + basedir)
 print('CPUs = ' + str(cpu_count))
 print('')
 
 
-samples = get_samples( basedir, period, args.apv )
+samples = get_samples( basedir, period )
 
 
 jobs_file_name = os.path.join(basedir, "jobs.txt")
@@ -85,9 +84,9 @@ def __check_dataset( dataset_list, basedir, period, args_syst, systematics, args
     count_bad = 0
     Nentries = 0
     dataset_name = dataset.split("_files_")[0]
-    dataset_year = dataset_name.split("_")[-1]
-    dataset_tag = dataset.split("_"+dataset_year)[0][-3:]
-    if (dataset_year == period):
+    dataset_period = dataset_name.split("_")[-2]+"_"+dataset_name.split("_")[-1]
+    #dataset_tag = dataset.split("_"+dataset_year)[0][-3:]
+    if (dataset_period == period):
         #print(dataset)
         control = 0
         with open(jobs_file_name) as f:
@@ -252,12 +251,6 @@ for datasets in tqdm(samples.keys()):
     if len(datasets) > 5:
         datasets_era = datasets[-1]
         datasets_group = datasets[:4]
-    preVFP_eras = ["B", "C", "D", "E"]
-    postVFP_eras = ["F", "G", "H"]
-    if period == "16" and not args.apv and datasets_group == "Data" and (datasets_era in preVFP_eras or 'HIPM_F' in datasets):
-        continue
-    if period == "16" and args.apv and datasets_group == "Data" and datasets_era in postVFP_eras and 'HIPM' not in datasets:
-        continue
     print(datasets)
     jobs_count_good = []
     jobs_count_bad = []
@@ -297,22 +290,14 @@ for datasets in tqdm(samples.keys()):
     
 if not args.debug:
     if len(Resubmit_Jobs) > 0:
-        if( args.apv ):
-            file_name = os.path.join("resubmit_APV_" + period + ".txt")
-        else:
-            file_name = os.path.join("resubmit_" + period + ".txt")
+        file_name = os.path.join("resubmit_" + period + ".txt")
         resubmit_file = open(file_name, "w")
         for i in range(len(Resubmit_Jobs)):
             resubmit_file.write(Resubmit_Jobs[i]) 
     else:
-        if( args.apv ):
-            file_name = os.path.join("resubmit_APV_" + period + ".txt")
-            if os.path.isfile(file_name):
-                os.system("mv -f " + file_name + " previous_resubmit_APV_" + period + ".txt" )
-        else:
-            file_name = os.path.join("resubmit_" + period + ".txt")
-            if os.path.isfile(file_name):
-                os.system("mv -f " + file_name + " previous_resubmit_" + period + ".txt" )
+        file_name = os.path.join("resubmit_" + period + ".txt")
+        if os.path.isfile(file_name):
+            os.system("mv -f " + file_name + " previous_resubmit_" + period + ".txt" )
         
             
 

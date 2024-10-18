@@ -1,33 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(HEPHero)
 
-include_directories(include)
+set(ANALYSIS "ABC")
 
-set(SOURCES src/RunAnalysis.cpp src/HEPHero.cpp src/correction.cc src/formula_ast.cc src/RoccoR.cc src/RecoilCorrector.cc src/HEPTools.cpp src/GENTools.cpp src/CMSTools.cpp src/ANATools.cpp src/OPENDATATools.cpp src/HEPObjects.cpp
-src/HepMC3/GenCrossSection.cc
-src/HepMC3/GenEvent.cc
-src/HepMC3/GenHeavyIon.cc
-src/HepMC3/GenParticle.cc
-src/HepMC3/GenPdfInfo.cc
-src/HepMC3/GenRunInfo.cc
-src/HepMC3/GenVertex.cc
-src/HepMC3/HEPEVT_Wrapper.cc
-src/HepMC3/LHEFAttributes.cc
-src/HepMC3/Print.cc
-src/HepMC3/ReaderAscii.cc
-src/HepMC3/ReaderAsciiHepMC2.cc
-src/HepMC3/ReaderHEPEVT.cc
-src/HepMC3/ReaderLHEF.cc
-src/HepMC3/ReaderPlugin.cc
-src/HepMC3/Setup.cc
-src/HepMC3/WriterAscii.cc
-src/HepMC3/WriterAsciiHepMC2.cc
-src/HepMC3/WriterHEPEVT.cc
-src/HepMC3/WriterPlugin.cc
-src/HepMC3/WriterDOT.cc
-src/HepMC3/Relatives.cc
-src/HepMC3/Selector.cc
-) 
+include_directories(include ${ANALYSIS}/include)# "include/onnxruntime-linux-x64-1.19.0/include")
+
+#link_directories("include/onnxruntime-linux-x64-1.19.0/lib")
 
 #ROOT 6.10+
 find_package(ROOT CONFIG REQUIRED)
@@ -40,8 +18,19 @@ set(CMAKE_PREFIX_PATH $ENV{MY_TORCH_PATH})
 find_package(Torch REQUIRED)
 ##set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-add_executable(RunAnalysis ${SOURCES})
+#add_executable(RunAnalysis ${SOURCES})
 
-target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive "${TORCH_LIBRARIES}")
+add_executable(RunAnalysis)
+#target_sources(app PRIVATE "app.cpp")
+add_subdirectory(src)
+add_subdirectory(${ANALYSIS}/src)
+add_subdirectory(${ANALYSIS}/ana)
+
+target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive "${TORCH_LIBRARIES}")# onnxruntime)
 
 set_property(TARGET RunAnalysis PROPERTY CXX_STANDARD 14)
+
+
+
+#include_directories("${ONNXRUNTIME_ROOTDIR}/include")
+#link_directories("${ONNXRUNTIME_ROOTDIR}/lib")

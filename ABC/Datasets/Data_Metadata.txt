@@ -1,0 +1,7 @@
+Data-taking     Year    DTI     Luminosity[pb-1]    Unc_total[%]    Unc_uncorr[%]   Unc_fc[%]       Unc_fc1718[%]
+2016_preVFP     16      0       19521.2283          1.2             1.0             0.6             0.0
+2016_postVFP    16      1       16812.1517          1.2             1.0             0.6             0.0
+2017            17      0       41479.6805          2.3             2.0             0.9             0.6
+2018            18      0       59832.4753          2.5             1.5             2.0             0.2
+> > > > > > > https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
+> > > > > > > https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2#SummaryTable

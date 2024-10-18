@@ -1,9 +1,9 @@
-#include "HEPHero.h"
+#include "HEPBase.h"
 
 //---------------------------------------------------------------------------------------------------------------
 // Calculate Gen Variables
 //---------------------------------------------------------------------------------------------------------------
-void HEPHero::calculate_gen_variables(){
+void HEPBase::calculate_gen_variables(){
     
     GEN_HT = 0;
     TLorentzVector MHT;
@@ -51,7 +51,7 @@ void HEPHero::calculate_gen_variables(){
 //---------------------------------------------------------------------------------------------------------------
 // Compute particle mass from stable particles at the end of the chain
 //---------------------------------------------------------------------------------------------------------------
-float HEPHero::part_mass( int barcode ){
+float HEPBase::part_mass( int barcode ){
     
     /*
     TLorentzVector part;
@@ -89,7 +89,7 @@ float HEPHero::part_mass( int barcode ){
 //---------------------------------------------------------------------------------------------------------------
 // PLOT GRAPHS OF THE EVENTS IN THE LIST
 //---------------------------------------------------------------------------------------------------------------
-void HEPHero::plot_events(vector<int> events){
+void HEPBase::plot_events(vector<int> events){
     
     for( unsigned int ievt = 0; ievt < events.size(); ++ievt ){
         if( _EventPosition == events[ievt] ){
@@ -105,7 +105,7 @@ void HEPHero::plot_events(vector<int> events){
 //---------------------------------------------------------------------------------------------------------------
 // PRINT INFO ABOUT THE SELECTION PROCESS
 //---------------------------------------------------------------------------------------------------------------
-void HEPHero::WriteGenCutflowInfo(){
+void HEPBase::WriteGenCutflowInfo(){
     
     if( _sysID_lateral == 0 ) {
         _CutflowFile.open( _CutflowFileName.c_str(), ios::app );
@@ -133,57 +133,68 @@ void HEPHero::WriteGenCutflowInfo(){
 }
 
 
+
 //---------------------------------------------------------------------------------------------------------------
-// Weight corrections
+// GENERATOR ROUTINES INSIDE THE LOOP
 //---------------------------------------------------------------------------------------------------------------
-/*
-void HEPHero::Weight_corrections(){
-    
-    //pileup_wgt = 1.;
-    //electron_wgt = 1.;
-    
-    if(dataset_group != "Data"){
-        
-        
-        if( apply_pileup_wgt ){
-            pileup_wgt = pileup_corr->evaluate({Pileup_nTrueInt, "nominal"});
-            evtWeight *= pileup_wgt;
+bool HEPBase::GenRoutines(){
+
+    //======HEPHeroGEN===============================================================
+    _evt.set_units(HepMC3::Units::GEV, HepMC3::Units::MM);
+
+    weights_value = _evt.weights();
+    if( _EventPosition == 0 ) weights_name = _ascii_file->run_info()->weight_names();
+
+    // PROCESS INFO
+    if( _EventPosition == 0 ){
+        if( _has_pdf ){
+            std::shared_ptr<HepMC3::GenPdfInfo> pdf = _evt.attribute<HepMC3::GenPdfInfo>("GenPdfInfo");
+            pdf_id1 = pdf->pdf_id[0];
+            pdf_id2 = pdf->pdf_id[1];
+        }else{
+            pdf_id1 = -1;
+            pdf_id2 = -1;
         }
-        
-        if( apply_electron_wgt ){
-            electron_wgt = GetElectronWeight("cv");
-            evtWeight *= electron_wgt;
-        }
-        
+
+        _N_PS_weights = _evt.weights().size();
+
+        momentum_unit_id = _evt.momentum_unit();
+        length_unit_id = _evt.length_unit();
+        _momentum_unit = "MeV";
+        _length_unit = "mm";
+        if( momentum_unit_id == 1 ) _momentum_unit = "GeV";
+        if( length_unit_id == 1 ) _length_unit = "cm";
+
     }
-    
-}
-*/
 
-
-//---------------------------------------------------------------------------------------------------------------
-// Vertical systematics
-// Keep the same order used in runSelection.py
-//--------------------------------------------------------------------------------------------------------------- 
-/*
-void HEPHero::VerticalSys(){
-    if( _sysID_lateral == 0 ) {   
-        sys_vertical_sfs.clear();
-        
-        int ivert2 = 1;
-        for( int ivert = 0; ivert < (_N_PS_weights-1)/2.; ++ivert ){
-            
-            vector<float> sfs;
-            sfs.push_back(weights_value[ivert2]);      // DOWN
-            sfs.push_back(weights_value[ivert2+1]);    // UP
-            sys_vertical_sfs.insert(pair<string, vector<float>>(_sysNames_vertical[ivert], sfs));
-            ivert2 += 2;
+    if( _EventPosition+1 == _NumberEntries ){
+        if( _has_xsec ){
+            std::shared_ptr<HepMC3::GenCrossSection> cs = _evt.attribute<HepMC3::GenCrossSection>("GenCrossSection");
+            cross_section = cs->xsec("Default");
+            cross_section_unc = cs->xsec_err("Default");
+        }else{
+            cross_section = -1;
+            cross_section_unc = -1;
         }
     }
+
+    // EVENT INFO
+    event_number = _evt.event_number();
+
+    if( _has_pdf ){
+        std::shared_ptr<HepMC3::GenPdfInfo> pdf = _evt.attribute<HepMC3::GenPdfInfo>("GenPdfInfo");
+        scalePDF = pdf->scale;      // Q-scale used in evaluation of PDF’s (in GeV)
+        id1 = pdf->parton_id[0];    // flavour code of first parton
+        id2 = pdf->parton_id[1];    // flavour code of second parton
+        x1 = pdf->x[0];             // fraction of beam momentum carried by first parton (”beam side”)
+        x2 = pdf->x[1];             // fraction of beam momentum carried by second parton (”target side”)
+        pdf1 = pdf->xf[0];          // PDF (id1, x1, Q) This should be of the form x*f(x)
+        pdf2 = pdf->xf[1];          // PDF (id2, x2, Q) This should be of the form x*f(x)
+    }
+
+    return true;
+
 }
-*/
-
-
 
 
 

@@ -1,1 +1,0 @@
-The btagging.json file was modified to replace the light jet SFs in 2016 postVFP by the light jet SFs from 2016 preVFP, following a temporary recommendation.
