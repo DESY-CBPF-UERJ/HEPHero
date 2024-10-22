@@ -14,15 +14,22 @@ echo "MACHINES"
 echo $6
 echo "USER"
 echo $7
-echo "RESUBMISSION"
+echo "ANALYSIS"
 echo $8
+echo "RESUBMISSION"
+echo $9
+
 
 export HEP_OUTPATH=$4
 export REDIRECTOR=$5
 export MACHINES=$6
 
 if [ "$6" == "CERN" ]; then
-rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/Datasets/*.hepmc" --exclude="HEPHero/Datasets/*.root" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/ana/local_output" $3 .
+rsync -azh --exclude="HEPHero/.*" --exclude="HEPHero/CMakeFiles" --exclude="HEPHero/RunAnalysis" --exclude="HEPHero/HTCondor/*.log" --exclude="HEPHero/HTCondor/jobs_log/run_*" --exclude="HEPHero/AP_*" $3 .
+cd HEPHero
+rsync -azh --exclude="$8/Datasets/*.hepmc" --exclude="$8/Datasets/*.root" --exclude="$8/ana/local_output" $3/$8 .
+cd ..
+
 #=======
 #cp -rf $HEP_OUTPATH/HEPHero .
 #=======
@@ -57,7 +64,6 @@ rm -rf HEPHero_old
 export MY_TORCH_PATH=/mnt/hadoop/cms/store/user/${USER}/libtorch
 fi
 
-ls
 if [ "$6" == "CERN" ] || [ "$6" == "DESY" ]; then
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 else
@@ -77,8 +83,8 @@ cmake $(pwd)
 make -j 4
 fi
 
-if [ "$8" == "--resubmit" ]; then
-python runSelection.py -j $1 -p $2 -t 0 $8
+if [ "$9" == "--resubmit" ]; then
+python runSelection.py -j $1 -p $2 -t 0 $9
 else
 python runSelection.py -j $1 -p $2 -t 0
 fi

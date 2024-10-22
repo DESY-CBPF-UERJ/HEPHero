@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(HEPHero)
 
-set(ANALYSIS "ABC")
+set(ANALYSIS "AP_Template_R3")
 
 include_directories(include ${ANALYSIS}/include)# "include/onnxruntime-linux-x64-1.19.0/include")
 

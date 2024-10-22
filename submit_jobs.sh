@@ -28,6 +28,8 @@ N_datasets=$2
 flavor=\"$1\"
 resubmit=$3
 
+ANALYSIS=$(<tools/analysis.txt)
+
 # Check if third argument is the submission flag
 if [ ${resubmit} ] && [ "${resubmit}" != "--resubmit" ]; then
   echo "Submission flag is incorrect."
@@ -84,14 +86,19 @@ else
         cd ..
         tgzdir=$(pwd)
         rm HEPHero.tgz
-        tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/Datasets/*.hepmc' --exclude='HEPHero/Datasets/*.root' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/ana/local_output' -zcf HEPHero.tgz HEPHero
+        rm AP.tgz
+
+        tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/AP_*' -zcf HEPHero.tgz HEPHero
+
+        tar --exclude="HEPHero/${ANALYSIS}/Datasets/*.hepmc" --exclude="HEPHero/${ANALYSIS}/Datasets/*.root" --exclude="HEPHero/${ANALYSIS}/ana/local_output" -zcf AP.tgz HEPHero/${ANALYSIS}
+
         cd HEPHero
         if grep -q "#grid_resource" HTCondor/condor.sub; then
             sed -i "s/.*Universe.*/Universe              = grid/" HTCondor/condor.sub
             sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" HTCondor/condor.sub
             sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" HTCondor/condor.sub
             sed -i "s/.*grid_resource.*/grid_resource         = condor condor.hepgrid.uerj.br condor.hepgrid.uerj.br/" HTCondor/condor.sub
-            sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHero.tgz~" HTCondor/condor.sub
+            sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHero.tgz,${tgzdir}/AP.tgz~" HTCondor/condor.sub
             sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" HTCondor/condor.sub
             sed -i "s/.*when_to_transfer_output.*/when_to_transfer_output = ON_EXIT/" HTCondor/condor.sub
             sed -i "s/.*transfer_output_files.*/transfer_output_files = output/" HTCondor/condor.sub
@@ -103,7 +110,7 @@ else
             sed -i "s/.*accounting_group_user.*/#accounting_group_user = ${USER}/" HTCondor/condor.sub
             sed -i "s/.*accounting_group      =.*/#accounting_group      = group_uerj/" HTCondor/condor.sub
             sed -i "s/.*grid_resource.*/#grid_resource         = condor condor.hepgrid.uerj.br condor.hepgrid.uerj.br/" HTCondor/condor.sub
-            sed -i "s~.*transfer_input_files.*~#transfer_input_files  = ${tgzdir}/HEPHero.tgz~" HTCondor/condor.sub
+            sed -i "s~.*transfer_input_files.*~#transfer_input_files  = ${tgzdir}/HEPHero.tgz,${tgzdir}/AP.tgz~" HTCondor/condor.sub
             sed -i "s/.*should_transfer_files.*/#should_transfer_files = YES/" HTCondor/condor.sub
             sed -i "s/.*when_to_transfer_output.*/#when_to_transfer_output = ON_EXIT/" HTCondor/condor.sub
             sed -i "s/.*transfer_output_files.*/#transfer_output_files = output/" HTCondor/condor.sub
@@ -114,7 +121,7 @@ else
     
     sed -i "s/.*queue.*/queue ${N_datasets}/" HTCondor/condor.sub
     sed -i "s~.*Proxy_path            =.*~Proxy_path            = ${Proxy_file}~" HTCondor/condor.sub
-    sed -i "s~.*arguments.*~arguments             = \$(ProcId) \$(Proxy_path) $(pwd) ${outpath} ${redirector} ${machines} ${USER} ${resubmit}~" HTCondor/condor.sub
+    sed -i "s~.*arguments.*~arguments             = \$(ProcId) \$(Proxy_path) $(pwd) ${outpath} ${redirector} ${machines} ${USER} ${ANALYSIS} ${resubmit}~" HTCondor/condor.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour             = ${flavor}/" HTCondor/condor.sub
     
     if [ "${run_start}" == "yes" ]; then

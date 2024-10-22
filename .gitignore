@@ -1,6 +1,4 @@
-ana/*.cpp
-ana/local_output
-setups/*.py
+AP_*
 RunAnalysis
 CMakeCache.txt
 CMakeFiles/*

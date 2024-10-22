@@ -18,7 +18,7 @@ import numpy as np
 # Main Setup
 #-------------------------------------------------------------------------------------
 selection = 'Test'
-analysis = 'ABC'
+analysis = 'AP_Template_R3'
 treeName = 'Events'
 LumiWeights = 1
 
@@ -52,23 +52,23 @@ NumFilesPerJob_Bkg = 5
 #-------------------------------------------------------------------------------------
 # Datasets
 #-------------------------------------------------------------------------------------
-sys.path.insert(0, 'ABC/Datasets')
+sys.path.insert(0, 'AP_Template_R3/Datasets')
 from Signal import *
 from Bkg import *
 from Data import *
 datasets = []
 
-datasets.extend(Data_MET_0_16)
-datasets.extend(Signal_0_16)
+datasets.extend(Data_MET_0_22)
+datasets.extend(Signal_0_22)
 
-datasets.extend(Data_MET_1_16)
-datasets.extend(Signal_1_16)
+datasets.extend(Data_MET_1_22)
+datasets.extend(Signal_1_22)
 
-datasets.extend(Data_MET_0_17)
-datasets.extend(Signal_0_17)
+datasets.extend(Data_MET_0_23)
+datasets.extend(Signal_0_23)
 
-datasets.extend(Data_MET_0_18)
-datasets.extend(Signal_0_18)
+datasets.extend(Data_MET_1_23)
+datasets.extend(Signal_1_23)
 
 
 #-------------------------------------------------------------------------------------
@@ -156,9 +156,13 @@ if args.check >= 0:
         if args.check == 4:
             datasets = [["TTToSemiLeptonic_test_0_18",        '1800000', analysis+"/Datasets/bkg.root",  0],]
         if args.check == 5:
+            datasets = [["TTToSemiLeptonic_test_0_22",        '2200000', analysis+"/Datasets/bkg.root",  0],]
+        if args.check == 6:
+            datasets = [["TTToSemiLeptonic_test_0_23",        '2300000', analysis+"/Datasets/bkg.root",  0],]
+        if args.check == 7:
             datasets = [["Data_DoubleMu_test_H_1_16",         '1600001', analysis+"/Datasets/data.root",   0],]
-        if args.check >= 6:
-            sys.exit("There are only 6 tests from 0 to 5.")
+        if args.check >= 8:
+            sys.exit("There are only 8 tests from 0 to 7.")
     
     jobs = [[datasets[0], 0, 1, 0, 0]]
     
