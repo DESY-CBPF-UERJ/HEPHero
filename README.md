@@ -17,7 +17,7 @@ export MACHINES=<place the organization name, owner of the computing resources>
 
 alias hepenv='source /afs/cern.ch/work/g/gcorreia/public/hepenv_setup.sh'  #(CERN)
 alias hepenv='source /afs/desy.de/user/g/gcorreia/public/hepenv_setup.sh'  #(DESY)
-alias hepenv='source /mnt/hadoop/cms/store/user/gcorreia/hepenv_setup.sh'  #(UERJ)
+alias hepenv='source /cms/store/user/gcorreia/hepenv_setup.sh'  #(UERJ)
 alias hepenv='source $HEP_OUTPATH/hepenv_setup.sh'                         #(PC)
 alias cernenv='source $HEP_OUTPATH/container_setup.sh'                     #(PC)
 ```
@@ -50,19 +50,19 @@ export MACHINES=CERN
 ```
 
 ```bash
-export HEP_OUTPATH=/nfs/dust/cms/user/gcorea/output
+export HEP_OUTPATH=/nfs/dust/cms/user/gcorreia/output
 export REDIRECTOR=None
 export MACHINES=DESY
 ```
 
 ```bash
-export HEP_OUTPATH=/home/gcorea/output
+export HEP_OUTPATH=/home/gcorreia/output
 export REDIRECTOR=None
 export MACHINES=UERJ
 ```
 
 ```bash
-export HEP_OUTPATH=/home/gcorea/output
+export HEP_OUTPATH=/home/gcorreia/output
 export REDIRECTOR=None
 export MACHINES=PC
 ```
@@ -82,7 +82,7 @@ hepenv
 
 Set up the runSelection.py to one of the available analysis folders inside the HEPHero directory:
 ```bash
-python setAnalysis.py -a bbZDM_Lep_R2
+python setAnalysis.py -a AP_bbZDM_Lep_R2
 ```
 
 Enter in the HEPHero directory and compile the code (running cmake is necessary only at the first time):
@@ -101,7 +101,7 @@ Dissociate **Test** from the framework (the anafile is not deleted):
 ./rmSelection.sh Test
 ```
 
-You can check for different cases [**m**= 0(signal), 1-4(bkg all years), 5(data)] if your anafile is working as intended using the test datasets:
+You can check for different cases [**m**= 0(signal), 1-4(bkg for Run2 years), 5-6(bkg for Run3 years), 7(data)] if your anafile is working as intended using the test datasets:
 
 ```bash
 python runSelection.py -c m

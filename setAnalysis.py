@@ -84,32 +84,13 @@ with open("runSelection_temp.py", "w") as newfile:
         for dataset in sm.datasets:
             newfile.write(str(dataset) + ",\n")
         newfile.write("]\n")
-    elif args.analysis == "OPENDATA":
-        newfile.write("sys.path.insert(0, '"+sm.analysis+"/Datasets')\n")
-        newfile.write("from Signal import *\n")
-        newfile.write("from Bkg import *\n")
-        newfile.write("from Data import *\n")
-        newfile.write("datasets = []\n")
-        newfile.write("\n")
-        for dataset in sm.datasets:
-            newfile.write("datasets.extend(" + dataset + "_12" + ")\n")
     else:
         newfile.write("sys.path.insert(0, '"+sm.analysis+"/Datasets')\n")
         newfile.write("from Signal import *\n")
         newfile.write("from Bkg import *\n")
         newfile.write("from Data import *\n")
         newfile.write("datasets = []\n") 
-        meta_file = open(sm.analysis+"/Datasets/Data_Metadata.txt")
-        periods = []
-        first_line = True
-        for line in meta_file:
-            year = line.split()[1]
-            dti = line.split()[2]
-            if first_line or dti == ">":
-                first_line = False
-            else:
-                periods.append(dti+"_"+year)
-        for period in periods:
+        for period in sm.periods:
             newfile.write("\n")
             for dataset in sm.datasets:
                 newfile.write("datasets.extend(" + dataset + "_" + period + ")\n")

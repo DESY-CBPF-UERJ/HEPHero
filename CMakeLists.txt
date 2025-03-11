@@ -3,9 +3,9 @@ project(HEPHero)
 
 set(ANALYSIS "AP_Template_R3")
 
-include_directories(include ${ANALYSIS}/include)# "include/onnxruntime-linux-x64-1.19.0/include")
+include_directories(include ${ANALYSIS}/include $ENV{MY_ONNX_PATH}/include)
 
-#link_directories("include/onnxruntime-linux-x64-1.19.0/lib")
+link_directories($ENV{MY_ONNX_PATH}/lib)
 
 #ROOT 6.10+
 find_package(ROOT CONFIG REQUIRED)
@@ -26,11 +26,8 @@ add_subdirectory(src)
 add_subdirectory(${ANALYSIS}/src)
 add_subdirectory(${ANALYSIS}/ana)
 
-target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive "${TORCH_LIBRARIES}")# onnxruntime)
+target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive "${TORCH_LIBRARIES}" onnxruntime)
 
 set_property(TARGET RunAnalysis PROPERTY CXX_STANDARD 14)
 
 
-
-#include_directories("${ONNXRUNTIME_ROOTDIR}/include")
-#link_directories("${ONNXRUNTIME_ROOTDIR}/lib")

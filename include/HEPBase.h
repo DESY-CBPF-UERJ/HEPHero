@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <optional>
 #include <random>
 #include "TRandom.h"
 #include "THnSparse.h"
@@ -30,8 +31,6 @@
 #include <time.h>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include <fdeep/fdeep.hpp>
-#include <fdeep/model.hpp>
 #include <torch/torch.h>
 #include <torch/script.h>
 #include "rapidcsv.h"
@@ -45,7 +44,6 @@
 #include "HepMC3/Relatives.h"
 #include <highfive/H5File.hpp>
 #include <boost/multi_array.hpp>
-//#include "onnxruntime_c_api.h"
 
 
 using namespace std;

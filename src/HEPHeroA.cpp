@@ -149,8 +149,9 @@ HEPHero::HEPHero( char *configFileName ) {
             
             string inputFileName;
             if( _Machines == "CERN" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
+            if( _Machines == "CMSC" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
             if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);  
-            if( _Machines == "UERJ" ) inputFileName = "/mnt/hadoop/cms/" + (*itr);
+            if( _Machines == "UERJ" ) inputFileName = "/cms/" + (*itr);
             if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-15) + "/opendata/" + (*itr);
             if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
             _inputTree -> Add( inputFileName.c_str() ); 

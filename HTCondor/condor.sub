@@ -8,6 +8,8 @@ executable            = condor.sh
 #when_to_transfer_output = ON_EXIT
 #transfer_output_files = output
 #transfer_output_remaps = "output = /home/gcorea/output"
+#+REQUIRED_OS          = "rhel9"
+#request_cpus          = 4
 Proxy_path            = /afs/cern.ch/work/g/gcorea/private/x509up
 arguments             = $(ProcId) $(Proxy_path) /home/gilson/cernbox/HEP_Project/CMS_LLGDV/HEPHero
 output                = jobs_log/run_$(ClusterId)_$(ProcId).out

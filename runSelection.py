@@ -61,15 +61,6 @@ datasets = []
 datasets.extend(Data_MET_0_22)
 datasets.extend(Signal_0_22)
 
-datasets.extend(Data_MET_1_22)
-datasets.extend(Signal_1_22)
-
-datasets.extend(Data_MET_0_23)
-datasets.extend(Signal_0_23)
-
-datasets.extend(Data_MET_1_23)
-datasets.extend(Signal_1_23)
-
 
 #-------------------------------------------------------------------------------------
 # Metadata
@@ -246,8 +237,10 @@ else:
             print("")
             sys.exit("Number of jobs: " + str(len(jobs)))
         if N == -2:
+            datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
             for i in range(len(jobs)):
-                print(str(i)+"  "+str(jobs[i])+",")
+                #print(i, jobs[i])
+                print(i, [jobs[i][0][0], jobs[i][0][1], datasets_short[i]], [jobs[i][0][3], str(jobs[i][1])+"-"+str(jobs[i][2])], [jobs[i][3], jobs[i][4]])
             sys.exit("")
         else:
             if N <= -3:
@@ -276,7 +269,7 @@ else:
                 empty_text_files.append(dataset[0])
                 number_of_files_not_at_local_storage[dataset[0]] = 0
             else:
-                if machines != "CERN":
+                if (machines != "CERN") and (machines != "CMSC"):
                     file_input = open(dataset[2], 'r')
                     lines = file_input.readlines()
                     lines = [x.strip() for x in lines]
@@ -285,7 +278,7 @@ else:
                         if machines == "DESY":
                             file_path = "/pnfs/desy.de/cms/tier2/" + line
                         if machines == "UERJ":
-                            file_path = "/mnt/hadoop/cms/" + line
+                            file_path = "/cms/" + line
                         if analysis == "OPENDATA":
                             file_path = hep_outpath[:-7] + "/opendata/" + line
 
@@ -327,8 +320,9 @@ else:
             print("")
             sys.exit("Number of jobs: " + str(len(jobs)))
         if N == -2:
+            datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
             for i in range(len(jobs)):
-                print(str(i)+"  "+str(jobs[i])+",")
+                print(str(i)+" ["+jobs[i][0][0]+", "+jobs[i][0][1]+", "+datasets_short[i]+"], ["+str(jobs[i][0][3])+", "+str(jobs[i][1])+"-"+str(jobs[i][2])+"], ["+str(jobs[i][3])+", "+str(jobs[i][4])+"]")
             sys.exit("")
         if N == -3:
             print("")
@@ -336,7 +330,7 @@ else:
                 print(empty_text_files[i])
             print("")
             sys.exit("There are " + str(len(empty_text_files)) + " empty text files")
-        if machines != "CERN":
+        if (machines != "CERN") and (machines != "CMSC"):
             if N == -4:
                 for i in range(len(files_not_at_local_storage)):
                     print(files_not_at_local_storage[i])
@@ -428,7 +422,7 @@ else:
     lines = [x.strip() for x in lines]
     iline = 0
     for line in lines:
-        if machines != "CERN" and analysis != "GEN":
+        if (machines != "CERN") and (machines != "CMSC") and (analysis != "GEN"):
             if line in files_not_at_local_storage:
                 continue
         if iline >= jobs[N][1] and iline < jobs[N][2]:
@@ -518,8 +512,8 @@ os.system(runCommand)
     
 #======REMOVE INPUT FILE OF THE SELECTION==========================================================
 removeCommand = "rm " + ConfigFile
-#if os.path.isfile(ConfigFile):
-#    os.system(removeCommand)
+if os.path.isfile(ConfigFile):
+    os.system(removeCommand)
 
 
 if( (jobs[N][3] == 0) and (jobs[N][4] == 0) ):    
