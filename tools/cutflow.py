@@ -138,6 +138,9 @@ def __generate_cutflow(period, basedir, signal_ref=None):
             cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
             plt.savefig(cutflow_plot_path, transparent=False, dpi=400)
 
+            cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
+            plt.savefig(cutflow_plot_path, transparent=False)
+
             plot_control = 0
             plot_n += 1
         elif plotted:
@@ -168,9 +171,13 @@ def __generate_cutflow(period, basedir, signal_ref=None):
 
 
     real_cutflow_filepath = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + ".txt")
-    cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
 
+    cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
     plt.savefig(cutflow_plot_path, transparent=False, dpi=400)
+
+    cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
+    plt.savefig(cutflow_plot_path, transparent=False)
+
     os.system("mv " + cutflow_filepath + " " + real_cutflow_filepath)
 
     cutflow_file.close()

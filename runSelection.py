@@ -549,6 +549,8 @@ if( (jobs[N][3] == 0) and (jobs[N][4] == 0) ):
     out.close()
 
 #======PRINT THE CONTENT OF THE HDFf FILE===========================================================
+pd.set_option('display.max_rows', None)
+
 print("=========================HDF5 FILE CONTENT=========================")
 if os.path.isfile(hdf_file):
 

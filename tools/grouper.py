@@ -21,6 +21,8 @@ parser.add_argument("--syst", dest='syst', action='store_true')
 parser.set_defaults(syst=False)
 parser.add_argument("--debug", dest='debug', action='store_true')
 parser.set_defaults(debug=False)
+parser.add_argument("--clean", dest='clean', action='store_true')
+parser.set_defaults(clean=False)
 
 args = parser.parse_args()
 
@@ -57,11 +59,14 @@ samples = get_samples( basedir, period )
 comb_path = os.path.join(basedir, "datasets")
 period_path = os.path.join(comb_path, period)
 
+if args.clean:
+    rmCommand = "rm -rf " + period_path
+    os.system(rmCommand)
+
 if not os.path.exists(comb_path):
     os.makedirs(comb_path)
 if not os.path.exists(period_path):
     os.makedirs(period_path)
-    
     
 jobs_file_name = os.path.join(basedir, "jobs.txt")
 json_sys_file_name = os.path.join(basedir, "lateral_systematics.json")
