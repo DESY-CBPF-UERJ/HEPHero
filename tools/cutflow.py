@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
 
 #==================================================================================================
-def __generate_cutflow(period, basedir, signal_ref=None):
+def __generate_cutflow(period, basedir, datasets_path, signal_ref=None):
 
     #Combine cutflow file for each event process for each job directory and produce general cutflow
 
@@ -22,7 +22,7 @@ def __generate_cutflow(period, basedir, signal_ref=None):
 
     samples = get_samples( basedir, period )
 
-    cutflow_filepath = os.path.join(basedir, "datasets/cutflow_XX.txt")
+    cutflow_filepath = os.path.join(datasets_path, "cutflow_XX.txt")
     cutflow_file = open(cutflow_filepath, "w")
 
     if signal_ref is not None:
@@ -135,10 +135,10 @@ def __generate_cutflow(period, basedir, signal_ref=None):
 
             plt.subplots_adjust(left=0.07, bottom=0.17, right=0.98, top=0.95, wspace=0.25, hspace=0.0)
 
-            cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+            cutflow_plot_path = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
             plt.savefig(cutflow_plot_path, transparent=False, dpi=400)
 
-            cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
+            cutflow_plot_path = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
             plt.savefig(cutflow_plot_path, transparent=False)
 
             plot_control = 0
@@ -170,12 +170,12 @@ def __generate_cutflow(period, basedir, signal_ref=None):
     plt.subplots_adjust(left=0.07, bottom=0.17, right=0.98, top=0.95, wspace=0.25, hspace=0.0)
 
 
-    real_cutflow_filepath = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + ".txt")
+    real_cutflow_filepath = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + ".txt")
 
-    cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
+    cutflow_plot_path = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".png")
     plt.savefig(cutflow_plot_path, transparent=False, dpi=400)
 
-    cutflow_plot_path = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
+    cutflow_plot_path = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + "_" + str(plot_n) + ".pdf")
     plt.savefig(cutflow_plot_path, transparent=False)
 
     os.system("mv " + cutflow_filepath + " " + real_cutflow_filepath)
@@ -184,9 +184,9 @@ def __generate_cutflow(period, basedir, signal_ref=None):
 
 
 #==================================================================================================
-def __join_cutflows(periods, basedir, signal_ref=None):
+def __join_cutflows(periods, basedir, datasets_path, signal_ref=None):
 
-    cutflow_filepath = os.path.join(basedir, "datasets/cutflow_XX.txt")
+    cutflow_filepath = os.path.join(datasets_path, "cutflow_XX.txt")
     cutflow_file = open(cutflow_filepath, "w")
 
     if signal_ref is not None:
@@ -208,7 +208,7 @@ def __join_cutflows(periods, basedir, signal_ref=None):
         ds_control = 0
         SUM_GEN_WGT = 0
         for period in periods:
-            cutflow = os.path.join(basedir, "datasets/cutflow_" + period + "_" + signal_tag + ".txt")
+            cutflow = os.path.join(datasets_path, "cutflow_" + period + "_" + signal_tag + ".txt")
             cut_name = []
             cut_val_i = []
             cut_unc_i = []
@@ -250,7 +250,7 @@ def __join_cutflows(periods, basedir, signal_ref=None):
             cutflow_file.write(""+"\n")
 
 
-    real_cutflow_filepath = os.path.join(basedir, "datasets/cutflow_all_periods_" + signal_tag + ".txt")
+    real_cutflow_filepath = os.path.join(datasets_path, "cutflow_all_periods_" + signal_tag + ".txt")
     os.system("mv " + cutflow_filepath + " " + real_cutflow_filepath)
 
     cutflow_file.close()
@@ -279,35 +279,50 @@ if args.periods is not None:
 else:
     periods = [args.period]
 
-for period in periods:
-    outpath = os.environ.get("HEP_OUTPATH")
-    basedir = os.path.join(outpath, analysis, args.selection)
 
+outpath = os.environ.get("HEP_OUTPATH")
+machines = os.environ.get("MACHINES")
+user = os.environ.get("USER")
+storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
+basedir = os.path.join(outpath, analysis, args.selection)
+
+datasets_path = os.path.join(basedir, "datasets")
+
+if machines == "UERJ":
+    basedir = os.path.join("/cms/store/user/", user, "output", analysis, args.selection)
+
+
+if not os.path.exists(datasets_path):
+    os.makedirs(datasets_path)
+
+
+jobs_file_name = os.path.join(basedir, "jobs.txt")
+if(not os.path.isfile(jobs_file_name)):
+    print('Missing configuration files, execute the runSelection.py using the flag "fix" as in the example below, and then try again!')
+    print('python runSelection.py -j 0 --fix')
+    sys.exit()
+
+
+
+for period in periods:
     print('')
     print('Analysis = ' + analysis)
     print('Selection = ' + args.selection)
     print('Period = ' + period)
     print('Outpath = ' + basedir)
 
-    output_path = os.path.join(basedir, "datasets")
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-
-
-    jobs_file_name = os.path.join(basedir, "jobs.txt")
-    if(not os.path.isfile(jobs_file_name)):
-        print('Missing configuration files, execute the runSelection.py using the flag "fix" as in the example below, and then try again!')
-        print('python runSelection.py -j 0 --fix')
-        sys.exit()
-
-    __generate_cutflow(period, basedir, signal_ref=args.signal_ref)
+    __generate_cutflow(period, basedir, datasets_path, signal_ref=args.signal_ref)
 
 
 if args.periods is not None:
     print(" ")
-    bad_datasets = __join_cutflows(periods, basedir, signal_ref=args.signal_ref)
+    bad_datasets = __join_cutflows(periods, basedir, datasets_path, signal_ref=args.signal_ref)
 
     for dataset in bad_datasets:
         print("The dataset", dataset, "is empty!")
 
-
+if machines == "UERJ":
+    cp_command = "xrdcp -rf " + datasets_path + " root://"+storage_redirector+"//store/user/"+user+"/output/"+analysis+"/"+args.selection
+    os.system(cp_command)
+    rm_command = "rm -rf " + datasets_path
+    os.system(rm_command)

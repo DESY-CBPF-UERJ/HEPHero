@@ -33,6 +33,10 @@ sys.path.insert(0, '../'+analysis+'/Datasets')
 from Samples import *
     
 outpath = os.environ.get("HEP_OUTPATH")
+machines = os.environ.get("MACHINES")
+user = os.environ.get("USER")
+storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
+
 basedir = os.path.join(outpath, analysis, args.selection)
 period = str(args.period)
 
@@ -45,6 +49,12 @@ if args.cpu == None:
 else:
     cpu_count = int(args.cpu)
 
+datasets_path = os.path.join(basedir, "datasets")
+period_path = os.path.join(datasets_path, period)
+
+if machines == "UERJ":
+    basedir = os.path.join("/cms/store/user/", user, "output", analysis, args.selection)
+
 print('Analysis = ' + analysis)
 print('Selection = ' + args.selection)
 print('Period = ' + period)
@@ -55,16 +65,12 @@ print('')
 
 samples = get_samples( basedir, period )
 
-
-comb_path = os.path.join(basedir, "datasets")
-period_path = os.path.join(comb_path, period)
-
 if args.clean:
     rmCommand = "rm -rf " + period_path
     os.system(rmCommand)
 
-if not os.path.exists(comb_path):
-    os.makedirs(comb_path)
+if not os.path.exists(datasets_path):
+    os.makedirs(datasets_path)
 if not os.path.exists(period_path):
     os.makedirs(period_path)
     
@@ -358,11 +364,17 @@ else:
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count) as executor:
         result = list(tqdm(executor.map(__group_datasets, sample_keys, repeat(samples), repeat(basedir), repeat(period), repeat(args.syst), repeat(systematics), repeat(args.debug)), total=len(sample_keys)))
         
-        
-    datasets_path = os.path.join(basedir, "datasets")
-    cpCommand = "cp " + os.path.join(basedir, "vertical_systematics.json") + " " + datasets_path
-    os.system(cpCommand)
-    cpCommand = "cp " + os.path.join(basedir, "lateral_systematics.json") + " " + datasets_path
-    os.system(cpCommand)
-    cpCommand = "cp " + os.path.join(basedir, args.selection + ".cpp") + " " + datasets_path
-    os.system(cpCommand)
+cpCommand = "cp " + os.path.join(basedir, "vertical_systematics.json") + " " + datasets_path
+os.system(cpCommand)
+cpCommand = "cp " + os.path.join(basedir, "lateral_systematics.json") + " " + datasets_path
+os.system(cpCommand)
+cpCommand = "cp " + os.path.join(basedir, args.selection + ".cpp") + " " + datasets_path
+os.system(cpCommand)
+
+if machines == "UERJ":
+    cp_command = "xrdcp -rf " + datasets_path + " root://"+storage_redirector+"//store/user/"+user+"/output/"+analysis+"/"+args.selection
+    os.system(cp_command)
+    rm_command = "rm -rf " + datasets_path
+    os.system(rm_command)
+
+

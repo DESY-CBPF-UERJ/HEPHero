@@ -91,6 +91,10 @@ parser.add_argument("--resubmit", dest='resubmit_flag', action='store_true')
 parser.set_defaults(resubmit_flag=False)
 parser.add_argument("--fix", dest='fix_flag', action='store_true')
 parser.set_defaults(fix_flag=False)
+parser.add_argument("--fix_storage", dest='fix_storage_flag', action='store_true')
+parser.set_defaults(fix_storage_flag=False)
+parser.add_argument("--clean_storage", dest='clean_storage_flag', action='store_true')
+parser.set_defaults(clean_storage_flag=False)
 parser.add_argument("--start", dest='start_flag', action='store_true')
 parser.set_defaults(start_flag=False)
 
@@ -163,7 +167,7 @@ else:
     #======SETUP ENVIRONMENT VARIABLES======
     hep_outpath = os.environ.get("HEP_OUTPATH")
     redirector = os.environ.get("REDIRECTOR")
-
+    storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
     
     if user is None:
         raise ValueError("USER environment variable is undefined. Aborting script execution...")
@@ -200,6 +204,7 @@ else:
     print("machines = " + machines)
     print("outpath = " + outpath)
     print("redirector = " + redirector)
+    print("")
     
     #======CREATE LIST OF JOBS======
     if analysis == "GEN":
@@ -228,7 +233,9 @@ else:
                 
 
         if len(resubmit) > 0:
-            jobs = resubmit
+            #jobs = resubmit
+            jobs_copy = jobs.copy()
+            jobs = [job for job in resubmit if job in jobs_copy]
         if args.resubmit_flag and len(resubmit) == 0:
             print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
         
@@ -311,7 +318,9 @@ else:
                 
 
         if len(resubmit) > 0:
-            jobs = resubmit
+            #jobs = resubmit
+            jobs_copy = jobs.copy()
+            jobs = [job for job in resubmit if job in jobs_copy]
         if args.resubmit_flag and len(resubmit) == 0:
             print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
         
@@ -355,13 +364,13 @@ else:
 if not os.path.exists(os.path.join(outpath, selection)):
     os.makedirs(os.path.join(outpath, selection))
     
-if args.fix_flag or args.start_flag:
+if args.fix_flag or args.fix_storage_flag or args.start_flag:
     copyfile(analysis+"/ana/"+selection+".cpp", outpath+'/'+selection+"/"+selection+".cpp")
     
-    for ijob in range(len(jobs)):
-        job_dir = os.path.join(outpath, selection, jobs[ijob][0][0] + "_files_" + str(jobs[ijob][1]) + "_" + str(jobs[ijob][2]-1))
-        if not os.path.exists(job_dir):    
-            os.makedirs(job_dir)  
+    #for ijob in range(len(jobs)):
+    #    job_dir = os.path.join(outpath, selection, jobs[ijob][0][0] + "_files_" + str(jobs[ijob][1]) + "_" + str(jobs[ijob][2]-1))
+    #    if not os.path.exists(job_dir):
+    #        os.makedirs(job_dir)
     
     jobs_file = open(outpath+'/'+selection+"/"+"jobs.txt", "w")
     for i in range(len(jobs)):
@@ -375,8 +384,40 @@ if args.fix_flag or args.start_flag:
     json_sys_file = outpath+'/'+selection+"/"+'lateral_systematics.json'    
     with open(json_sys_file, 'w') as fls:
         json.dump(lateral_systematics, fls)
+
+    hephero_local = {
+    "MACHINES": machines,
+    "USER": user,
+    "HEPHERO_PATH": os.getcwd(),
+    }
+    json_hephero_local = outpath+'/'+selection+"/"+'hephero_local.json'
+    with open(json_hephero_local, 'w') as jhl:
+        json.dump(hephero_local, jhl)
+
+    with open("tools/selection.txt", "w") as txtfile:
+        txtfile.write(selection)
+
       
 if args.fix_flag:
+    sys.exit()
+
+if args.fix_storage_flag:
+    if machines == "CMSC" and user[-4:-1] = "_cms":
+        command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user[:-4]+"/output/"+analysis
+    else:
+        command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user+"/output/"+analysis
+    os.system(command)
+    sys.exit()
+
+if args.clean_storage_flag:
+    if machines == "UERJ" or machines == "CERN":
+        gfal_command = "env -i gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
+    elif machines == "CMSC":
+        if user[-4:-1] = "_cms":
+            gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user[:-4] + "/output/" + analysis + "/" + selection
+        else:
+            gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
+    os.system(gfal_command)
     sys.exit()
     
 if args.start_flag:
@@ -548,7 +589,8 @@ if( (jobs[N][3] == 0) and (jobs[N][4] == 0) ):
             print(line.rstrip())
     out.close()
 
-#======PRINT THE CONTENT OF THE HDFf FILE===========================================================
+
+#======PRINT THE CONTENT OF THE HDFf FILE==========================================================
 pd.set_option('display.max_rows', None)
 
 print("=========================HDF5 FILE CONTENT=========================")

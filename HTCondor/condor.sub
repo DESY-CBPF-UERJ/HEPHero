@@ -3,17 +3,22 @@ executable            = condor.sh
 #accounting_group_user = gcorea
 #accounting_group      = group_uerj
 #grid_resource         = condor condor.hepgrid.uerj.br condor.hepgrid.uerj.br
+#x509userproxy = /tmp
+#use_x509userproxy     = true
+#Requirements          = (HAS_SINGULARITY == True)
+#+SingularityImage     = "/cvmfs/singularity.opensciencegrid.org/opensciencegrid/osgvo-el8:latest"
 #transfer_input_files  = HEPHero.tgz
 #should_transfer_files = YES
 #when_to_transfer_output = ON_EXIT
 #transfer_output_files = output
 #transfer_output_remaps = "output = /home/gcorea/output"
+#output_destination    = root://xrootd2.hepgrid.uerj.br:1094//store/user/gcorreia/
 #+REQUIRED_OS          = "rhel9"
 #request_cpus          = 4
-Proxy_path            = /afs/cern.ch/work/g/gcorea/private/x509up
-arguments             = $(ProcId) $(Proxy_path) /home/gilson/cernbox/HEP_Project/CMS_LLGDV/HEPHero
+#Proxy_path            = /
+arguments             = $(ProcId) $(Proxy_path) /home/gilson/Dropbox/HEP/HEPHero /home/gilson/cernbox/OPENDATA/CMS None PC gilson AP_bbhZDM_Had_R3
 output                = jobs_log/run_$(ClusterId)_$(ProcId).out
 error                 = jobs_log/run_$(ClusterId)_$(ProcId).err
 log                   = run_$(ClusterId).log
-+JobFlavour = "workday"
-queue 3
++JobFlavour             = "-h"
+queue
