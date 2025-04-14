@@ -402,7 +402,7 @@ if args.fix_flag:
     sys.exit()
 
 if args.fix_storage_flag:
-    if machines == "CMSC" and user[-4:-1] = "_cms":
+    if machines == "CMSC" and user[-4:-1] == "_cms":
         command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user[:-4]+"/output/"+analysis
     else:
         command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user+"/output/"+analysis
@@ -413,7 +413,7 @@ if args.clean_storage_flag:
     if machines == "UERJ" or machines == "CERN":
         gfal_command = "env -i gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
     elif machines == "CMSC":
-        if user[-4:-1] = "_cms":
+        if user[-4:-1] == "_cms":
             gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user[:-4] + "/output/" + analysis + "/" + selection
         else:
             gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
