@@ -401,22 +401,28 @@ if args.fix_flag or args.fix_storage_flag or args.start_flag:
 if args.fix_flag:
     sys.exit()
 
+
+if machines == "CMSC" and user[-4:-1] == "_cms":
+    xrd_user = user[:-4]
+else:
+    xrd_user = user
+
+if machines == "CMSC":
+    storage_dir = "eos/user/" + user[0] + "/" + xrd_user + "/output"
+else:
+    storage_dir = "store/user/" + xrd_user + "/output"
+
+
 if args.fix_storage_flag:
-    if machines == "CMSC" and user[-4:-1] == "_cms":
-        command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user[:-4]+"/output/"+analysis
-    else:
-        command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//store/user/"+user+"/output/"+analysis
+    command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis
     os.system(command)
     sys.exit()
 
 if args.clean_storage_flag:
     if machines == "UERJ" or machines == "CERN":
-        gfal_command = "env -i gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
-    elif machines == "CMSC":
-        if user[-4:-1] == "_cms":
-            gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user[:-4] + "/output/" + analysis + "/" + selection
-        else:
-            gfal_command = "gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + analysis + "/" + selection
+        gfal_command = "env -i gfal-rm -r davs://"+storage_redirector+"/"+storage_dir+"/" + analysis + "/" + selection
+    #elif machines == "CMSC": [It is not workig and it is not so necessary]
+    #    gfal_command = "gfal-rm -r davs://"+storage_redirector+"/"+storage_dir+"/" + analysis + "/" + selection
     os.system(gfal_command)
     sys.exit()
     

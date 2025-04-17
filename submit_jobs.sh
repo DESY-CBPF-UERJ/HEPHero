@@ -59,7 +59,7 @@ else
 fi
 
 
-if [ "${machines}" == "UERJ" ]; then
+if [ "${machines}" == "UERJ" ] || [ "${machines}" == "CMSC" ]; then
 storage=yes
 fi
 
@@ -182,13 +182,19 @@ else
       else
       XRD_USER=${USER}
       fi
-    xrdfs root://${storage_redirector}/ mkdir /store/user/${XRD_USER}/output/${ANALYSIS}
-    xrdfs root://${storage_redirector}/ mkdir /store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/jobs.txt root://${storage_redirector}//store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/hephero_local.json root://${storage_redirector}//store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/lateral_systematics.json root://${storage_redirector}//store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/vertical_systematics.json root://${storage_redirector}//store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/${SELECTION}.cpp root://${storage_redirector}//store/user/${XRD_USER}/output/${ANALYSIS}/${SELECTION}
+      if [ "$6" == "CMSC" ]; then
+      STORAGE_DIR=eos/user/${USER:0:1}/${XRD_USER}/output
+      else
+      STORAGE_DIR=store/user/${XRD_USER}/output
+      fi
+    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}
+    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}/${ANALYSIS}
+    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/jobs.txt root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/hephero_local.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/lateral_systematics.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/vertical_systematics.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/${SELECTION}.cpp root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
     fi
     
     cd HTCondor
