@@ -66,16 +66,18 @@ fi
 
 if [ $storage ] && [ "$storage" == "yes" ]; then
   echo "The output will be stored in the user storage."
-  # Check if STORAGE_REDIRECTOR variable exists then read
-  if [[ -z "${STORAGE_REDIRECTOR}" ]]; then
-    echo "STORAGE_REDIRECTOR environment varibale is undefined. Defaulting to xrootd2.hepgrid.uerj.br:1094"
-    storage_redirector='xrootd2.hepgrid.uerj.br:1094'
-  else
-    storage_redirector=${STORAGE_REDIRECTOR}
+  storage_redirector=${STORAGE_REDIRECTOR}
+  storage_user=${STORAGE_USER}
+  if [ "$STORAGE_REDIRECTOR" == "eosuser.cern.ch" ]; then
+      storage_dir=eos/user/${STORAGE_USER:0:1}/${STORAGE_USER}
+  elif [ "$STORAGE_REDIRECTOR" == "xrootd2.hepgrid.uerj.br:1094" ]; then
+      storage_dir=store/user/${STORAGE_USER}
   fi
 else
   echo "The output will be stored at ${HEP_OUTPATH}."
   storage_redirector=None
+  storage_user=None
+  storage_dir=None
 fi
 
 
@@ -95,6 +97,7 @@ if [[ -z "${REDIRECTOR}" ]]; then
 else
   redirector=${REDIRECTOR}
 fi
+
 
 ANALYSIS=$(<tools/analysis.txt)
 
@@ -139,7 +142,7 @@ else
         sed -i "s~.*x509userproxy = /tmp.*~#x509userproxy = /tmp/${Proxy_filename}~" HTCondor/condor.sub
         sed -i "s/.*use_x509userproxy.*/#use_x509userproxy = true/" HTCondor/condor.sub
         sed -i "s~.*+REQUIRED_OS.*~+REQUIRED_OS           = \"rhel9\"~" HTCondor/condor.sub
-        sed -i "s~.*request_cpus.*~request_cpus           = 4~" HTCondor/condor.sub
+        sed -i "s~.*request_cpus.*~request_cpus           = 2~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/#accounting_group_user =/" HTCondor/condor.sub
         sed -i "s/.*accounting_group      =.*/#accounting_group      =/" HTCondor/condor.sub
         sed -i "s/.*grid_resource.*/#grid_resource         =/" HTCondor/condor.sub
@@ -157,7 +160,7 @@ else
 
     sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHero.tgz,${tgzdir}/AP.tgz~" HTCondor/condor.sub
     sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" HTCondor/condor.sub
-    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${Proxy_filename} $(pwd) ${outpath} ${redirector} ${machines} ${USER} ${ANALYSIS} ${storage_redirector} ${resubmit}~" HTCondor/condor.sub
+    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${Proxy_filename} $(pwd) ${outpath} ${redirector} ${machines} ${USER} ${ANALYSIS} ${storage_redirector} ${storage_user} ${resubmit}~" HTCondor/condor.sub
     #sed -i "s/.*Requirements.*/Requirements            = (HasSingularity == True)/" HTCondor/condor.sub
     #sed -i "s~.*+SingularityImage.*~+SingularityImage       = \"/cvmfs/singularity.opensciencegrid.org/opensciencegrid/osgvo-el8:latest\"~" HTCondor/condor.sub
     #sed -i "s/.*when_to_transfer_output.*/when_to_transfer_output = ON_EXIT/" HTCondor/condor.sub
@@ -177,24 +180,14 @@ else
     if [ $storage ] && [ "$storage" == "yes" ]; then
     SELECTION=$(<tools/selection.txt)
     #rm -rf ${outpath}/${ANALYSIS}/${SELECTION}/*_files_*
-      if [ "$6" == "CMSC" ] && [ "${USER:${#USER}-4}" == "_cms" ]; then
-      XRD_USER=${USER:0:${#USER}-4}
-      else
-      XRD_USER=${USER}
-      fi
-      if [ "$6" == "CMSC" ]; then
-      STORAGE_DIR=eos/user/${USER:0:1}/${XRD_USER}/output
-      else
-      STORAGE_DIR=store/user/${XRD_USER}/output
-      fi
-    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}
-    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}/${ANALYSIS}
-    xrdfs root://${storage_redirector}/ mkdir /${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/jobs.txt root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/hephero_local.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/lateral_systematics.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/vertical_systematics.json root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
-    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/${SELECTION}.cpp root://${storage_redirector}//${STORAGE_DIR}/${ANALYSIS}/${SELECTION}
+    xrdfs root://${storage_redirector}/ mkdir /${storage_dir}/output
+    xrdfs root://${storage_redirector}/ mkdir /${storage_dir}/output/${ANALYSIS}
+    xrdfs root://${storage_redirector}/ mkdir /${storage_dir}/output/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/jobs.txt root://${storage_redirector}//${storage_dir}/output/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/hephero_local.json root://${storage_redirector}//${storage_dir}/output/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/lateral_systematics.json root://${storage_redirector}//${storage_dir}/output/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/vertical_systematics.json root://${storage_redirector}//${storage_dir}/output/${ANALYSIS}/${SELECTION}
+    xrdcp -rf ${outpath}/${ANALYSIS}/${SELECTION}/${SELECTION}.cpp root://${storage_redirector}//${storage_dir}/output/${ANALYSIS}/${SELECTION}
     fi
     
     cd HTCondor

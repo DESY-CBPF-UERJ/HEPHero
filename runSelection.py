@@ -168,6 +168,7 @@ else:
     hep_outpath = os.environ.get("HEP_OUTPATH")
     redirector = os.environ.get("REDIRECTOR")
     storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
+    storage_user = os.environ.get("STORAGE_USER")
     
     if user is None:
         raise ValueError("USER environment variable is undefined. Aborting script execution...")
@@ -402,16 +403,10 @@ if args.fix_flag:
     sys.exit()
 
 
-if machines == "CMSC" and user[-4:-1] == "_cms":
-    xrd_user = user[:-4]
-else:
-    xrd_user = user
-
-if machines == "CMSC":
-    storage_dir = "eos/user/" + user[0] + "/" + xrd_user + "/output"
-else:
-    storage_dir = "store/user/" + xrd_user + "/output"
-
+if storage_redirector == "eosuser.cern.ch":
+    storage_dir = "eos/user/" + storage_user[0] + "/" + storage_user + "/output"
+elif storage_redirector == "xrootd2.hepgrid.uerj.br:1094":
+    storage_dir = "store/user/" + storage_user + "/output"
 
 if args.fix_storage_flag:
     command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis

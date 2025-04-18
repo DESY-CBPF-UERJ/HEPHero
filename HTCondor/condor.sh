@@ -18,15 +18,23 @@ echo "ANALYSIS"
 echo $8
 echo "STORAGE_REDIRECTOR"
 echo $9
-echo "RESUBMISSION"
+echo "STORAGE_USER"
 echo ${10}
+echo "RESUBMISSION"
+echo ${11}
 
 export HEP_OUTPATH=$4
 export REDIRECTOR=$5
 export STORAGE_REDIRECTOR=$9
+export STORAGE_USER=${10}
 export MACHINES=$6
 export USER=$7
 
+if [ "$STORAGE_REDIRECTOR" == "eosuser.cern.ch" ]; then
+    STORAGE_DIR=eos/user/${STORAGE_USER:0:1}/${STORAGE_USER}
+elif [ "$STORAGE_REDIRECTOR" == "xrootd2.hepgrid.uerj.br:1094" ]; then
+    STORAGE_DIR=store/user/${STORAGE_USER}
+fi
 
 if [ "$6" == "CERN" ]; then
 export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/${USER}/private/$2
@@ -36,12 +44,12 @@ export MY_ONNX_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/onnxruntime-linux-x64-
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 elif [ "$6" == "CMSC" ]; then
 export $2=$(pwd)/$2
-xrdcp -fr root://eosuser.cern.ch//eos/user/${USER:0:1}/${USER}/libtorch.tgz .
-xrdcp -fr root://eosuser.cern.ch//eos/user/${USER:0:1}/${USER}/fixtorch .
-xrdcp -fr root://eosuser.cern.ch//eos/user/${USER:0:1}/${USER}/onnxruntime-linux-x64-1.20.1.tgz .
-tar -zxf libtorch.tgz
+xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/libtorch-shared-with-deps-1.9.0+cpu.zip .
+xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/fixtorch .
+xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/onnxruntime-linux-x64-1.20.1.tgz .
+unzip -o libtorch-shared-with-deps-1.9.0+cpu.zip
 tar -zxf onnxruntime-linux-x64-1.20.1.tgz
-rm libtorch.tgz
+rm libtorch-shared-with-deps-1.9.0+cpu.zip
 rm onnxruntime-linux-x64-1.20.1.tgz
 cp fixtorch/DeviceGuard.h libtorch/include/ATen
 cp fixtorch/Functions.h libtorch/include/ATen
@@ -84,7 +92,7 @@ make -j 2
 fi
 
 
-if [ "${10}" == "yes" ]; then
+if [ "${11}" == "yes" ]; then
 python runSelection.py -j $1 -t 0 --resubmit
 else
 python runSelection.py -j $1 -t 0
@@ -96,17 +104,7 @@ if [ "$STORAGE_REDIRECTOR" != "None" ]; then
   export X509_USER_PROXY=$2
   voms-proxy-info -all -file ${X509_USER_PROXY}
   fi
-  if [ "$6" == "CMSC" ]; then
-    if [ "${USER:${#USER}-4}" == "_cms" ]; then
-    #xrdcp -rf output root://$STORAGE_REDIRECTOR//store/user/${USER:0:${#USER}-4}
-    xrdcp -rf output root://$STORAGE_REDIRECTOR//eos/user/${USER:0:1}/${USER:0:${#USER}-4}
-    else
-    #xrdcp -rf output root://$STORAGE_REDIRECTOR//store/user/${USER}
-    xrdcp -rf output root://$STORAGE_REDIRECTOR//eos/user/${USER:0:1}/${USER}
-    fi
-  else
-  xrdcp -rf output root://$STORAGE_REDIRECTOR//store/user/${USER}
-  fi
+xrdcp -rf output root://$STORAGE_REDIRECTOR//${STORAGE_DIR}
 fi
 
 if [ "$6" == "CERN" ]; then
