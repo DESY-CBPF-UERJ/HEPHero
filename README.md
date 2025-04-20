@@ -6,28 +6,23 @@
 
 Set up your environment: (only once in your life)   
 CERN - add the lines below to the file **/afs/cern.ch/user/${USER:0:1}/${USER}/.bashrc** and restart your session.   
-DESY - add the lines below to the file **/afs/desy.de/user/${USER:0:1}/${USER}/.zshrc** and restart your session. (Create the file if it doesn't exist)   
 UERJ - add the lines below to the file **/home/${USER}/.bashrc** and restart your session.   
-PC (Personal Computer) - add the lines below to the file **/home/${USER}/.bashrc** and restart your session.
 
 ```bash
 export HEP_OUTPATH=<place the full path to a directory that will store the outputs>
 export REDIRECTOR=<place the redirector suitable to your geographic region>
 export MACHINES=<place the organization name, owner of the computing resources>
+export STORAGE_REDIRECTOR=<place the redirector suitable to your storage>
+export STORAGE_USER=<place your user name in the machines where is locatted your storage>
 
 alias hepenv='source /afs/cern.ch/work/g/gcorreia/public/hepenv_setup.sh'  #(CERN)
-alias hepenv='source /afs/desy.de/user/g/gcorreia/public/hepenv_setup.sh'  #(DESY)
-alias hepenv='source /cms/store/user/gcorreia/hepenv_setup.sh'  #(UERJ)
-alias hepenv='source $HEP_OUTPATH/hepenv_setup.sh'                         #(PC)
-alias cernenv='source $HEP_OUTPATH/container_setup.sh'                     #(PC)
+alias hepenv='source /cms/store/user/gcorreia/hepenv_setup.sh'             #(UERJ)
 ```
 
 Possible outpaths:   
 
 * `At CERN, use a folder inside your eos area` 
-* `At DESY, use a folder inside your dust area`
-* `At UERJ, you must create and define your outpath as: /home/username/output`
-* `At PC, use any folder inside your home area`
+* `At UERJ, use a folder inside your home area. This folder will store the output of jobs locally executed. The condor jobs will store the output in the user's UERJ storage locatted at /cms/store/user/<user_name>/output/.`
 
 Possible redirectors (only used at CERN):   
 
@@ -38,7 +33,6 @@ Possible redirectors (only used at CERN):
 Possible machines:   
 
 * `CERN`
-* `DESY`
 * `UERJ`
 
 # Examples
@@ -47,29 +41,22 @@ Possible machines:
 export HEP_OUTPATH=/eos/user/g/gcorea/output
 export REDIRECTOR=xrootd-cms.infn.it
 export MACHINES=CERN
-```
-
-```bash
-export HEP_OUTPATH=/nfs/dust/cms/user/gcorreia/output
-export REDIRECTOR=None
-export MACHINES=DESY
+export STORAGE_REDIRECTOR=xrootd2.hepgrid.uerj.br:1094
+export STORAGE_USER=gcorreia
 ```
 
 ```bash
 export HEP_OUTPATH=/home/gcorreia/output
 export REDIRECTOR=None
 export MACHINES=UERJ
+export STORAGE_REDIRECTOR=xrootd2.hepgrid.uerj.br:1094
+export STORAGE_USER=gcorreia
 ```
 
-```bash
-export HEP_OUTPATH=/home/gcorreia/output
-export REDIRECTOR=None
-export MACHINES=PC
-```
 
 # Quick start
 
-Inside your private or home area (NOT in the eos or dust area and NOT inside a CMSSW release), download the code.
+Inside your private or home area (NOT in the eos and NOT inside a CMSSW release), download the code.
 
 ```bash
 git clone git@github.com:DESY-CBPF-UERJ/HEPHero.git
@@ -139,14 +126,24 @@ python runSelection.py -j n
 
 # Submiting condor jobs
 
-If you have permission to deploy condor jobs, you can run your code in each dataset as a job.
+If you have permission to deploy condor jobs, you can run your code on each dataset as a job.
 
-1. See all flavours available for the jobs
+1. See options and flavours available for the jobs
+
+```bash
+./submit_jobs.sh -h
+```
+
 2. Submit all the **N** jobs the code is setted to process (need to provide the proxy)
 
 ```bash
-./submit_jobs.sh help
-./submit_jobs.sh flavour N
+./submit_jobs.sh -f flavour -n N
+```
+
+3. Submit all jobs and store the outputs in the UERJ storage when you are at CERN machines.
+
+```bash
+./submit_jobs.sh -s -f flavour -n N
 ```
 
 # Checking and processing condor jobs results
@@ -155,6 +152,12 @@ First, go to **tools** directory.
 
 ```
 cd tools
+```
+
+Check the status of the condor jobs submitted:
+
+```
+python condor.py
 ```
 
 Check integrity of jobs of the selection **Test** and period **0_16**:
@@ -230,12 +233,19 @@ python runSelection.py -j -2 --resubmit
 Resubmit your jobs:
 
 ```bash
-./submit_jobs.sh flavour N --resubmit
+./submit_jobs.sh -r -f flavour -n N
+```
+
+Resubmit your jobs and store the outputs in the UERJ storage when you are at CERN machines:
+
+```bash
+./submit_jobs.sh -rs -f flavour -n N
 ```
 
 
-
 <!---
+grip -b README.md
+
 # PC setup
 
 Run the HEPHero in your personal computer is usefull for local development and working with opendata. To use the HEPHero in your PC, you need to download the list of files below from the link: https://cernbox.cern.ch/s/LNGQ6aDRQ9gzZNu. Then, place them inside the **HEP_OUTPATH** directory.

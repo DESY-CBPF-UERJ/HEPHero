@@ -49,6 +49,7 @@ while getopts ":hrsl:f:n:" option; do
    esac
 done
 
+voms-proxy-init --voms cms
 
 # Check if MACHINES variable exists then read
 if [[ -z "${MACHINES}" ]]; then
