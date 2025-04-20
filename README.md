@@ -1,6 +1,6 @@
 # ![HEPHERO](logoframe.svg)
 
-**HEPHero - Framework for the DESY-CBPF-UERJ collaboration**
+**HEPHero - Framework for analysis of flat ntuples in the CMS collaboration**
 
 # Initial setup
 
