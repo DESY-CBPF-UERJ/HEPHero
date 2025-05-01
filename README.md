@@ -22,7 +22,7 @@ alias hepenv='source /cms/store/user/gcorreia/hepenv_setup.sh'             #(UER
 Possible outpaths:   
 
 * `At CERN, use a folder inside your eos area` 
-* `At UERJ, use a folder inside your home area. This folder will store the output of jobs locally executed. The condor jobs will store the output in the user's UERJ storage locatted at /cms/store/user/<user_name>/output/.`
+* `At UERJ, use a folder inside your home area. This folder will store the output of jobs locally executed. The condor jobs will store the output in the user's UERJ storage locatted at /cms/store/user/<user_name>/output.`
 
 Possible redirectors (only used at CERN):   
 
@@ -145,6 +145,7 @@ If you have permission to deploy condor jobs, you can run your code on each data
 ```bash
 ./submit_jobs.sh -s -f flavour -n N
 ```
+
 
 # Checking and processing condor jobs results
 

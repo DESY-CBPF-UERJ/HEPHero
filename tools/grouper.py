@@ -66,8 +66,13 @@ print('')
 samples = get_samples( basedir, period )
 
 if args.clean:
-    rmCommand = "rm -rf " + period_path
+    if machines == "UERJ":
+        period_dir = os.path.join(analysis, args.selection, "datasets", period)
+        rmCommand = "env -i gfal-rm -r davs://"+storage_redirector+"/store/user/" + user + "/output/" + period_dir
+    else:
+        rmCommand = "rm -rf " + period_path
     os.system(rmCommand)
+
 
 if not os.path.exists(datasets_path):
     os.makedirs(datasets_path)

@@ -27,7 +27,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hrsl:f:n:" option; do
+while getopts ":hrslk:f:n:" option; do
    case $option in
       h) # display Help
          Help
@@ -42,7 +42,7 @@ while getopts ":hrsl:f:n:" option; do
      f) # job flavour
          flavour=\"$OPTARG\";;
      n) # number of jobs
-         N_datasets=$OPTARG;;
+         N_jobs=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -59,12 +59,13 @@ else
   machines=${MACHINES}
 fi
 
-
-if [ "${machines}" == "UERJ" ] || [ "${machines}" == "CMSC" ]; then
-storage=yes
+if [ "$local" != "yes" ]; then
+  if [ "${machines}" == "UERJ" ] || [ "${machines}" == "CMSC" ]; then
+  storage=yes
+  fi
 fi
 
-
+echo " "
 if [ $storage ] && [ "$storage" == "yes" ]; then
   echo "The output will be stored in the user storage."
   storage_redirector=${STORAGE_REDIRECTOR}
@@ -112,7 +113,7 @@ fi
 if [ $local ] && [ "$local" == "yes" ]; then
     python runSelection.py -j 0 --start
     ijob=0
-    while (( $ijob < $2 ))
+    while (( $ijob < $N_jobs ))
     do
       python runSelection.py -j $ijob
       ijob=$(( ijob+1 ))
@@ -168,7 +169,7 @@ else
     #sed -i "s/.*transfer_output_files.*/#transfer_output_files = output/" HTCondor/condor.sub
     #sed -i "s~.*output_destination.*~#output_destination = root://xrootd2.hepgrid.uerj.br:1094//store/user/gcorreia/~" HTCondor/condor.sub
     #sed -i "s~.*transfer_output_remaps.*~transfer_output_remaps = \"output = /home/${USER}/output\"~" HTCondor/condor.sub
-    sed -i "s/.*queue.*/queue ${N_datasets}/" HTCondor/condor.sub
+    sed -i "s/.*queue.*/queue ${N_jobs}/" HTCondor/condor.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour             = ${flavour}/" HTCondor/condor.sub
 
 
