@@ -97,6 +97,8 @@ parser.add_argument("--clean_storage", dest='clean_storage_flag', action='store_
 parser.set_defaults(clean_storage_flag=False)
 parser.add_argument("--start", dest='start_flag', action='store_true')
 parser.set_defaults(start_flag=False)
+parser.add_argument("--start_storage", dest='start_storage_flag', action='store_true')
+parser.set_defaults(start_storage_flag=False)
 
 args = parser.parse_args()
 print('')
@@ -409,7 +411,15 @@ elif storage_redirector == "xrootd2.hepgrid.uerj.br:1094":
     storage_dir = "store/user/" + storage_user + "/output"
 
 if args.fix_storage_flag:
-    command = "xrdcp -rf " + outpath+'/'+selection + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis
+    command = "xrdcp -rf " + outpath+'/'+selection+'/jobs.txt' + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
+    os.system(command)
+    command = "xrdcp -rf " + outpath+'/'+selection+'/hephero_local.json' + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
+    os.system(command)
+    command = "xrdcp -rf " + outpath+'/'+selection+'/lateral_systematics.json' + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
+    os.system(command)
+    command = "xrdcp -rf " + outpath+'/'+selection+'/vertical_systematics.json' + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
+    os.system(command)
+    command = "xrdcp -rf " + outpath+'/'+selection+'/'+selection+'.cpp' + " root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
     os.system(command)
     sys.exit()
 
@@ -434,7 +444,24 @@ if args.start_flag:
             os.system("rm -rf " + job_dir + "/Systematics/0_0.*")
         else:
             os.system("rm -rf " + job_dir + "/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".*")
-    sys.exit()
+    sys.exit
+
+if args.start_storage_flag:
+    job_storage_dir = storage_dir + "/" + analysis + "/" + selection + "/" + jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1)
+    job_sysID = jobs[N][3]
+    job_universe = jobs[N][4]
+    if machines == "UERJ" or machines == "CERN":
+        if job_sysID == 0:
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/cutflow.txt")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Histograms.root")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/selection.h5")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Tree.root")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/0_0.root")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/0_0.json")
+        else:
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".root")
+            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".json")
+    sys.exit
 
 output_dir = os.path.join(outpath, selection, jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1))
 if not os.path.exists(output_dir):    

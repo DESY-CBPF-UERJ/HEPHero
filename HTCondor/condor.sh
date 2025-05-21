@@ -36,6 +36,12 @@ elif [ "$STORAGE_REDIRECTOR" == "xrootd2.hepgrid.uerj.br:1094" ]; then
     STORAGE_DIR=store/user/${STORAGE_USER}
 fi
 
+if [ "$STORAGE_REDIRECTOR" != "None" ]; then
+python runSelection.py -j $1 --start_storage
+mkdir output
+export HEP_OUTPATH=$(pwd)/output
+fi
+
 if [ "$6" == "CERN" ]; then
 export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/${USER}/private/$2
 cp /afs/cern.ch/user/${USER:0:1}/${USER}/private/$2 .
@@ -67,11 +73,6 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el8-gcc11-opt/setup.sh
 fi
 
 voms-proxy-info -all -file ${X509_USER_PROXY}
-
-if [ "$STORAGE_REDIRECTOR" != "None" ]; then
-mkdir output
-export HEP_OUTPATH=$(pwd)/output
-fi
 
 tar -zxf HEPHero.tgz
 tar -zxf AP.tgz
