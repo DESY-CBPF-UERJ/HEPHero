@@ -2,12 +2,24 @@ AP_*
 RunAnalysis
 CMakeCache.txt
 CMakeFiles/*
+src/CMakeFiles/*
 cmake_install.cmake
+*.cmake
 ..gitignore.kate-swp
 Makefile
 .vscode
 CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
+tools/resubmit_*.txt
+tools/selection.txt
+HTCondor/condor.sub
+include/HighFive/CMakeFiles/CMakeDirectoryInformation.cmake
+include/HighFive/CMakeFiles/Export/3b04e8d7dfee8082e1db69ea70817037/HighFiveTargets.cmake
+include/HighFive/HighFiveConfigVersion.cmake
+include/HighFive/HighFiveTargets.cmake
+include/HighFive/doc/CMakeFiles/CMakeDirectoryInformation.cmake
+include/HighFive/doc/CMakeFiles/doc.dir/DependInfo.cmake
+include/HighFive/doc/CMakeFiles/doc.dir/build.makey
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

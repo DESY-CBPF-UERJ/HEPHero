@@ -126,6 +126,7 @@ else
     tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/.git*' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/AP_*' -zcf HEPHero.tgz HEPHero
     tar --exclude="HEPHero/${ANALYSIS}/.git*" --exclude="HEPHero/${ANALYSIS}/Datasets/*.hepmc" --exclude="HEPHero/${ANALYSIS}/Datasets/*.root" --exclude="HEPHero/${ANALYSIS}/ana/local_output" -zcf AP.tgz HEPHero/${ANALYSIS}
     cd HEPHero
+    cp HTCondor/condor_ref.sub HTCondor/condor.sub
 
     if [ "${machines}" == "CERN" ]; then
         Proxy_filename=x509up
