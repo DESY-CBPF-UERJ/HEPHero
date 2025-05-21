@@ -18,7 +18,7 @@ include/HighFive/HighFiveConfigVersion.cmake
 include/HighFive/HighFiveTargets.cmake
 include/HighFive/doc/CMakeFiles/CMakeDirectoryInformation.cmake
 include/HighFive/doc/CMakeFiles/doc.dir/DependInfo.cmake
-include/HighFive/doc/CMakeFiles/doc.dir/build.makey
+include/HighFive/doc/CMakeFiles/doc.dir/build.make
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
