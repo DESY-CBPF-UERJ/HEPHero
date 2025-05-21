@@ -444,7 +444,7 @@ if args.start_flag:
             os.system("rm -rf " + job_dir + "/Systematics/0_0.*")
         else:
             os.system("rm -rf " + job_dir + "/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".*")
-    sys.exit
+    sys.exit()
 
 if args.start_storage_flag:
     job_storage_dir = storage_dir + "/" + analysis + "/" + selection + "/" + jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1)
@@ -461,7 +461,7 @@ if args.start_storage_flag:
         else:
             os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".root")
             os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".json")
-    sys.exit
+    sys.exit()
 
 output_dir = os.path.join(outpath, selection, jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1))
 if not os.path.exists(output_dir):    
