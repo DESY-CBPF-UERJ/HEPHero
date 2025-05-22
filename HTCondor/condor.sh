@@ -37,7 +37,11 @@ elif [ "$STORAGE_REDIRECTOR" == "xrootd2.hepgrid.uerj.br:1094" ]; then
 fi
 
 if [ "$STORAGE_REDIRECTOR" != "None" ]; then
-python runSelection.py -j $1 --start_storage
+  if [ "${11}" == "yes" ]; then
+  python runSelection.py -j $1 --start_storage --resubmit
+  else
+  python runSelection.py -j $1 --start_storage
+  fi
 mkdir output
 export HEP_OUTPATH=$(pwd)/output
 fi
