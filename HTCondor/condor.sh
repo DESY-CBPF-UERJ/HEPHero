@@ -36,16 +36,6 @@ elif [ "$STORAGE_REDIRECTOR" == "xrootd2.hepgrid.uerj.br:1094" ]; then
     STORAGE_DIR=store/user/${STORAGE_USER}
 fi
 
-if [ "$STORAGE_REDIRECTOR" != "None" ]; then
-  if [ "${11}" == "yes" ]; then
-  python runSelection.py -j $1 --start_storage --resubmit
-  else
-  python runSelection.py -j $1 --start_storage
-  fi
-mkdir output
-export HEP_OUTPATH=$(pwd)/output
-fi
-
 if [ "$6" == "CERN" ]; then
 export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/${USER}/private/$2
 cp /afs/cern.ch/user/${USER:0:1}/${USER}/private/$2 .
@@ -86,6 +76,18 @@ mv HEPHero HEPHero_old
 mkdir HEPHero
 mv HEPHero_old/* HEPHero
 rm -rf HEPHero_old
+
+if [ "$STORAGE_REDIRECTOR" != "None" ]; then
+cd HEPHero
+  if [ "${11}" == "yes" ]; then
+  python runSelection.py -j $1 --start_storage --resubmit
+  else
+  python runSelection.py -j $1 --start_storage
+  fi
+cd ..
+mkdir output
+export HEP_OUTPATH=$(pwd)/output
+fi
 
 cd HEPHero
 rm CMakeCache.txt
