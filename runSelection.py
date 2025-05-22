@@ -452,16 +452,17 @@ if args.start_storage_flag:
     job_universe = jobs[N][4]
     if machines == "UERJ" or machines == "CERN":
         if job_sysID == 0:
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/cutflow.txt")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Histograms.root")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/selection.h5")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Tree.root")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/0_0.root")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/0_0.json")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/cutflow.txt")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Histograms.root")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/selection.h5")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Tree.root")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Systematics/0_0.root")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Systematics/0_0.json")
         else:
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".root")
-            os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".json")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".root")
+            os.system("xrdfs root://"+storage_redirector+" rm "+job_storage_dir+"/Systematics/" + str(job_sysID) + "_" + str(job_universe) + ".json")
     sys.exit()
+
 
 output_dir = os.path.join(outpath, selection, jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1))
 if not os.path.exists(output_dir):    
