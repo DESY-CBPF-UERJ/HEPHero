@@ -173,10 +173,9 @@ else
     sed -i "s/.*queue.*/queue ${N_jobs}/" HTCondor/condor.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour             = ${flavour}/" HTCondor/condor.sub
 
-
+    rm HTCondor/*.log
     if [ "${run_start}" == "yes" ]; then
     python runSelection.py -j 0 --start
-    rm HTCondor/*.log
     rm HTCondor/jobs_log/run*
     fi
 
