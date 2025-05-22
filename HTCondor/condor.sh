@@ -78,6 +78,8 @@ mv HEPHero_old/* HEPHero
 rm -rf HEPHero_old
 
 if [ "$STORAGE_REDIRECTOR" != "None" ]; then
+mkdir output
+export HEP_OUTPATH=$(pwd)/output
 cd HEPHero
   if [ "${11}" == "yes" ]; then
   python runSelection.py -j $1 --start_storage --resubmit
@@ -85,8 +87,6 @@ cd HEPHero
   python runSelection.py -j $1 --start_storage
   fi
 cd ..
-mkdir output
-export HEP_OUTPATH=$(pwd)/output
 fi
 
 cd HEPHero
