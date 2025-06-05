@@ -110,7 +110,8 @@ HEPHero::HEPHero( char *configFileName ) {
             }
         }
 
-        dataset_dti = atoi(DatasetID.substr(6,1).c_str());
+        dataset_dti = atoi(DatasetID.substr(4,1).c_str());
+        cout << "dti " << dataset_dti << endl;
         _DatasetID = atoi(DatasetID.c_str());
 
         cout << " " << endl;
@@ -153,7 +154,8 @@ HEPHero::HEPHero( char *configFileName ) {
             if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);  
             if( _Machines == "UERJ" ) inputFileName = "/cms/" + (*itr);
             if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-15) + "/opendata/" + (*itr);
-            if( _check || DatasetID.substr(2,2) == "99" ) inputFileName = (*itr);
+            if( _check || DatasetID.substr(0,2) == "99" ) inputFileName = (*itr);
+            cout << "prod_ID " << DatasetID.substr(0,2) << endl;
             _inputTree -> Add( inputFileName.c_str() ); 
         }
     }

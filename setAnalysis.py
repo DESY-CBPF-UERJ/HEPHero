@@ -93,7 +93,12 @@ with open("runSelection_temp.py", "w") as newfile:
         for period in sm.periods:
             newfile.write("\n")
             for dataset in sm.datasets:
-                newfile.write("datasets.extend(" + dataset + "_" + period + ")\n")
+                if dataset[:4] == "Data":
+                    newfile.write("datasets.extend(d_ds['" + dataset + "_" + period + "'])\n")
+                elif dataset[:6] == "Signal":
+                    newfile.write("datasets.extend(s_ds['" + dataset + "_" + period + "'])\n")
+                else:
+                    newfile.write("datasets.extend(b_ds['" + dataset + "_" + period + "'])\n")
     newfile.write("\n")    
     newfile.write("\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")

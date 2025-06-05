@@ -58,8 +58,8 @@ from Bkg import *
 from Data import *
 datasets = []
 
-datasets.extend(Data_MET_0_22)
-datasets.extend(Signal_0_22)
+datasets.extend(d_ds['Data_MET_0_22'])
+datasets.extend(s_ds['Signal_0_22'])
 
 
 #-------------------------------------------------------------------------------------
