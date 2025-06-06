@@ -223,7 +223,7 @@ else:
             if NumFiles == 0:
                 empty_text_files.append(dataset[0])
             else:
-                dataset.append(NumFiles)
+                #dataset.append(NumFiles)
 
                 Intervals = list(range(0,NumFiles,NumFilesPerJob))
                 if NumFiles%NumFilesPerJob == 0:
@@ -300,7 +300,7 @@ else:
                     number_of_files_not_at_local_storage[dataset[0]] = len(files_not_at_local_storage_per_dataset)
                 
                 if NumFiles > 0:
-                    dataset.append(NumFiles)
+                    #dataset.append(NumFiles)
 
                     Intervals = list(range(0,NumFiles,NumFilesPerJob))
                     if NumFiles%NumFilesPerJob == 0:
@@ -525,11 +525,22 @@ else:
 #-----DATA AND MC METADATA------------------------------------------------------------
 in_file.write("MCmetaFileName       ./"+analysis+"/Datasets/MC_Metadata.txt"                + "\n")
 
-meta_dir = analysis+"/Datasets"
-sys.path.insert(0, meta_dir)
-from Data import *
-from Bkg import *
-from Signal import *
+if( dataset[0][:4] == "Data" ):
+    PROC_XSEC = 0
+    PROC_XSEC_UNC_UP = 0
+    PROC_XSEC_UNC_DOWN = 0
+else:
+    PROC_XSEC = jobs[N][0][3]
+    if isinstance(jobs[N][0][4], float):
+        PROC_XSEC_UNC_UP = jobs[N][0][4]
+        PROC_XSEC_UNC_DOWN = jobs[N][0][4]
+    else:
+        PROC_XSEC_UNC_UP = jobs[N][0][4][0]
+        PROC_XSEC_UNC_DOWN = jobs[N][0][4][1]
+
+print(PROC_XSEC)
+print(PROC_XSEC_UNC_UP)
+print(PROC_XSEC_UNC_DOWN)
 
 tags_split_unc = lumis["tags"][2:]
 for lumi_key in lumis.keys():
