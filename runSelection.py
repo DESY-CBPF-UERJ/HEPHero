@@ -223,7 +223,7 @@ else:
             if NumFiles == 0:
                 empty_text_files.append(dataset[0])
             else:
-                #dataset.append(NumFiles)
+                dataset.append(NumFiles)
 
                 Intervals = list(range(0,NumFiles,NumFilesPerJob))
                 if NumFiles%NumFilesPerJob == 0:
@@ -250,7 +250,7 @@ else:
             datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
             for i in range(len(jobs)):
                 #print(i, jobs[i])
-                print(i, [jobs[i][0][0], jobs[i][0][1], datasets_short[i]], [jobs[i][0][3], str(jobs[i][1])+"-"+str(jobs[i][2])], [jobs[i][3], jobs[i][4]])
+                print(i, [jobs[i][0][0], jobs[i][0][1], datasets_short[i]], [jobs[i][0][5], str(jobs[i][1])+"-"+str(jobs[i][2])], [jobs[i][3], jobs[i][4]])
             sys.exit("")
         else:
             if N <= -3:
@@ -300,7 +300,7 @@ else:
                     number_of_files_not_at_local_storage[dataset[0]] = len(files_not_at_local_storage_per_dataset)
                 
                 if NumFiles > 0:
-                    #dataset.append(NumFiles)
+                    dataset.append(NumFiles)
 
                     Intervals = list(range(0,NumFiles,NumFilesPerJob))
                     if NumFiles%NumFilesPerJob == 0:
@@ -334,7 +334,7 @@ else:
         if N == -2:
             datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
             for i in range(len(jobs)):
-                print(str(i)+" ["+jobs[i][0][0]+", "+jobs[i][0][1]+", "+datasets_short[i]+"], ["+str(jobs[i][0][3])+", "+str(jobs[i][1])+"-"+str(jobs[i][2])+"], ["+str(jobs[i][3])+", "+str(jobs[i][4])+"]")
+                print(str(i)+" ["+jobs[i][0][0]+", "+jobs[i][0][1]+", "+datasets_short[i]+"], ["+str(jobs[i][0][5])+", "+str(jobs[i][1])+"-"+str(jobs[i][2])+"], ["+str(jobs[i][3])+", "+str(jobs[i][4])+"]")
             sys.exit("")
         if N == -3:
             print("")
@@ -522,9 +522,7 @@ else:
         in_file.write("SysNames_vertical  " + syst                             + "\n")
         
     
-#-----DATA AND MC METADATA------------------------------------------------------------
-in_file.write("MCmetaFileName       ./"+analysis+"/Datasets/MC_Metadata.txt"                + "\n")
-
+#-----MC AND DATA METADATA------------------------------------------------------------
 if( dataset[0][:4] == "Data" ):
     PROC_XSEC = 0
     PROC_XSEC_UNC_UP = 0
@@ -537,10 +535,9 @@ else:
     else:
         PROC_XSEC_UNC_UP = jobs[N][0][4][0]
         PROC_XSEC_UNC_DOWN = jobs[N][0][4][1]
-
-print(PROC_XSEC)
-print(PROC_XSEC_UNC_UP)
-print(PROC_XSEC_UNC_DOWN)
+in_file.write("PROC_XSEC            "  + str(PROC_XSEC)                        + "\n")
+in_file.write("PROC_XSEC_UNC_UP     "  + str(PROC_XSEC_UNC_UP)                 + "\n")
+in_file.write("PROC_XSEC_UNC_DOWN   "  + str(PROC_XSEC_UNC_DOWN)               + "\n")
 
 tags_split_unc = lumis["tags"][2:]
 for lumi_key in lumis.keys():
@@ -557,9 +554,7 @@ for lumi_key in lumis.keys():
                 in_file.write("DATA_LUMI_TAGS_UNC    " + str(tags_split_unc[i])    + "\n")
                 in_file.write("DATA_LUMI_VALUES_UNC  " + str(values_split_unc[i])  + "\n")
 
-
 #-------------------------------------------------------------------------------------
-    
 in_file.write("Show_Timer           "  + str(args.timer)                       + "\n")
 in_file.write("Get_Image_in_EPS     "  + str(Get_Image_in_EPS)                 + "\n")
 in_file.write("Get_Image_in_PNG     "  + str(Get_Image_in_PNG)                 + "\n")

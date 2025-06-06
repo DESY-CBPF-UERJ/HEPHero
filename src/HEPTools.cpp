@@ -55,42 +55,6 @@ void HEPBase::WriteCutflowInfo(){
 }
 
 
-//---------------------------------------------------------------------------------------------------------------
-// Get Medatada associated to the MC dataset
-//---------------------------------------------------------------------------------------------------------------
-void HEPBase::GetMCMetadata(){
-
-    bool foundMetadata = false;
-    PROC_XSEC = 0;
-    ifstream metadataFile( MCmetaFileName.c_str(), ios::in );
-    string dsName = _datasetName.substr(0,_datasetName.length()-5);
-    while( metadataFile.good() ) {
-        string name, xs, xs_unc, source;
-        metadataFile >> name >> ws >> xs >> ws >> xs_unc >> ws >> source;
-        if( metadataFile.eof() ) break;
-        if( name == dsName ) {
-            PROC_XSEC = atof( xs.c_str() );
-            string delimiter = "/";
-            size_t pos = xs_unc.find(delimiter);
-            if( (dsName.length() > 6) && (dsName.length() > pos) ){
-                string xs_unc_up = xs_unc.substr(0, pos);
-                string xs_unc_down = xs_unc.erase(0, pos + delimiter.length());
-                PROC_XSEC_UNC_UP = atof( xs_unc_up.c_str() );
-                PROC_XSEC_UNC_DOWN = atof( xs_unc_down.c_str() );
-            }else{
-                PROC_XSEC_UNC_UP = 0;
-                PROC_XSEC_UNC_DOWN = 0;
-            }
-            foundMetadata = true;
-            break;
-        }
-    }
-
-    if( (!foundMetadata) && (dataset_group != "Data") ) {
-        cout << "Did not find dataset " << dsName << " in " << MCmetaFileName << ". The xsec was set to zero: " << PROC_XSEC << endl;
-    }
-}
-
 
 //---------------------------------------------------------------------------------------------------------------
 // Setup HDF maps

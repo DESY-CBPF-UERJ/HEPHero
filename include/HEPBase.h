@@ -52,7 +52,6 @@ class HEPBase {
     public:
         //=====HEP Tools===========================================================================
         void WriteCutflowInfo();
-        void GetMCMetadata();
         void makeHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2, double zAxisOffset = 1. );
         void makeHist( string nametitle, int nbins, double xmin, double xmax, string xtitle, string ytitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2 );
         void makeSysHist( string nametitle, int nbinsx, double xmin, double xmax, int nbinsy, double ymin, double ymax, string xtitle, string ytitle, string ztitle, string drawOption = "", double xAxisOffset = 1., double yAxisOffset = 1.2, double zAxisOffset = 1. );
@@ -236,7 +235,6 @@ class HEPBase {
         double  PROC_XSEC;       // the total cross section for the process in pb
         double  PROC_XSEC_UNC_UP;
         double  PROC_XSEC_UNC_DOWN;
-        string  MCmetaFileName;
         double  luminosity;
         double  lumi_total_unc;
         vector<double> lumi_values_unc;

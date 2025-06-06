@@ -50,7 +50,9 @@ HEPHero::HEPHero( char *configFileName ) {
         if( key == "NumMaxEvents"               )   _NumMaxEvents = atoi(value.c_str());
         if( key == "Redirector"                 )   _Redirector = value;
         if( key == "Machines"                   )   _Machines = value;
-        if( key == "MCmetaFileName"             )   MCmetaFileName = value;
+        if( key == "PROC_XSEC"                  )   PROC_XSEC = atof(value.c_str());
+        if( key == "PROC_XSEC_UNC_UP"           )   PROC_XSEC_UNC_UP = atof(value.c_str());
+        if( key == "PROC_XSEC_UNC_DOWN"         )   PROC_XSEC_UNC_DOWN = atof(value.c_str());
         if( key == "DATA_LUMI"                  )   DATA_LUMI = atof(value.c_str());
         if( key == "DATA_LUMI_TOTAL_UNC"        )   DATA_LUMI_TOTAL_UNC = atof(value.c_str());
         if( key == "DATA_LUMI_TAGS_UNC"         )   DATA_LUMI_TAGS_UNC.push_back( value );
