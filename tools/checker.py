@@ -31,8 +31,8 @@ with open('analysis.txt') as f:
     analysis = f.readline()
 
 
-sys.path.insert(0, '../'+analysis+'/Datasets')
-from Samples import *
+sys.path.insert(0, '../Datasets')
+from samples import *
 
 period = str(args.period)
 outpath = os.environ.get("HEP_OUTPATH")
@@ -78,7 +78,7 @@ with open(hephero_local_file_name) as hephero_local_file:
     user_origin = hephero_local["USER"]
     hephero_path_origin = hephero_local["HEPHERO_PATH"]
 
-samples = get_samples( basedir, period )
+samples = get_samples( analysis, basedir, period )
 
 with open(json_sys_file_name) as json_sys_file:
     systematics = json.load(json_sys_file)
@@ -260,7 +260,7 @@ with open(jobs_file_name) as f:
         job_samples.append(job_dataset)
 job_samples = list(dict.fromkeys(job_samples))
 
-extra_samples = get_samples( basedir, period )
+extra_samples = get_samples( analysis, basedir, period )
 for extra_sample in extra_samples.keys():
     if extra_sample not in job_samples:
         job_samples.append(extra_sample)

@@ -145,3 +145,20 @@ with open("tools/analysis.txt", "w") as txtfile:
 #======SET NEW ANALYSIS IN CMAKELISTS==============================================================
 os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' CMakeLists.txt")
 
+
+#======SET NEW ANALYSIS IN DATASETS' SCRIPTS=======================================================
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_bkg.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_signal.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_data.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_bkg.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_signal.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_data.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_private.py")
+
+
+#======CORRECT ANALYSIS NAME INSIDE ANALYSIS PROJECT===============================================
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Bkg.py")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Signal.py")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Data.py")
+os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' "+sm.analysis+"/src/CMakeLists.txt")
+os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' "+sm.analysis+"/ana/CMakeLists.txt")

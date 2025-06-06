@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
 
 #==================================================================================================
-def __generate_cutflow(period, basedir, datasets_path, signal_ref=None):
+def __generate_cutflow(analysis, period, basedir, datasets_path, signal_ref=None):
 
     #Combine cutflow file for each event process for each job directory and produce general cutflow
 
@@ -20,7 +20,7 @@ def __generate_cutflow(period, basedir, datasets_path, signal_ref=None):
     #    period (str): Jobs period used in anafile
     #    samples (dict): Dictionary mapping each event flavour to jobs directories
 
-    samples = get_samples( basedir, period )
+    samples = get_samples( analysis, basedir, period )
 
     cutflow_filepath = os.path.join(datasets_path, "cutflow_XX.txt")
     cutflow_file = open(cutflow_filepath, "w")
@@ -184,7 +184,7 @@ def __generate_cutflow(period, basedir, datasets_path, signal_ref=None):
 
 
 #==================================================================================================
-def __join_cutflows(periods, basedir, datasets_path, signal_ref=None):
+def __join_cutflows(analysis, periods, basedir, datasets_path, signal_ref=None):
 
     cutflow_filepath = os.path.join(datasets_path, "cutflow_XX.txt")
     cutflow_file = open(cutflow_filepath, "w")
@@ -196,7 +196,7 @@ def __join_cutflows(periods, basedir, datasets_path, signal_ref=None):
 
     sample_names = []
     for period in periods:
-        samples_i = get_samples( basedir, period )
+        samples_i = get_samples( analysis, basedir, period )
         sample_names = sample_names + [name for name in samples_i.keys() if name not in sample_names]
 
     bad_datasets = []
@@ -271,8 +271,8 @@ args = parser.parse_args()
 with open('analysis.txt') as f:
     analysis = f.readline()
 
-sys.path.insert(0, '../'+analysis+'/Datasets')
-from Samples import *
+sys.path.insert(0, '../Datasets')
+from samples import *
 
 if args.periods is not None:
     periods = args.periods.split(",")
@@ -311,12 +311,12 @@ for period in periods:
     print('Period = ' + period)
     print('Outpath = ' + basedir)
 
-    __generate_cutflow(period, basedir, datasets_path, signal_ref=args.signal_ref)
+    __generate_cutflow(analysis, period, basedir, datasets_path, signal_ref=args.signal_ref)
 
 
 if args.periods is not None:
     print(" ")
-    bad_datasets = __join_cutflows(periods, basedir, datasets_path, signal_ref=args.signal_ref)
+    bad_datasets = __join_cutflows(analysis, periods, basedir, datasets_path, signal_ref=args.signal_ref)
 
     for dataset in bad_datasets:
         print("The dataset", dataset, "is empty!")

@@ -29,8 +29,8 @@ args = parser.parse_args()
 with open('analysis.txt') as f:
     analysis = f.readline()
 
-sys.path.insert(0, '../'+analysis+'/Datasets')
-from Samples import *
+sys.path.insert(0, '../Datasets')
+from samples import *
     
 outpath = os.environ.get("HEP_OUTPATH")
 machines = os.environ.get("MACHINES")
@@ -63,7 +63,7 @@ print('Outpath = ' + basedir)
 print('CPUs = ' + str(cpu_count))
 print('')
 
-samples = get_samples( basedir, period )
+samples = get_samples( analysis, basedir, period )
 
 if args.clean:
     if machines == "UERJ":
