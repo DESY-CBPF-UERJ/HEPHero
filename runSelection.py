@@ -525,34 +525,13 @@ else:
 #-----DATA AND MC METADATA------------------------------------------------------------
 in_file.write("MCmetaFileName       ./"+analysis+"/Datasets/MC_Metadata.txt"                + "\n")
 
-
-meta_file = open(analysis+"/Datasets/Data_Metadata.txt")
-#meta_file = open(analysis+"/Datasets/Data_Metadata_for_tests.txt") # For bkg cross-sections checks
-first_line = True
-for line in meta_file:
-    if first_line:
-        tags_split_unc = [unc_tag[4:-3] for unc_tag in line.split()[5:]]
-        first_line = False
-    year = line.split()[1]
-    dti = line.split()[2]
-    data_scale = line.split()[3]
-    total_unc = line.split()[4]
-    values_split_unc = line.split()[5:]
-    if( (year == jobs[N][0][1][0:2]) and (dti == jobs[N][0][1][6]) ):
-        in_file.write("DATA_LUMI             " + data_scale                    + "\n")
-        in_file.write("DATA_LUMI_TOTAL_UNC   " + total_unc                     + "\n")
-        for i in range(len(values_split_unc)):
-            in_file.write("DATA_LUMI_TAGS_UNC    " + tags_split_unc[i]         + "\n")
-            in_file.write("DATA_LUMI_VALUES_UNC  " + values_split_unc[i]       + "\n")
-
-"""
 meta_dir = analysis+"/Datasets"
 sys.path.insert(0, meta_dir)
 from Data import *
 from Bkg import *
 from Signal import *
 
-tags_split_unc = lumi["tags"][2:]
+tags_split_unc = lumis["tags"][2:]
 for lumi_key in lumis.keys():
     if lumi_key != "tags":
         year = lumi_key[-2:]
@@ -560,13 +539,13 @@ for lumi_key in lumis.keys():
         data_scale = lumis[lumi_key][0]
         total_unc = lumis[lumi_key][1]
         values_split_unc = lumis[lumi_key][2:]
-        if( (year == jobs[N][0][1][0:2]) and (dti == jobs[N][0][1][6]) ):
-            in_file.write("DATA_LUMI             " + data_scale                    + "\n")
-            in_file.write("DATA_LUMI_TOTAL_UNC   " + total_unc                     + "\n")
+        if( (year == jobs[N][0][1][2:4]) and (dti == jobs[N][0][1][4]) ):
+            in_file.write("DATA_LUMI             " + str(data_scale)               + "\n")
+            in_file.write("DATA_LUMI_TOTAL_UNC   " + str(total_unc)                + "\n")
             for i in range(len(values_split_unc)):
-                in_file.write("DATA_LUMI_TAGS_UNC    " + tags_split_unc[i]         + "\n")
-                in_file.write("DATA_LUMI_VALUES_UNC  " + values_split_unc[i]       + "\n")
-"""
+                in_file.write("DATA_LUMI_TAGS_UNC    " + str(tags_split_unc[i])    + "\n")
+                in_file.write("DATA_LUMI_VALUES_UNC  " + str(values_split_unc[i])  + "\n")
+
 
 #-------------------------------------------------------------------------------------
     
@@ -607,8 +586,8 @@ os.system(runCommand)
     
 #======REMOVE INPUT FILE OF THE SELECTION==========================================================
 removeCommand = "rm " + ConfigFile
-#if os.path.isfile(ConfigFile):
-#    os.system(removeCommand)
+if os.path.isfile(ConfigFile):
+    os.system(removeCommand)
 
 
 if( (jobs[N][3] == 0) and (jobs[N][4] == 0) ):    
