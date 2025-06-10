@@ -532,6 +532,9 @@ else:
     if isinstance(jobs[N][0][4], float):
         PROC_XSEC_UNC_UP = jobs[N][0][4]
         PROC_XSEC_UNC_DOWN = jobs[N][0][4]
+    elif jobs[N][0][4] is None:
+        PROC_XSEC_UNC_UP = None
+        PROC_XSEC_UNC_DOWN = None
     else:
         PROC_XSEC_UNC_UP = jobs[N][0][4][0]
         PROC_XSEC_UNC_DOWN = jobs[N][0][4][1]
