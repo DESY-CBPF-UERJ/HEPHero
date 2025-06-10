@@ -98,13 +98,14 @@ HEPHero::HEPHero( char *configFileName ) {
         dataset_year = _datasetName.substr(_datasetName.length()-2,2);
         if( _datasetName.substr(0,4) == "Data" ){
             dataset_group = "Data";
-            dataset_era = _datasetName.substr(_datasetName.length()-6,1);
-            string data_sample = _datasetName.substr(5,_datasetName.length());
-            size_t spos = data_sample.find("_");
-            dataset_sample = data_sample.substr(0, spos).c_str();
+            string data_name = _datasetName.substr(5,_datasetName.length());
+            size_t spos = data_name.find("_");
+            dataset_sample = data_name.substr(0, spos).c_str();
+            data_name = data_name.substr(spos+1, data_name.length()).c_str();
+            dataset_era = data_name.substr(0, data_name.length()-5);
         }else{
-            dataset_era = "none";
             dataset_sample = "none";
+            dataset_era = "none";
             if( _datasetName.substr(0,6) == "Signal" ){
                 dataset_group = "Signal";
             }else{
