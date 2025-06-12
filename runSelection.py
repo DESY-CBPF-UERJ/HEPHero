@@ -527,7 +527,7 @@ if( dataset[0][:4] == "Data" ):
     PROC_XSEC_UNC_DOWN = 0
 else:
     PROC_XSEC = jobs[N][0][3]
-    if isinstance(jobs[N][0][4], float):
+    if isinstance(jobs[N][0][4], float) or isinstance(jobs[N][0][4], int):
         PROC_XSEC_UNC_UP = jobs[N][0][4]
         PROC_XSEC_UNC_DOWN = jobs[N][0][4]
     elif jobs[N][0][4] is None:
