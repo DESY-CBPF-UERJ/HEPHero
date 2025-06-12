@@ -14,8 +14,8 @@ find_package(ZLIB)
 
 add_subdirectory(include/HighFive)
 
-set(CMAKE_PREFIX_PATH $ENV{MY_TORCH_PATH})
-find_package(Torch REQUIRED)
+#set(CMAKE_PREFIX_PATH $ENV{MY_TORCH_PATH})
+#find_package(Torch REQUIRED)
 ##set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 #add_executable(RunAnalysis ${SOURCES})
@@ -26,7 +26,7 @@ add_subdirectory(src)
 add_subdirectory(${ANALYSIS}/src)
 add_subdirectory(${ANALYSIS}/ana)
 
-target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive "${TORCH_LIBRARIES}" onnxruntime)
+target_link_libraries(RunAnalysis PUBLIC ROOT::Core ROOT::Imt ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::ROOTVecOps ROOT::Tree ROOT::TreePlayer ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore ROOT::Thread ROOT::MultiProc ROOT::ROOTDataFrame ROOT::MathMore ZLIB::ZLIB HighFive onnxruntime) #"${TORCH_LIBRARIES}")
 
 set_property(TARGET RunAnalysis PROPERTY CXX_STANDARD 14)
 

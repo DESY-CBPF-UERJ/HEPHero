@@ -31,8 +31,8 @@
 #include <time.h>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include <torch/torch.h>
-#include <torch/script.h>
+//#include <torch/torch.h>
+//#include <torch/script.h>
 #include "rapidcsv.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/ReaderAscii.h"
