@@ -77,7 +77,7 @@ Get_Image_in_PNG = 1
 Get_Image_in_PDF = 0
 
 
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------
 # [DO NOT TOUCH THIS PART] 
 #----------------------------------------------------------------------------------------
 
@@ -125,6 +125,10 @@ if args.resubmit_flag:
 #======SETUP ENVIRONMENT VARIABLES=================================================================
 user = os.environ.get("USER")
 machines = os.environ.get("MACHINES")
+hep_outpath = os.environ.get("HEP_OUTPATH")
+redirector = os.environ.get("REDIRECTOR")
+storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
+storage_user = os.environ.get("STORAGE_USER")
 
   
 #======CASE SELECTION==============================================================================
@@ -166,12 +170,6 @@ if args.check >= 0:
     #with open('tools/analysis.txt', "w") as newfile:
     #    newfile.write(analysis)
 else:
-    #======SETUP ENVIRONMENT VARIABLES======
-    hep_outpath = os.environ.get("HEP_OUTPATH")
-    redirector = os.environ.get("REDIRECTOR")
-    storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
-    storage_user = os.environ.get("STORAGE_USER")
-    
     if user is None:
         raise ValueError("USER environment variable is undefined. Aborting script execution...")
     first_letter_user = user[0]
