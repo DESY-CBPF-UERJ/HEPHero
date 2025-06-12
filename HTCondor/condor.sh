@@ -39,27 +39,27 @@ fi
 if [ "$6" == "CERN" ]; then
 export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/${USER}/private/$2
 cp /afs/cern.ch/user/${USER:0:1}/${USER}/private/$2 .
-export MY_TORCH_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/libtorch
+#export MY_TORCH_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/libtorch
 export MY_ONNX_PATH=/afs/cern.ch/user/${USER:0:1}/${USER}/onnxruntime-linux-x64-1.20.1
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 elif [ "$6" == "CMSC" ]; then
 export $2=$(pwd)/$2
-xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/libtorch-shared-with-deps-1.9.0+cpu.zip .
-xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/fixtorch .
+#xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/libtorch-shared-with-deps-1.9.0+cpu.zip .
+#xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/fixtorch .
 xrdcp -fr root://${STORAGE_REDIRECTOR}//${STORAGE_DIR}/onnxruntime-linux-x64-1.20.1.tgz .
-unzip -o libtorch-shared-with-deps-1.9.0+cpu.zip
+#unzip -o libtorch-shared-with-deps-1.9.0+cpu.zip
 tar -zxf onnxruntime-linux-x64-1.20.1.tgz
-rm libtorch-shared-with-deps-1.9.0+cpu.zip
+#rm libtorch-shared-with-deps-1.9.0+cpu.zip
 rm onnxruntime-linux-x64-1.20.1.tgz
-cp fixtorch/DeviceGuard.h libtorch/include/ATen
-cp fixtorch/Functions.h libtorch/include/ATen
-export MY_TORCH_PATH=$(pwd)/libtorch
+#cp fixtorch/DeviceGuard.h libtorch/include/ATen
+#cp fixtorch/Functions.h libtorch/include/ATen
+#export MY_TORCH_PATH=$(pwd)/libtorch
 export MY_ONNX_PATH=$(pwd)/onnxruntime-linux-x64-1.20.1
 echo "ls"
 ls
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 elif [ "$6" == "UERJ" ]; then
-export MY_TORCH_PATH=/cms/store/user/${USER}/libtorch
+#export MY_TORCH_PATH=/cms/store/user/${USER}/libtorch
 export MY_ONNX_PATH=/cms/store/user/${USER}/onnxruntime-linux-x64-1.20.1
 echo "ls"
 ls
