@@ -294,6 +294,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
     //======LOOP OVER THE EVENTS===================================================================
     SumGenWeights = 0;
+    SumGenWeights_original = 0;
     
     for( int i = 0; i < _NumberEntries; ++i ) {
         if( _ANALYSIS == "GEN" ){ 
@@ -338,10 +339,6 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         }else{
             if( !RunRoutines() ) continue;
         }
-        
-        //======START EVENT WEIGHT=====================================================
-        evtWeight = 1.;
-        if( (_ANALYSIS != "GEN") && (dataset_group != "Data") ) evtWeight = genWeight;
         
         
         //======RUN REGION SETUP=========================================================

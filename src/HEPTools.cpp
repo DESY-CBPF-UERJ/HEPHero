@@ -6,6 +6,10 @@
 //---------------------------------------------------------------------------------------------
 void HEPBase::WriteCutflowInfo(){
 
+    if( SumGenWeights != SumGenWeights_original ){
+        PROC_XSEC = (SumGenWeights/SumGenWeights_original)*PROC_XSEC;
+    }
+
     if( _applyEventWeights || dataset_group == "Data"){
         luminosity = DATA_LUMI;
         lumi_total_unc = DATA_LUMI_TOTAL_UNC;

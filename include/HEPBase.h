@@ -168,6 +168,7 @@ class HEPBase {
         
         double                      evtWeight;
         double                      SumGenWeights;
+        double                      SumGenWeights_original;
         map<string, vector<float>>  sys_vertical_sfs;
         vector<int>                 sys_vertical_size;
         vector<int>                 sys_regions;
