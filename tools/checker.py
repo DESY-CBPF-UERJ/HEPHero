@@ -108,11 +108,11 @@ def __check_dataset( dataset_list, basedir, period, args_syst, systematics, args
                 #if dataset == line[:-1]:
                 info = line.split(" ")
                 #print(info)
-                info_source = info[8].split(",")[0]
-                #info_universe = info[9].split("]")[0]
+                info_source = info[10].split(",")[0]
+                #info_universe = info[11].split("]")[0]
                 #print(info_source)
                 #print(info_universe)
-                job_line = info[2][3:-2] + "_files_" + info[6][:-1] + "_" + str(int(info[7][:-1])-1)
+                job_line = info[2][3:-2] + "_files_" + info[8][:-1] + "_" + str(int(info[9][:-1])-1)
                 if( (dataset == job_line) and (info_source == "0") ):
                     control = 1
                     job = line
@@ -313,8 +313,8 @@ for datasets in tqdm(job_samples):
                     job_period = info[2][-6:-2]
                     job_dataset = info[2][3:-7]
                     if (job_period == period) and (job_dataset == datasets):
-                        info_source = info[8].split(",")[0]
-                        job_line = info[2][3:-2] + "_files_" + info[6][:-1] + "_" + str(int(info[7][:-1])-1)
+                        info_source = info[10].split(",")[0]
+                        job_line = info[2][3:-2] + "_files_" + info[8][:-1] + "_" + str(int(info[9][:-1])-1)
                         if( (job_line not in dataset_list) and (info_source == "0") ):
                             job = "[["+line.split("[[")[1]
                             Resubmit_Jobs.append(job)
@@ -335,7 +335,7 @@ for datasets in tqdm(job_samples):
                 info = line.split(" ")
                 job_period = info[2][-6:-2]
                 job_dataset = info[2][3:-7]
-                info_source = info[8].split(",")[0]
+                info_source = info[10].split(",")[0]
                 if (job_period == period) and (job_dataset == datasets) and ( info_source == "0" ):
                     job = "[["+line.split("[[")[1]
                     Resubmit_Jobs.append(job)
