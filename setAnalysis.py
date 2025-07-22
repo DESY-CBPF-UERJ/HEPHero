@@ -154,6 +154,7 @@ os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Fil
 os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_signal.py")
 os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_data.py")
 os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_private.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets\"~' Datasets/samples.py")
 
 
 #======CORRECT ANALYSIS NAME INSIDE ANALYSIS PROJECT===============================================

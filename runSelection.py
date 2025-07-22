@@ -375,8 +375,10 @@ if args.fix_flag or args.fix_storage_flag or args.start_flag:
     
     jobs_file = open(outpath+'/'+selection+"/"+"jobs.txt", "w")
     for i in range(len(jobs)):
-        #jobs_file.write(jobs[i][0][0] + "_files_" + str(jobs[i][1]) + "_" + str(jobs[i][2]-1)+"\n")
-        jobs_file.write(str(i)+"  "+str(jobs[i])+","+"\n")
+        str_job = jobs[i].copy()
+        str_job[0][4] = str(str_job[0][4]).replace(' ', '')
+        str_job = str(str_job)
+        jobs_file.write(str(i)+"  "+str_job+","+"\n")
     jobs_file.close()
     
     json_sys_file = outpath+'/'+selection+"/"+'vertical_systematics.json'
@@ -628,6 +630,14 @@ if( (jobs[N][3] == 0) and (jobs[N][4] == 0) ):
         else:
             print(line.rstrip())
     out.close()
+
+
+#======COPY OUTPUT TO STORAGE======================================================================
+#if machines == "UERJ":
+#    job_folder = jobs[N][0][0] + "_files_" + str(jobs[N][1]) + "_" + str(jobs[N][2]-1)
+#    command = "xrdcp -rf " + outpath+'/'+selection+'/'+job_folder + " #root://"+storage_redirector+"//"+storage_dir+"/"+analysis+'/'+selection
+#    os.system(command)
+    
 
 
 #======PRINT THE CONTENT OF THE HDFf FILE==========================================================

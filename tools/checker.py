@@ -99,20 +99,18 @@ def __check_dataset( dataset_list, basedir, period, args_syst, systematics, args
     Nentries = 0
     dataset_name = dataset.split("_files_")[0]
     dataset_period = dataset_name.split("_")[-2]+"_"+dataset_name.split("_")[-1]
-    #dataset_tag = dataset.split("_"+dataset_year)[0][-3:]
     if (dataset_period == period):
-        #print(dataset)
+        #print("dataset", dataset)
         control = 0
         with open(jobs_file_name) as f:
             for line in f:
-                #if dataset == line[:-1]:
+                #print(line)
                 info = line.split(" ")
                 #print(info)
                 info_source = info[10].split(",")[0]
-                #info_universe = info[11].split("]")[0]
-                #print(info_source)
-                #print(info_universe)
+                #print("info_source",info_source)
                 job_line = info[2][3:-2] + "_files_" + info[8][:-1] + "_" + str(int(info[9][:-1])-1)
+                #print("job_line", job_line)
                 if( (dataset == job_line) and (info_source == "0") ):
                     control = 1
                     job = line
