@@ -63,7 +63,7 @@ print('Outpath = ' + basedir)
 print('CPUs = ' + str(cpu_count))
 print('')
 
-samples = get_samples( analysis, basedir, period )
+samples = get_samples( analysis, basedir, period, group_data=True )
 
 if args.clean:
     if machines == "UERJ":
