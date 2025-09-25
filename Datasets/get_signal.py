@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-files_dir = "../AP_Template_R3/Datasets/Files"
+files_dir = "../AP_ZpDM_Had_R2/Datasets/Files"
 sys.path.insert(0, files_dir)
 from Signal import *
 
