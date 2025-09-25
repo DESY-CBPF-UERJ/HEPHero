@@ -18,52 +18,14 @@ import numpy as np
 # Main Setup
 #-------------------------------------------------------------------------------------
 selection = 'Test'
-analysis = 'AP_ZpDM_Had_R2'
+analysis = 'AP_Template_R3'
 treeName = 'Events'
 LumiWeights = 1
 
 analysis_parameters = {
-'JET_ETA_CUT                ': 2.4,
-'JET_PT_CUT                 ': 20,
-'JET_ID_WP                  ': 6,
-'JET_PUID_WP                ': 7,
-'JET_BTAG_WP                ': 3,
-'JET_LEP_DR_ISO_CUT         ': 0.4,
-'ELECTRON_GAP_LOWER_CUT     ': 1.444,
-'ELECTRON_GAP_UPPER_CUT     ': 1.566,
-'ELECTRON_ETA_CUT           ': 2.5,
-'ELECTRON_PT_CUT            ': 20,
-'ELECTRON_LOW_PT_CUT        ': 15,
-'ELECTRON_ID_WP             ': 4,
-'MUON_ETA_CUT               ': 2.4,
-'MUON_PT_CUT                ': 20,
-'MUON_LOW_PT_CUT            ': 15,
-'MUON_ID_WP                 ': 1,
-'MUON_ISO_WP                ': 3,
-'LEADING_LEP_PT_CUT         ': 40,
-'LEPLEP_PT_CUT              ': 40,
-'LEPLEP_DR_CUT              ': 3.2,
-'LEPLEP_DM_CUT              ': 25,
-'MET_CUT                    ': 65,
-'MET_DY_UPPER_CUT           ': 100,
-'MET_LEPLEP_DPHI_CUT        ': 0.8,
-'MET_LEPLEP_MT_CUT          ': 90,
 }
 
 corrections = {  # 0-don't apply, 1-apply
-'PILEUP_WGT                 ': 1,
-'ELECTRON_ID_WGT            ': 1,
-'MUON_ID_WGT                ': 1,
-'JET_PUID_WGT               ': 1,
-'BTAG_WGT                   ': 1,
-'TRIGGER_WGT                ': 1,
-'PREFIRING_WGT              ': 1,
-'JER_CORR                   ': 1,
-'MET_XY_CORR                ': 1,
-'MET_RECOIL_CORR            ': 1,
-'TOP_PT_WGT                 ': 1,
-'W_PT_WGT                   ': 1,
-'MUON_ROC_CORR              ': 1,
 }
 
 
@@ -75,26 +37,13 @@ lateral_systematics = {
 }
 
 vertical_systematics = {
-'Pileup': [50, 2, [], []],
-'EleID': [51, 2, [], []],
-'MuID': [52, 2, [], []],
-'JetPU': [53, 2, [], []],
-'BTag': [54, 8, [], ['bc', 'light', 'bc_fc', 'light_fc']],
-'Trig': [58, 2, [], []],
-'PreFir': [59, 2, [], []],
-'PDF': [60, 100, [], []],
-'Scales': [62, 7, [], []],
-'ISR': [63, 2, [], []],
-'FSR': [64, 2, [], []],
-'TopPt': [65, 1, [], []],
-'WPt': [66, 1, [], []],
 }
 
 
 #-------------------------------------------------------------------------------------
 # Jobs setup
 #-------------------------------------------------------------------------------------
-NumMaxEvents = 200000
+NumMaxEvents = -1
 NumFilesPerJob_Data = 1
 NumFilesPerJob_Signal = 50
 NumFilesPerJob_Bkg = 5
@@ -103,84 +52,20 @@ NumFilesPerJob_Bkg = 5
 #-------------------------------------------------------------------------------------
 # Datasets
 #-------------------------------------------------------------------------------------
-sys.path.insert(0, 'AP_ZpDM_Had_R2/Datasets')
+sys.path.insert(0, 'AP_Template_R3/Datasets')
 from Signal import *
 from Bkg import *
 from Data import *
 datasets = []
 
-datasets.extend(s_ds['Signal_0_17'])
-datasets.extend(b_ds['DYPt50ToInf_0_17'])
-datasets.extend(b_ds['DYPt0To50_0_17'])
-datasets.extend(b_ds['TTFullLep_0_17'])
-datasets.extend(b_ds['TTSemiLep_0_17'])
-datasets.extend(b_ds['ST_0_17'])
-datasets.extend(b_ds['VZ_0_17'])
-datasets.extend(b_ds['ResidualSM_0_17'])
+datasets.extend(d_ds['Data_MET_0_22'])
+datasets.extend(s_ds['Signal_0_22'])
 
 
 #-------------------------------------------------------------------------------------
 # Metadata
 #-------------------------------------------------------------------------------------
 metadata = {
-'NN_model_onnx_0_16         ': 'AP_ZpDM_Had_R2/Metadata/ML/ONNX/DeepCSV/2016preVFP/model.onnx',
-'NN_model_onnx_1_16         ': 'AP_ZpDM_Had_R2/Metadata/ML/ONNX/DeepCSV/2016postVFP/model.onnx',
-'NN_model_onnx_0_17         ': 'AP_ZpDM_Had_R2/Metadata/ML/ONNX/DeepCSV/2017/model.onnx',
-'NN_model_onnx_0_18         ': 'AP_ZpDM_Had_R2/Metadata/ML/ONNX/DeepCSV/2018/model.onnx',
-'lumi_certificate_X_16      ': 'AP_ZpDM_Had_R2/Metadata/certificates/Cert_271036-284044_13TeV_Legacy2016_Collisions16.json',
-'lumi_certificate_X_17      ': 'AP_ZpDM_Had_R2/Metadata/certificates/Cert_294927-306462_13TeV_UL2017_Collisions17.json',
-'lumi_certificate_X_18      ': 'AP_ZpDM_Had_R2/Metadata/certificates/Cert_314472-325175_13TeV_Legacy2018_Collisions18.json',
-'pdf_type_X_XX              ': 'AP_ZpDM_Had_R2/Metadata/PDF/pdf_type.json',
-'pileup_0_16                ': 'AP_ZpDM_Had_R2/Metadata/POG/LUM/2016preVFP_UL/puWeights.json.gz',
-'pileup_1_16                ': 'AP_ZpDM_Had_R2/Metadata/POG/LUM/2016postVFP_UL/puWeights.json.gz',
-'pileup_0_17                ': 'AP_ZpDM_Had_R2/Metadata/POG/LUM/2017_UL/puWeights.json.gz',
-'pileup_0_18                ': 'AP_ZpDM_Had_R2/Metadata/POG/LUM/2018_UL/puWeights.json.gz',
-'electron_0_16              ': 'AP_ZpDM_Had_R2/Metadata/POG/EGM/2016preVFP_UL/electron.json.gz',
-'electron_1_16              ': 'AP_ZpDM_Had_R2/Metadata/POG/EGM/2016postVFP_UL/electron.json.gz',
-'electron_0_17              ': 'AP_ZpDM_Had_R2/Metadata/POG/EGM/2017_UL/electron.json.gz',
-'electron_0_18              ': 'AP_ZpDM_Had_R2/Metadata/POG/EGM/2018_UL/electron.json.gz',
-'muon_0_16                  ': 'AP_ZpDM_Had_R2/Metadata/POG/MUO/2016preVFP_UL/muon_Z.json.gz',
-'muon_1_16                  ': 'AP_ZpDM_Had_R2/Metadata/POG/MUO/2016postVFP_UL/muon_Z.json.gz',
-'muon_0_17                  ': 'AP_ZpDM_Had_R2/Metadata/POG/MUO/2017_UL/muon_Z.json.gz',
-'muon_0_18                  ': 'AP_ZpDM_Had_R2/Metadata/POG/MUO/2018_UL/muon_Z.json.gz',
-'btag_SF_0_16               ': 'AP_ZpDM_Had_R2/Metadata/POG/BTV/2016preVFP_UL/btagging.json.gz',
-'btag_SF_1_16               ': 'AP_ZpDM_Had_R2/Metadata/POG/BTV/2016postVFP_UL/btagging.json.gz',
-'btag_SF_0_17               ': 'AP_ZpDM_Had_R2/Metadata/POG/BTV/2017_UL/btagging.json.gz',
-'btag_SF_0_18               ': 'AP_ZpDM_Had_R2/Metadata/POG/BTV/2018_UL/btagging.json.gz',
-'btag_eff_0_16              ': 'AP_ZpDM_Had_R2/Metadata/btag_eff/DeepCSVLoose/2016preVFP.json',
-'btag_eff_1_16              ': 'AP_ZpDM_Had_R2/Metadata/btag_eff/DeepCSVLoose/2016postVFP.json',
-'btag_eff_0_17              ': 'AP_ZpDM_Had_R2/Metadata/btag_eff/DeepCSVLoose/2017.json',
-'btag_eff_0_18              ': 'AP_ZpDM_Had_R2/Metadata/btag_eff/DeepCSVLoose/2018.json',
-'trigger_X_16               ': 'AP_ZpDM_Had_R2/Metadata/trigger/SF_2016_ttbar.json',
-'trigger_X_17               ': 'AP_ZpDM_Had_R2/Metadata/trigger/SF_2017_ttbar.json',
-'trigger_X_18               ': 'AP_ZpDM_Had_R2/Metadata/trigger/SF_2018_ttbar.json',
-'JES_MC_0_16                ': 'AP_ZpDM_Had_R2/Metadata/JES/JES_MC_16_preVFP.txt',
-'JES_MC_1_16                ': 'AP_ZpDM_Had_R2/Metadata/JES/JES_MC_16_postVFP.txt',
-'JES_MC_0_17                ': 'AP_ZpDM_Had_R2/Metadata/JES/JES_MC_17.txt',
-'JES_MC_0_18                ': 'AP_ZpDM_Had_R2/Metadata/JES/JES_MC_18.txt',
-'JER_MC_0_16                ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt',
-'JER_SF_MC_0_16             ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt',
-'JER_MC_1_16                ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt',
-'JER_SF_MC_1_16             ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK4PFchs.txt',
-'JER_MC_0_17                ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt',
-'JER_SF_MC_0_17             ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt',
-'JER_MC_0_18                ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt',
-'JER_SF_MC_0_18             ': 'AP_ZpDM_Had_R2/Metadata/JER/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt',
-'jet_puID_0_16              ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2016preVFP_UL/jmar.json.gz',
-'jet_puID_1_16              ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2016postVFP_UL/jmar.json.gz',
-'jet_puID_0_17              ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2017_UL/jmar.json.gz',
-'jet_puID_0_18              ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2018_UL/jmar.json.gz',
-'JERC_0_16                  ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2016preVFP_UL/jet_jerc.json.gz',
-'JERC_1_16                  ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2016postVFP_UL/jet_jerc.json.gz',
-'JERC_0_17                  ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2017_UL/jet_jerc.json.gz',
-'JERC_0_18                  ': 'AP_ZpDM_Had_R2/Metadata/POG/JME/2018_UL/jet_jerc.json.gz',
-'mu_RoccoR_0_16             ': 'AP_ZpDM_Had_R2/Metadata/mu_Rochester/RoccoR2016aUL.txt',
-'mu_RoccoR_1_16             ': 'AP_ZpDM_Had_R2/Metadata/mu_Rochester/RoccoR2016bUL.txt',
-'mu_RoccoR_0_17             ': 'AP_ZpDM_Had_R2/Metadata/mu_Rochester/RoccoR2017UL.txt',
-'mu_RoccoR_0_18             ': 'AP_ZpDM_Had_R2/Metadata/mu_Rochester/RoccoR2018UL.txt',
-'Z_recoil_X_16              ': 'AP_ZpDM_Had_R2/Metadata/boson_recoil/Z/TypeI-PFMet_Run2016_legacy.root',
-'Z_recoil_X_17              ': 'AP_ZpDM_Had_R2/Metadata/boson_recoil/Z/Type1_PFMET_2017.root',
-'Z_recoil_X_18              ': 'AP_ZpDM_Had_R2/Metadata/boson_recoil/Z/TypeI-PFMet_Run2018.root',
 }
 
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(HEPHero)
 
-set(ANALYSIS "AP_ZpDM_Had_R2")
+set(ANALYSIS "AP_Template_R3")
 
 include_directories(include ${ANALYSIS}/include $ENV{MY_ONNX_PATH}/include)
 
