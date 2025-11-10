@@ -24,16 +24,26 @@ basedir_signal = files_dir+"/"+"signal_"+period[-2:]+"/dti_"+period[0]+"/v"+vers
 if os.path.isdir(basedir_signal) is False:
     os.makedirs(basedir_signal)
 
+basedir_data = files_dir+"/"+"data_"+period[-2:]+"/v"+version+"/"
+if os.path.isdir(basedir_data) is False:
+    os.makedirs(basedir_data)
+
 #==================================================================================================
 for i in range(len(datasets[period])):
     if datasets[period][i][0][:6] == "Signal":
         file_out = basedir_signal + datasets[period][i][0] + ".txt"
+    elif datasets[period][i][0][:4] == "Data":
+        file_out = basedir_data + datasets[period][i][0] + ".txt"
     else:
         file_out = basedir_bkg + datasets[period][i][0] + ".txt"
 
-    files_list = os.listdir(datasets[period][i][1])
-
+    #files_list = os.listdir(datasets[period][i][1])
+    os.system('find '+datasets[period][i][1]+' -name "*.root" > files_list_temp.txt')
+    with open('files_list_temp.txt', 'r') as file_temp:
+        files_list = file_temp.readlines()
+    os.system('rm files_list_temp.txt')
+    
     with open(file_out, "w") as out:
         for input_file in files_list:
-            out.write(os.path.join(datasets[period][i][1],input_file+"\n"))
+            out.write(os.path.join(datasets[period][i][1],input_file))
 

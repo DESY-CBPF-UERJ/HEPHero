@@ -8,6 +8,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis", type=str, default="GEN")
 args = parser.parse_args()
+if args.analysis[-1] == "/":
+    args.analysis = args.analysis[:-1]
 print('Analysis set to ' + args.analysis)
 print('')
    
@@ -37,7 +39,7 @@ with open("runSelection_temp.py", "w") as newfile:
     newfile.write("# Main Setup\n")    
     newfile.write("#-------------------------------------------------------------------------------------\n")
     newfile.write("selection = '" + sm.selection +"'\n")
-    newfile.write("analysis = '" + sm.analysis +"'\n")
+    newfile.write("analysis = '" + args.analysis +"'\n")
     newfile.write("treeName = '" + sm.treeName +"'\n")
     newfile.write("LumiWeights = " + str(sm.LumiWeights) +"\n")
     newfile.write("\n")
@@ -85,7 +87,7 @@ with open("runSelection_temp.py", "w") as newfile:
             newfile.write(str(dataset) + ",\n")
         newfile.write("]\n")
     else:
-        newfile.write("sys.path.insert(0, '"+sm.analysis+"/Datasets')\n")
+        newfile.write("sys.path.insert(0, '"+args.analysis+"/Datasets')\n")
         newfile.write("from Signal import *\n")
         newfile.write("from Bkg import *\n")
         newfile.write("from Data import *\n")
@@ -139,27 +141,28 @@ os.system("mv runSelection_temp.py runSelection.py")
 
 #======CREATE NEW ANALYSIS FILE IN TOOLS===========================================================
 with open("tools/analysis.txt", "w") as txtfile:
-    txtfile.write(sm.analysis)
+    txtfile.write(args.analysis)
 
 
 #======SET NEW ANALYSIS IN CMAKELISTS==============================================================
-os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' CMakeLists.txt")
+os.system("sed -i 's~set(ANALYSIS.*~set(ANALYSIS "+'"'+args.analysis+'"'+")~' CMakeLists.txt")
 
 
 #======SET NEW ANALYSIS IN DATASETS' SCRIPTS=======================================================
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_bkg.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_signal.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/check_data.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_bkg.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_signal.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_data.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets/Files\"~' Datasets/get_private.py")
-os.system("sed -i 's~files_dir =.*~files_dir = \"../"+sm.analysis+"/Datasets\"~' Datasets/samples.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/check_bkg.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/check_signal.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/check_data.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/get_bkg.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/get_signal.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/get_data.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets/Files\"~' Datasets/get_private.py")
+os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets\"~' Datasets/samples.py")
 
 
 #======CORRECT ANALYSIS NAME INSIDE ANALYSIS PROJECT===============================================
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Bkg.py")
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Signal.py")
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+sm.analysis+'"'+"~' "+sm.analysis+"/Datasets/Data.py")
-os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' "+sm.analysis+"/src/CMakeLists.txt")
-os.system("sed -i 's/set(ANALYSIS.*/set(ANALYSIS "+'"'+sm.analysis+'"'+")/' "+sm.analysis+"/ana/CMakeLists.txt")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/setup.py")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Bkg.py")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Signal.py")
+os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Data.py")
+os.system("sed -i 's~set(ANALYSIS.*~set(ANALYSIS "+'"'+args.analysis+'"'+")~' "+args.analysis+"/src/CMakeLists.txt")
+os.system("sed -i 's~set(ANALYSIS.*~set(ANALYSIS "+'"'+args.analysis+'"'+")~' "+args.analysis+"/ana/CMakeLists.txt")

@@ -289,8 +289,8 @@ else:
                             file_path = "/cms/" + line
                         if analysis == "OPENDATA":
                             file_path = hep_outpath[:-7] + "/opendata/" + line
-
-                        if os.path.isfile(file_path) or dataset[1][2:4] == "99":
+                        #print(file_path, dataset[1][0:2])
+                        if os.path.isfile(file_path) or dataset[1][0:2] == "99":
                             NumFiles += 1
                         else:
                             files_not_at_local_storage.append(line)
