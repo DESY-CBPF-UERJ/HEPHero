@@ -120,9 +120,7 @@ if args.resubmit_flag:
             for line in f:
                 line = ast.literal_eval(line[:-1])[0]
                 resubmit.append(line)
-
-print("args.resubmit_flag", args.resubmit_flag)
-print("resubmit", len(resubmit))
+                
 
 #======SETUP ENVIRONMENT VARIABLES=================================================================
 user = os.environ.get("USER")
@@ -148,24 +146,16 @@ if args.check >= 0:
         if args.check >= 1:
             sys.exit("There are only 1 test from 0 to 0.")
     else:
-        if args.check == 0:
-            datasets = [["Signal_test_1_16",                  '1600001', analysis+"/Datasets/signal.root", 0],]
         if args.check == 1:
-            datasets = [["TTToSemiLeptonic_test_0_16",        '1600000', analysis+"/Datasets/bkg.root",  0],]
+            datasets = [["Test_0_16",        '1600000', analysis+"/Datasets/bkg.root",  0],]
         if args.check == 2:
-            datasets = [["TTToSemiLeptonic_test_1_16",        '1600001', analysis+"/Datasets/bkg.root",  0],]
+            datasets = [["Test_1_16",        '1600001', analysis+"/Datasets/bkg.root",  0],]
         if args.check == 3:
-            datasets = [["TTToSemiLeptonic_test_0_17",        '1700000', analysis+"/Datasets/bkg.root",  0],]
+            datasets = [["Test_0_17",        '1700000', analysis+"/Datasets/bkg.root",  0],]
         if args.check == 4:
-            datasets = [["TTToSemiLeptonic_test_0_18",        '1800000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 5:
-            datasets = [["TTToSemiLeptonic_test_0_22",        '2200000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 6:
-            datasets = [["TTToSemiLeptonic_test_0_23",        '2300000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 7:
-            datasets = [["Data_DoubleMu_test_H_1_16",         '1600001', analysis+"/Datasets/data.root",   0],]
-        if args.check >= 8:
-            sys.exit("There are only 8 tests from 0 to 7.")
+            datasets = [["Test_0_18",        '1800000', analysis+"/Datasets/bkg.root",  0],]
+        if args.check >= 5:
+            sys.exit("There are only 4 tests from 0 to 3.")
     
     jobs = [[datasets[0], 0, 1, 0, 0]]
     

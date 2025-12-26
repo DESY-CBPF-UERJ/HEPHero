@@ -20,10 +20,21 @@ def get_samples( analysis, basedir, period, group_data=False ):
     path_signal = text_basedir+'/'+analysis+'/Datasets/Files/signal_'+year+'/dti_'+dti+'/'+nano_version+'/'
     path_data = text_basedir+'/'+analysis+'/Datasets/Files/data_'+year+'/'+nano_version+'/'
 
-    list_bkg = os.listdir(path_bkg)
-    list_signal = os.listdir(path_signal)
-    list_data = os.listdir(path_data)
+    if os.path.isdir(path_bkg):
+        list_bkg = os.listdir(path_bkg)
+    else:
+        list_bkg = []
+
+    if os.path.isdir(path_signal):
+        list_signal = os.listdir(path_signal)
+    else:
+        list_signal = []
     
+    if os.path.isdir(path_data):
+        list_data = os.listdir(path_data)
+    else:
+        list_data = []
+
     list_bkg = [name[:-4] for name in list_bkg]
     list_signal = [name[:-4] for name in list_signal]
     list_data = [name[:-4] for name in list_data]
