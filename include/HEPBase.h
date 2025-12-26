@@ -44,7 +44,7 @@
 #include "HepMC3/Relatives.h"
 #include <highfive/H5File.hpp>
 #include <boost/multi_array.hpp>
-
+#include "fastjet/ClusterSequence.hh"
 
 using namespace std;
 

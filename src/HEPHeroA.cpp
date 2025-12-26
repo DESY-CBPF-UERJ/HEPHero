@@ -57,7 +57,7 @@ HEPHero::HEPHero( char *configFileName ) {
         if( key == "DATA_LUMI_TOTAL_UNC"        )   DATA_LUMI_TOTAL_UNC = atof(value.c_str());
         if( key == "DATA_LUMI_TAGS_UNC"         )   DATA_LUMI_TAGS_UNC.push_back( value );
         if( key == "DATA_LUMI_VALUES_UNC"       )   DATA_LUMI_VALUES_UNC.push_back( atof(value.c_str()) );
-
+        
         FillControlVariables( key, value);
         
     }

@@ -121,6 +121,8 @@ if args.resubmit_flag:
                 line = ast.literal_eval(line[:-1])[0]
                 resubmit.append(line)
 
+print("args.resubmit_flag", args.resubmit_flag)
+print("resubmit", len(resubmit))
 
 #======SETUP ENVIRONMENT VARIABLES=================================================================
 user = os.environ.get("USER")
@@ -317,7 +319,6 @@ else:
                                     if( dataset[1][2:4] in lateral_systematics[systematic][2] ):
                                         jobs += [ [dataset, Intervals[i], Intervals[i+1], lateral_systematics[systematic][0], u] for u in range(lateral_systematics[systematic][1]) ]
                 
-
         if len(resubmit) > 0:
             #jobs = resubmit
             jobs_copy = jobs.copy()

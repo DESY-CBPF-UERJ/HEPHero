@@ -309,8 +309,7 @@ def __group_datasets( sample_keys, samples, basedir, period, args_syst, systemat
                     if varname[-4:] == "_std":
                         N_name = varname[:-4]+"_N"
                         datasets_out_dict[varname] = np.sqrt(datasets_out_dict[varname]/(datasets_out_dict[N_name]-1));
-
-
+    
     if PROC_XSEC == 0:
         dataScaleWeight = 1
     else:

@@ -104,6 +104,8 @@ def __check_dataset( dataset_list, basedir, period, args_syst, systematics, args
         control = 0
         with open(jobs_file_name) as f:
             for line in f:
+                cross_section_unc_string = line.split("', ")[3].split(", '")[1]
+                line = line.replace("'"+cross_section_unc_string+"'", cross_section_unc_string)
                 #print(line)
                 info = line.split(" ")
                 #print(info)
@@ -307,14 +309,23 @@ for datasets in tqdm(job_samples):
             jobs_count_missing = 0
             with open(jobs_file_name) as f:
                 for line in f:
+                    cross_section_unc_string = line.split("', ")[3].split(", '")[1]
+                    line = line.replace("'"+cross_section_unc_string+"'", cross_section_unc_string)
                     info = line.split(" ")
                     job_period = info[2][-6:-2]
                     job_dataset = info[2][3:-7]
                     if (job_period == period) and (job_dataset == datasets):
                         info_source = info[10].split(",")[0]
+                        #print("info_sorce", info_source)
                         job_line = info[2][3:-2] + "_files_" + info[8][:-1] + "_" + str(int(info[9][:-1])-1)
+                        #print("line", line)
+                        #print("line2", line.split("', ")[3].split(", '")[1])
+                        #cross_section_unc_string = line.split("', ")[3].split(", '")[1]
+                        #line = line.replace("'"+cross_section_unc_string+"'", cross_section_unc_string)
+                        #print("line", line)
                         if( (job_line not in dataset_list) and (info_source == "0") ):
                             job = "[["+line.split("[[")[1]
+                            print("job", job)
                             Resubmit_Jobs.append(job)
                             jobs_count_missing += 1
 
@@ -330,6 +341,8 @@ for datasets in tqdm(job_samples):
         jobs_count_missing = 0
         with open(jobs_file_name) as f:
             for line in f:
+                cross_section_unc_string = line.split("', ")[3].split(", '")[1]
+                line = line.replace("'"+cross_section_unc_string+"'", cross_section_unc_string)
                 info = line.split(" ")
                 job_period = info[2][-6:-2]
                 job_dataset = info[2][3:-7]
