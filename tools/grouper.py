@@ -14,7 +14,7 @@ import multiprocessing
 #======SETUP=======================================================================================
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--selection")
-parser.add_argument("-p", "--period")
+parser.add_argument("-p", "--period", default="0_00")
 parser.add_argument("-c", "--cpu")
 parser.set_defaults(cpu=None)
 parser.add_argument("--syst", dest='syst', action='store_true')

@@ -118,6 +118,7 @@ class HEPBase {
         int                         _EventPosition;
         string                      _SELECTION;
         string                      _ANALYSIS;
+        string                      _ANALYSIS_TYPE;
         string                      _datasetName;
         string                      _Files;
         int                         _FilesID;
@@ -130,7 +131,6 @@ class HEPBase {
         bool                        _Get_Image_in_PDF;
         time_t                      _begin;
         time_t                      _end;
-        bool                        _check;
         int                         _NumMaxEvents;
         string                      _Redirector;
         string                      _Machines;
@@ -195,7 +195,6 @@ class HEPBase {
         double GEN_MET_phi;
         double GEN_MHT_pt;
         double GEN_MHT_phi;
-        vector<int> parameters_id;
         
         // HepMC Variables
         int     event_number;

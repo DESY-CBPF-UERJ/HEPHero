@@ -44,9 +44,9 @@ vertical_systematics = {
 # Jobs setup
 #-------------------------------------------------------------------------------------
 NumMaxEvents = -1
-NumFilesPerJob_Data = 1
 NumFilesPerJob_Signal = 50
 NumFilesPerJob_Bkg = 5
+NumFilesPerJob_Data = 1
 
 
 #-------------------------------------------------------------------------------------
@@ -86,7 +86,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-j", "--job", type=int, default=0)
 parser.add_argument("-p", "--proxy", default="none")
 parser.add_argument("-t", "--timer", type=int, default=1)
-parser.add_argument("-c", "--check", type=int, default=-1)
 parser.add_argument("--resubmit", dest='resubmit_flag', action='store_true')
 parser.set_defaults(resubmit_flag=False)
 parser.add_argument("--fix", dest='fix_flag', action='store_true')
@@ -106,7 +105,6 @@ print('Analysis = ' + analysis)
 print('Job ID = ' + str(args.job))
 print('Timer = ' + str(args.timer))
 print('Proxy = ' + args.proxy)   
-print('Check = ' + str(args.check))
 if args.proxy != "none":
     os.environ["X509_USER_PROXY"] = args.proxy
 
@@ -132,87 +130,134 @@ storage_user = os.environ.get("STORAGE_USER")
 
   
 #======CASE SELECTION==============================================================================
-if args.check >= 0:
-    outpath = analysis+"/ana/local_output"
-    redirector = "None"
-    N = 0
-    
-    if analysis == "GEN":
-        if args.check == 0:
-            datasets = [["H7_test", '1600000', analysis+"/Datasets/test.hepmc", 0],]
-            #datasets = [["H7_cms", '1600000', analysis+"/Datasets/InterfaceMatchboxTest-S123456790_cms.hepmc", 0],]
-            #datasets = [["H7_dell", '1600000', analysis+"/Datasets/InterfaceMatchboxTest-S123456790_dell.hepmc", 0],]
-            #datasets = [["H7_ttbar_tests", '1600000', "/home/gcorreia/cernbox/ttbar_test/LHC-Matchbox.hepmc", 0],]
-        if args.check >= 1:
-            sys.exit("There are only 1 test from 0 to 0.")
-    else:
-        if args.check == 1:
-            datasets = [["Test_0_16",        '1600000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 2:
-            datasets = [["Test_1_16",        '1600001', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 3:
-            datasets = [["Test_0_17",        '1700000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check == 4:
-            datasets = [["Test_0_18",        '1800000', analysis+"/Datasets/bkg.root",  0],]
-        if args.check >= 5:
-            sys.exit("There are only 4 tests from 0 to 3.")
-    
-    jobs = [[datasets[0], 0, 1, 0, 0]]
-    
-    #with open('tools/analysis.txt', "w") as newfile:
-    #    newfile.write(analysis)
-else:
-    if user is None:
-        raise ValueError("USER environment variable is undefined. Aborting script execution...")
-    first_letter_user = user[0]
+if user is None:
+    raise ValueError("USER environment variable is undefined. Aborting script execution...")
+first_letter_user = user[0]
 
-    if machines is None:
-        raise ValueError("MACHINES environment variable is undefined. Aborting script execution...")
+if machines is None:
+    raise ValueError("MACHINES environment variable is undefined. Aborting script execution...")
 
-    if hep_outpath is None:
-        hep_outpath = os.path.join("/eos/user", first_letter_user, user, "HEP_OUTPUT")
-        #hep_outpath = "/home/" # used for offline tests
-        warnings.warn("HEP_OUTPATH environment varibale is undefined. Defaulting to " + hep_outpath)
-        if os.path.isdir(hep_outpath) is False:
-            try:
-                os.makedirs(hep_outpath)
-            except Exception as e:
-                quit("Script failed when creating default output path. Exception: " + str(e) + " Aborting...")
-    
-    outpath = os.path.join(hep_outpath, analysis)
-    if os.path.isdir(outpath) is False:
+if hep_outpath is None:
+    hep_outpath = os.path.join("/eos/user", first_letter_user, user, "HEP_OUTPUT")
+    #hep_outpath = "/home/" # used for offline tests
+    warnings.warn("HEP_OUTPATH environment varibale is undefined. Defaulting to " + hep_outpath)
+    if os.path.isdir(hep_outpath) is False:
         try:
-            os.makedirs(outpath)
+            os.makedirs(hep_outpath)
         except Exception as e:
             quit("Script failed when creating default output path. Exception: " + str(e) + " Aborting...")
 
-    if redirector is None:
-        # Possible redirectors: ['cmsxrootd.fnal.gov', 'xrootd-cms.infn.it', 'cms-xrd-global.cern.ch']
-        # recommended in [USA, Europe/Asia, Global]
-        redirector = 'cms-xrd-global.cern.ch'
-        warnings.warn("REDIRECTOR environment varibale is undefined. Defaulting to " + redirector)
-    
- 
-    print("\nuser = " + user)
-    print("machines = " + machines)
-    print("outpath = " + outpath)
-    print("redirector = " + redirector)
-    print("")
-    
-    #======CREATE LIST OF JOBS======
-    if analysis == "GEN":
-        jobs = []
-        empty_text_files = []
-        total_number_of_files = {}
-        for dataset in datasets:
-            NumFilesPerJob = 1
-            
-            NumFiles = sum(1 for line in open(dataset[2]))
-            total_number_of_files[dataset[0]] = NumFiles
-            
-            if NumFiles == 0:
-                empty_text_files.append(dataset[0])
+outpath = os.path.join(hep_outpath, analysis)
+if os.path.isdir(outpath) is False:
+    try:
+        os.makedirs(outpath)
+    except Exception as e:
+        quit("Script failed when creating default output path. Exception: " + str(e) + " Aborting...")
+
+if redirector is None:
+    # Possible redirectors: ['cmsxrootd.fnal.gov', 'xrootd-cms.infn.it', 'cms-xrd-global.cern.ch']
+    # recommended in [USA, Europe/Asia, Global]
+    redirector = 'cms-xrd-global.cern.ch'
+    warnings.warn("REDIRECTOR environment varibale is undefined. Defaulting to " + redirector)
+
+
+print("\nuser = " + user)
+print("machines = " + machines)
+print("outpath = " + outpath)
+print("redirector = " + redirector)
+print("")
+
+#======CREATE LIST OF JOBS======
+if analysis[-3:] == "GEN":
+    jobs = []
+    empty_text_files = []
+    total_number_of_files = {}
+    for dataset in datasets:
+        NumFilesPerJob = 1
+        
+        NumFiles = sum(1 for line in open(dataset[2]))
+        total_number_of_files[dataset[0]] = NumFiles
+        
+        if NumFiles == 0:
+            empty_text_files.append(dataset[0])
+        else:
+            dataset.append(NumFiles)
+
+            Intervals = list(range(0,NumFiles,NumFilesPerJob))
+            if NumFiles%NumFilesPerJob == 0:
+                Intervals.append(Intervals[-1]+NumFilesPerJob)
             else:
+                Intervals.append(Intervals[-1]+NumFiles%NumFilesPerJob)
+
+            for i in range(len(Intervals)-1):
+                jobs += [ [dataset, Intervals[i], Intervals[i+1], 0, 0] ]
+            
+
+    if len(resubmit) > 0:
+        #jobs = resubmit
+        jobs_copy = jobs.copy()
+        jobs = [job for job in resubmit if job in jobs_copy]
+    if args.resubmit_flag and len(resubmit) == 0:
+        print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
+    
+    N = int(args.job)
+    if N == -1:
+        print("")
+        sys.exit("Number of jobs: " + str(len(jobs)))
+    if N == -2:
+        datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
+        for i in range(len(jobs)):
+            #print(i, jobs[i])
+            print(i, [jobs[i][0][0], jobs[i][0][1], datasets_short[i]], [jobs[i][0][5], str(jobs[i][1])+"-"+str(jobs[i][2])], [jobs[i][3], jobs[i][4]])
+        sys.exit("")
+    else:
+        if N <= -3:
+            print("")
+            sys.exit(">> Enter an integer >= -2")
+    if N >= len(jobs):
+        sys.exit("There are only " + str(len(jobs)) + " jobs")
+else:
+    jobs = []
+    empty_text_files = []
+    files_not_at_local_storage = []
+    number_of_files_not_at_local_storage = {}
+    total_number_of_files = {}
+    for dataset in datasets:
+        files_not_at_local_storage_per_dataset = []
+        if( dataset[0][:4] == "Data" ):
+            NumFilesPerJob = NumFilesPerJob_Data;
+        elif( dataset[0][:6] == "Signal" ):
+            NumFilesPerJob = NumFilesPerJob_Signal;
+        else:
+            NumFilesPerJob = NumFilesPerJob_Bkg;
+        
+        NumFiles = sum(1 for line in open(dataset[2]))
+        total_number_of_files[dataset[0]] = NumFiles
+        if NumFiles == 0:
+            empty_text_files.append(dataset[0])
+            number_of_files_not_at_local_storage[dataset[0]] = 0
+        else:
+            if (machines != "CERN") and (machines != "CMSC"):
+                file_input = open(dataset[2], 'r')
+                lines = file_input.readlines()
+                lines = [x.strip() for x in lines]
+                NumFiles = 0
+                for line in lines:
+                    if machines == "DESY":
+                        file_path = "/pnfs/desy.de/cms/tier2/" + line
+                    if machines == "UERJ":
+                        file_path = "/cms/" + line
+                    if analysis == "OPENDATA":
+                        file_path = hep_outpath[:-7] + "/opendata/" + line
+                    #print(file_path, dataset[1][0:2])
+                    if os.path.isfile(file_path) or dataset[1][0:2] == "99":
+                        NumFiles += 1
+                    else:
+                        files_not_at_local_storage.append(line)
+                        files_not_at_local_storage_per_dataset.append(line)
+                number_of_files_not_at_local_storage[dataset[0]] = len(files_not_at_local_storage_per_dataset)
+            
+            if NumFiles > 0:
                 dataset.append(NumFiles)
 
                 Intervals = list(range(0,NumFiles,NumFilesPerJob))
@@ -220,136 +265,59 @@ else:
                     Intervals.append(Intervals[-1]+NumFilesPerJob)
                 else:
                     Intervals.append(Intervals[-1]+NumFiles%NumFilesPerJob)
-
+    
                 for i in range(len(Intervals)-1):
-                    jobs += [ [dataset, Intervals[i], Intervals[i+1], 0, 0] ]
-                
-
-        if len(resubmit) > 0:
-            #jobs = resubmit
-            jobs_copy = jobs.copy()
-            jobs = [job for job in resubmit if job in jobs_copy]
-        if args.resubmit_flag and len(resubmit) == 0:
-            print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
-        
-        N = int(args.job)
-        if N == -1:
-            print("")
-            sys.exit("Number of jobs: " + str(len(jobs)))
-        if N == -2:
-            datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
-            for i in range(len(jobs)):
-                #print(i, jobs[i])
-                print(i, [jobs[i][0][0], jobs[i][0][1], datasets_short[i]], [jobs[i][0][5], str(jobs[i][1])+"-"+str(jobs[i][2])], [jobs[i][3], jobs[i][4]])
-            sys.exit("")
-        else:
-            if N <= -3:
-                print("")
-                sys.exit(">> Enter an integer >= -2")
-        if N >= len(jobs):
-            sys.exit("There are only " + str(len(jobs)) + " jobs")
-    else:
-        jobs = []
-        empty_text_files = []
-        files_not_at_local_storage = []
-        number_of_files_not_at_local_storage = {}
-        total_number_of_files = {}
-        for dataset in datasets:
-            files_not_at_local_storage_per_dataset = []
-            if( dataset[0][:4] == "Data" ):
-                NumFilesPerJob = NumFilesPerJob_Data;
-            elif( dataset[0][:6] == "Signal" ):
-                NumFilesPerJob = NumFilesPerJob_Signal;
-            else:
-                NumFilesPerJob = NumFilesPerJob_Bkg;
-            
-            NumFiles = sum(1 for line in open(dataset[2]))
-            total_number_of_files[dataset[0]] = NumFiles
-            if NumFiles == 0:
-                empty_text_files.append(dataset[0])
-                number_of_files_not_at_local_storage[dataset[0]] = 0
-            else:
-                if (machines != "CERN") and (machines != "CMSC"):
-                    file_input = open(dataset[2], 'r')
-                    lines = file_input.readlines()
-                    lines = [x.strip() for x in lines]
-                    NumFiles = 0
-                    for line in lines:
-                        if machines == "DESY":
-                            file_path = "/pnfs/desy.de/cms/tier2/" + line
-                        if machines == "UERJ":
-                            file_path = "/cms/" + line
-                        if analysis == "OPENDATA":
-                            file_path = hep_outpath[:-7] + "/opendata/" + line
-                        #print(file_path, dataset[1][0:2])
-                        if os.path.isfile(file_path) or dataset[1][0:2] == "99":
-                            NumFiles += 1
-                        else:
-                            files_not_at_local_storage.append(line)
-                            files_not_at_local_storage_per_dataset.append(line)
-                    number_of_files_not_at_local_storage[dataset[0]] = len(files_not_at_local_storage_per_dataset)
-                
-                if NumFiles > 0:
-                    dataset.append(NumFiles)
-
-                    Intervals = list(range(0,NumFiles,NumFilesPerJob))
-                    if NumFiles%NumFilesPerJob == 0:
-                        Intervals.append(Intervals[-1]+NumFilesPerJob)
+                    if( dataset[0][:4] == "Data" ):
+                        jobs += [ [dataset, Intervals[i], Intervals[i+1], 0, 0] ]
                     else:
-                        Intervals.append(Intervals[-1]+NumFiles%NumFilesPerJob)
-        
-                    for i in range(len(Intervals)-1):
-                        if( dataset[0][:4] == "Data" ):
-                            jobs += [ [dataset, Intervals[i], Intervals[i+1], 0, 0] ]
-                        else:
-                            for systematic in lateral_systematics.keys():
-                                if( len(lateral_systematics[systematic][2]) == 0 ):
+                        for systematic in lateral_systematics.keys():
+                            if( len(lateral_systematics[systematic][2]) == 0 ):
+                                jobs += [ [dataset, Intervals[i], Intervals[i+1], lateral_systematics[systematic][0], u] for u in range(lateral_systematics[systematic][1]) ]
+                            else:
+                                if( dataset[1][2:4] in lateral_systematics[systematic][2] ):
                                     jobs += [ [dataset, Intervals[i], Intervals[i+1], lateral_systematics[systematic][0], u] for u in range(lateral_systematics[systematic][1]) ]
-                                else:
-                                    if( dataset[1][2:4] in lateral_systematics[systematic][2] ):
-                                        jobs += [ [dataset, Intervals[i], Intervals[i+1], lateral_systematics[systematic][0], u] for u in range(lateral_systematics[systematic][1]) ]
-                
-        if len(resubmit) > 0:
-            #jobs = resubmit
-            jobs_copy = jobs.copy()
-            jobs = [job for job in resubmit if job in jobs_copy]
-        if args.resubmit_flag and len(resubmit) == 0:
-            print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
-        
-        N = int(args.job)
-        if N == -1:
+            
+    if len(resubmit) > 0:
+        #jobs = resubmit
+        jobs_copy = jobs.copy()
+        jobs = [job for job in resubmit if job in jobs_copy]
+    if args.resubmit_flag and len(resubmit) == 0:
+        print("Warning: there is no job to be resubmitted, it is being considered the initial list of jobs.")
+    
+    N = int(args.job)
+    if N == -1:
+        print("")
+        sys.exit("Number of jobs: " + str(len(jobs)))
+    if N == -2:
+        datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
+        for i in range(len(jobs)):
+            print(str(i)+" ["+jobs[i][0][0]+", "+jobs[i][0][1]+", "+datasets_short[i]+"], ["+str(jobs[i][0][5])+", "+str(jobs[i][1])+"-"+str(jobs[i][2])+"], ["+str(jobs[i][3])+", "+str(jobs[i][4])+"]")
+        sys.exit("")
+    if N == -3:
+        print("")
+        for i in range(len(empty_text_files)):
+            print(empty_text_files[i])
+        print("")
+        sys.exit("There are " + str(len(empty_text_files)) + " empty text files")
+    if (machines != "CERN") and (machines != "CMSC"):
+        if N == -4:
+            for i in range(len(files_not_at_local_storage)):
+                print(files_not_at_local_storage[i])
+            print("")    
+            for dataset in datasets:
+                if number_of_files_not_at_local_storage[dataset[0]] > 0:
+                    print(dataset[0] + " has " + str(number_of_files_not_at_local_storage[dataset[0]]) + " missing files of " + str(total_number_of_files[dataset[0]]))
             print("")
-            sys.exit("Number of jobs: " + str(len(jobs)))
-        if N == -2:
-            datasets_short = [job[0][2].split("Files/")[1] for job in jobs]
-            for i in range(len(jobs)):
-                print(str(i)+" ["+jobs[i][0][0]+", "+jobs[i][0][1]+", "+datasets_short[i]+"], ["+str(jobs[i][0][5])+", "+str(jobs[i][1])+"-"+str(jobs[i][2])+"], ["+str(jobs[i][3])+", "+str(jobs[i][4])+"]")
-            sys.exit("")
-        if N == -3:
+            sys.exit("There are " + str(len(files_not_at_local_storage)) + " missing files at local storage")
+        if N <= -5:
             print("")
-            for i in range(len(empty_text_files)):
-                print(empty_text_files[i])
+            sys.exit(">> Enter an integer >= -4")
+    else:
+        if N <= -4:
             print("")
-            sys.exit("There are " + str(len(empty_text_files)) + " empty text files")
-        if (machines != "CERN") and (machines != "CMSC"):
-            if N == -4:
-                for i in range(len(files_not_at_local_storage)):
-                    print(files_not_at_local_storage[i])
-                print("")    
-                for dataset in datasets:
-                    if number_of_files_not_at_local_storage[dataset[0]] > 0:
-                        print(dataset[0] + " has " + str(number_of_files_not_at_local_storage[dataset[0]]) + " missing files of " + str(total_number_of_files[dataset[0]]))
-                print("")
-                sys.exit("There are " + str(len(files_not_at_local_storage)) + " missing files at local storage")
-            if N <= -5:
-                print("")
-                sys.exit(">> Enter an integer >= -4")
-        else:
-            if N <= -4:
-                print("")
-                sys.exit(">> Enter an integer >= -3")
-        if N >= len(jobs):
-            sys.exit("There are only " + str(len(jobs)) + " jobs")
+            sys.exit(">> Enter an integer >= -3")
+    if N >= len(jobs):
+        sys.exit("There are only " + str(len(jobs)) + " jobs")
             
 
 #======CREATE OUTPUT DIRECTORY FOR THE SELECTION AND COPY FILES THERE==============================
@@ -472,22 +440,17 @@ in_file.write("DatasetID            " + jobs[N][0][1]                          +
 in_file.write("Redirector           " + str(redirector)                        + "\n")
 in_file.write("Machines             " + str(machines)                          + "\n")
     
-if args.check >= 0:
-    in_file.write("Check                " + str(1)                             + "\n")
-    in_file.write("InputFile            " + jobs[N][0][2]                      + "\n")
-else:
-    in_file.write("Check                " + str(0)                             + "\n")
-    file_input = open(jobs[N][0][2], 'r')
-    lines = file_input.readlines()
-    lines = [x.strip() for x in lines]
-    iline = 0
-    for line in lines:
-        if (machines != "CERN") and (machines != "CMSC") and (analysis != "GEN"):
-            if line in files_not_at_local_storage:
-                continue
-        if iline >= jobs[N][1] and iline < jobs[N][2]:
-            in_file.write("InputFile            " + line                       + "\n")
-        iline += 1
+file_input = open(jobs[N][0][2], 'r')
+lines = file_input.readlines()
+lines = [x.strip() for x in lines]
+iline = 0
+for line in lines:
+    if (machines != "CERN") and (machines != "CMSC") and (analysis[-3:] != "GEN"):
+        if line in files_not_at_local_storage:
+            continue
+    if iline >= jobs[N][1] and iline < jobs[N][2]:
+        in_file.write("InputFile            " + line                       + "\n")
+    iline += 1
 
 if( jobs[N][0][0][:4] == "Data" ):
     in_file.write("NumMaxEvents         " + str(-1)                            + "\n")
@@ -499,7 +462,7 @@ else:
     in_file.write("LumiWeights          " + str(LumiWeights)                   + "\n")
     in_file.write("Universe             " + str(jobs[N][4])                    + "\n")
     in_file.write("SysID_lateral        " + str(jobs[N][3])                    + "\n")
-    if analysis != "GEN":
+    if analysis[-3:] != "GEN":
         for systematic in lateral_systematics.keys():
             if lateral_systematics[systematic][0] == jobs[N][3]:
                 in_file.write("SysName_lateral " + systematic                      + "\n")
@@ -533,20 +496,21 @@ in_file.write("PROC_XSEC            "  + str(PROC_XSEC)                        +
 in_file.write("PROC_XSEC_UNC_UP     "  + str(PROC_XSEC_UNC_UP)                 + "\n")
 in_file.write("PROC_XSEC_UNC_DOWN   "  + str(PROC_XSEC_UNC_DOWN)               + "\n")
 
-tags_split_unc = lumis["tags"][2:]
-for lumi_key in lumis.keys():
-    if lumi_key != "tags":
-        year = lumi_key[-2:]
-        dti = lumi_key[0]
-        data_scale = lumis[lumi_key][0]
-        total_unc = lumis[lumi_key][1]
-        values_split_unc = lumis[lumi_key][2:]
-        if( (year == jobs[N][0][1][2:4]) and (dti == jobs[N][0][1][4]) ):
-            in_file.write("DATA_LUMI             " + str(data_scale)               + "\n")
-            in_file.write("DATA_LUMI_TOTAL_UNC   " + str(total_unc)                + "\n")
-            for i in range(len(values_split_unc)):
-                in_file.write("DATA_LUMI_TAGS_UNC    " + str(tags_split_unc[i])    + "\n")
-                in_file.write("DATA_LUMI_VALUES_UNC  " + str(values_split_unc[i])  + "\n")
+if analysis[-3:] != "GEN":
+    tags_split_unc = lumis["tags"][2:]
+    for lumi_key in lumis.keys():
+        if lumi_key != "tags":
+            year = lumi_key[-2:]
+            dti = lumi_key[0]
+            data_scale = lumis[lumi_key][0]
+            total_unc = lumis[lumi_key][1]
+            values_split_unc = lumis[lumi_key][2:]
+            if( (year == jobs[N][0][1][2:4]) and (dti == jobs[N][0][1][4]) ):
+                in_file.write("DATA_LUMI             " + str(data_scale)               + "\n")
+                in_file.write("DATA_LUMI_TOTAL_UNC   " + str(total_unc)                + "\n")
+                for i in range(len(values_split_unc)):
+                    in_file.write("DATA_LUMI_TAGS_UNC    " + str(tags_split_unc[i])    + "\n")
+                    in_file.write("DATA_LUMI_VALUES_UNC  " + str(values_split_unc[i])  + "\n")
 
 #-------------------------------------------------------------------------------------
 in_file.write("Show_Timer           "  + str(args.timer)                       + "\n")

@@ -6,7 +6,7 @@ import argparse
 
 #======GET SETUP FILE==============================================================================
 parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--analysis", type=str, default="GEN")
+parser.add_argument("-a", "--analysis", type=str)
 args = parser.parse_args()
 if args.analysis[-1] == "/":
     args.analysis = args.analysis[:-1]
@@ -72,28 +72,38 @@ with open("runSelection_temp.py", "w") as newfile:
     newfile.write("# Jobs setup\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")
     newfile.write("NumMaxEvents = " + str(sm.NumMaxEvents) +"\n")
-    if args.analysis != "GEN":
-        newfile.write("NumFilesPerJob_Data = " + str(sm.NumFilesPerJob_Data) +"\n")
+    if args.analysis[-3:] != "GEN":
         newfile.write("NumFilesPerJob_Signal = " + str(sm.NumFilesPerJob_Signal) +"\n")
         newfile.write("NumFilesPerJob_Bkg = " + str(sm.NumFilesPerJob_Bkg) +"\n")
+        newfile.write("NumFilesPerJob_Data = " + str(sm.NumFilesPerJob_Data) +"\n")
     newfile.write("\n")    
     newfile.write("\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")
     newfile.write("# Datasets\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")
-    if args.analysis == "GEN":
+    """
+    if args.analysis[-3:] == "GEN":
         newfile.write("datasets = [\n")
         for dataset in sm.datasets:
             newfile.write(str(dataset) + ",\n")
         newfile.write("]\n")
     else:
-        newfile.write("sys.path.insert(0, '"+args.analysis+"/Datasets')\n")
+    """
+    newfile.write("sys.path.insert(0, '"+args.analysis+"/Datasets')\n")
+    
+    if args.analysis[-3:] == "GEN":
+        newfile.write("from Simulation import *\n")
+    else:
         newfile.write("from Signal import *\n")
         newfile.write("from Bkg import *\n")
         newfile.write("from Data import *\n")
-        newfile.write("datasets = []\n") 
-        for period in sm.periods:
-            newfile.write("\n")
+    newfile.write("datasets = []\n") 
+    for period in sm.periods:
+        newfile.write("\n")
+        if args.analysis[-3:] == "GEN":
+            for dataset in sm.datasets:
+                newfile.write("datasets.extend(s_ds['" + dataset + "_" + period + "'])\n")
+        else:
             for dataset in sm.datasets:
                 if dataset[:4] == "Data":
                     newfile.write("datasets.extend(d_ds['" + dataset + "_" + period + "'])\n")
@@ -161,8 +171,11 @@ os.system("sed -i 's~files_dir =.*~files_dir = \"../"+args.analysis+"/Datasets\"
 
 #======CORRECT ANALYSIS NAME INSIDE ANALYSIS PROJECT===============================================
 os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/setup.py")
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Bkg.py")
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Signal.py")
-os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Data.py")
+if args.analysis[-3:] == "GEN":
+    os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Simulation.py")
+else:
+    os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Signal.py")
+    os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Bkg.py")
+    os.system("sed -i 's~analysis =.*~analysis = "+'"'+args.analysis+'"'+"~' "+args.analysis+"/Datasets/Data.py")
 os.system("sed -i 's~set(ANALYSIS.*~set(ANALYSIS "+'"'+args.analysis+'"'+")~' "+args.analysis+"/src/CMakeLists.txt")
 os.system("sed -i 's~set(ANALYSIS.*~set(ANALYSIS "+'"'+args.analysis+'"'+")~' "+args.analysis+"/ana/CMakeLists.txt")

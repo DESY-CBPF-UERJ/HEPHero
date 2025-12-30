@@ -46,7 +46,6 @@ HEPHero::HEPHero( char *configFileName ) {
         if( key == "Get_Image_in_EPS"           )   _Get_Image_in_EPS = (bool)(atoi(value.c_str()));
         if( key == "Get_Image_in_PNG"           )   _Get_Image_in_PNG = (bool)(atoi(value.c_str()));
         if( key == "Get_Image_in_PDF"           )   _Get_Image_in_PDF = (bool)(atoi(value.c_str()));
-        if( key == "Check"                      )   _check = (bool)(atoi(value.c_str()));
         if( key == "NumMaxEvents"               )   _NumMaxEvents = atoi(value.c_str());
         if( key == "Redirector"                 )   _Redirector = value;
         if( key == "Machines"                   )   _Machines = value;
@@ -64,65 +63,37 @@ HEPHero::HEPHero( char *configFileName ) {
     
 
     //======GET DATASET INFORMATION================================================================
-    if( _ANALYSIS == "GEN" ){
-        // HEPHeroGEN
-        if( _datasetName.substr(0,2) == "H7" ){
-            dataset_group = "H7";
-        }
-        _DatasetID = atoi(DatasetID.c_str());
-        cout << "group: " << dataset_group << endl;
-        
-        
-        string sfile = _inputFileNames[0];
-        string sdelimiter = "/";
-        size_t spos = sfile.rfind(sdelimiter);
-        string sfile_start = sfile.substr(0, spos);
-        spos = sfile_start.rfind(sdelimiter);
-        string sparam = sfile_start.erase(0, spos + sdelimiter.length());
-        
-        string pdelimiter = "_";
-        int max_nparam = 100;
-        int nparam = 0;
-        do{
-            size_t ppos = sparam.find(pdelimiter);
-            if( ppos < sparam.npos ){
-                parameters_id.push_back(atoi(sparam.substr(0, ppos).c_str()));
-                sparam = sparam.erase(0, ppos + pdelimiter.length());
-            }else{
-                parameters_id.push_back(atoi(sparam.c_str()));
-                break;
-            }
-            nparam += 1;
-        }while( nparam < max_nparam );
+    size_t spos = _ANALYSIS.rfind("_");
+    _ANALYSIS_TYPE = _ANALYSIS.substr(spos+1, _ANALYSIS.length()).c_str();
+    
+    dataset_year = _datasetName.substr(_datasetName.length()-2,2);
+    if( _datasetName.substr(0,4) == "Data" ){
+        dataset_group = "Data";
+        string data_name = _datasetName.substr(5,_datasetName.length());
+        size_t spos = data_name.find("_");
+        dataset_sample = data_name.substr(0, spos).c_str();
+        data_name = data_name.substr(spos+1, data_name.length()).c_str();
+        dataset_era = data_name.substr(0, data_name.length()-5);
     }else{
-        dataset_year = _datasetName.substr(_datasetName.length()-2,2);
-        if( _datasetName.substr(0,4) == "Data" ){
-            dataset_group = "Data";
-            string data_name = _datasetName.substr(5,_datasetName.length());
-            size_t spos = data_name.find("_");
-            dataset_sample = data_name.substr(0, spos).c_str();
-            data_name = data_name.substr(spos+1, data_name.length()).c_str();
-            dataset_era = data_name.substr(0, data_name.length()-5);
+        dataset_sample = "none";
+        dataset_era = "none";
+        if( _datasetName.substr(0,6) == "Signal" ){
+            dataset_group = "Signal";
         }else{
-            dataset_sample = "none";
-            dataset_era = "none";
-            if( _datasetName.substr(0,6) == "Signal" ){
-                dataset_group = "Signal";
-            }else{
-                dataset_group = "Bkg";
-            }
+            dataset_group = "Bkg";
         }
-
-        dataset_dti = atoi(DatasetID.substr(4,1).c_str());
-        _DatasetID = atoi(DatasetID.c_str());
-
-        cout << " " << endl;
-        cout << "group: " << dataset_group << endl;
-        cout << "year: " << dataset_year << endl;
-        cout << "dti: " << dataset_dti << endl;
-        cout << "era: " << dataset_era << endl;
-        cout << "sample: " << dataset_sample << endl;
     }
+
+    dataset_dti = atoi(DatasetID.substr(4,1).c_str());
+    _DatasetID = atoi(DatasetID.c_str());
+
+    cout << " " << endl;
+    cout << "group: " << dataset_group << endl;
+    cout << "year: " << dataset_year << endl;
+    cout << "dti: " << dataset_dti << endl;
+    cout << "era: " << dataset_era << endl;
+    cout << "sample: " << dataset_sample << endl;
+    //}
 
     string s = _Files;
     string delimiter = "_";
@@ -138,14 +109,14 @@ HEPHero::HEPHero( char *configFileName ) {
     mkdir(_outputDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     string sysDirectory = _outputDirectory + "/Systematics"; 
     mkdir(sysDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    if( _ANALYSIS == "GEN" ){
+    if( _ANALYSIS_TYPE == "GEN" ){
         string dotDirectory = _outputDirectory + "/Views"; 
         mkdir(dotDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     
-
+    
     //======ADD THE INPUT TREES TO THE TCHAINS=====================================================
-    if( _ANALYSIS != "GEN" ){
+    if( _ANALYSIS_TYPE != "GEN" ){
         gErrorIgnoreLevel = kError;
         _inputTree = new TChain(_inputTreeName.c_str());
         for( vector<string>::iterator itr = _inputFileNames.begin(); itr != _inputFileNames.end(); ++itr ) {
@@ -155,19 +126,18 @@ HEPHero::HEPHero( char *configFileName ) {
             if( _Machines == "CMSC" ) inputFileName = "root://" + _Redirector + "//" + (*itr);
             if( _Machines == "DESY" ) inputFileName = "/pnfs/desy.de/cms/tier2/" + (*itr);  
             if( _Machines == "UERJ" ) inputFileName = "/cms/" + (*itr);
-            //if( _ANALYSIS == "OPENDATA" ) inputFileName = raw_outputDirectory.substr(0,raw_outputDirectory.size()-15) + "/opendata/" + (*itr);
-            if( _check || DatasetID.substr(0,2) == "99" ) inputFileName = (*itr);
+            if( DatasetID.substr(0,2) == "99" ) inputFileName = (*itr);
         
             _inputTree -> Add( inputFileName.c_str() ); 
         }
     }
     
-
+    
     //======ADD ASCII FILE=========================================================================
     // HEPHeroGEN
-    if( _ANALYSIS == "GEN" ) _ascii_file = new HepMC3::ReaderAsciiHepMC2(_inputFileNames.at(0));
+    if( _ANALYSIS_TYPE == "GEN" ) _ascii_file = new HepMC3::ReaderAsciiHepMC2(_inputFileNames.at(0));
     
-        
+       
     //======CREATE OUTPUT FILE AND TREE============================================================
     if( _sysID_lateral == 0 ) {
         _outputFileName = _outputDirectory + "/Tree.root";
@@ -190,7 +160,6 @@ HEPHero::HEPHero( char *configFileName ) {
     //const std::string model_s = "C:/Downloads/resnet18-v1-7.tar/resnet18-v1-7/resnet18-v1-7.onnx";
     //std::basic_string<ORTCHAR_T> model = std::basic_string<ORTCHAR_T>(model_s.begin(), model_s.end());
     //std::cout << model.c_str();
-    
 
 }
 
@@ -203,11 +172,9 @@ HEPHero::HEPHero( char *configFileName ) {
 //---------------------------------------------------------------------------------------------
 void HEPHero::RunEventLoop( int ControlEntries ) {
 
-    
     //======GET NUMBER OF EVENTS===================================================================
     if( ControlEntries < 0 ){
-        if( _ANALYSIS == "GEN" ){
-            // HEPHeroGEN
+        if( _ANALYSIS_TYPE == "GEN" ){
             ifstream in_file( _inputFileNames.at(0), ios::in );
             string line;
 
@@ -240,7 +207,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         }
         if( _NumberEntries > _NumMaxEvents && _NumMaxEvents > 0 ) _NumberEntries = _NumMaxEvents;
     }
-
+    
     
     //======PRINT INFO ABOUT THE SELECTION PROCESS=================================================
     cout << endl;
@@ -270,11 +237,10 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
 
     //======VERTICAL SYSTEMATICS SIZE==============================================================
-    //if( _ANALYSIS == "OPENDATA" ) VerticalSysSizesOD( );
-    if( _ANALYSIS != "GEN" ) VerticalSysSizes( );
+    if( _ANALYSIS_TYPE != "GEN" ) VerticalSysSizes( );
     
     //======PRE-ROUTINES SETUP=====================================================================
-    if( _ANALYSIS != "GEN") PreRoutines();
+    if( _ANALYSIS_TYPE != "GEN") PreRoutines();
 
     //======SETUP SELECTION========================================================================
     SetupAna();
@@ -298,16 +264,14 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     SumGenWeights_original = 0;
     
     for( int i = 0; i < _NumberEntries; ++i ) {
-        if( _ANALYSIS == "GEN" ){ 
+        if( _ANALYSIS_TYPE == "GEN" ){ 
            if( _ascii_file->failed() ) break;
         }
         
         //======TIMER====================================================================
         int timer_steps;
-        if( _ANALYSIS == "GEN" ){ 
+        if( _ANALYSIS_TYPE == "GEN" ){ 
             timer_steps = 1000;
-        }else if( _ANALYSIS == "OPENDATA" ){
-            timer_steps = 500000;
         }else{
             timer_steps = 10000;
         }
@@ -327,7 +291,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
     
         //======SETUP EVENT==============================================================
         _EventPosition = i;
-        if( _ANALYSIS == "GEN" ){ 
+        if( _ANALYSIS_TYPE == "GEN" ){ 
             _ascii_file->read_event(_evt);
         }else{
             _inputTree->GetEntry(i);
@@ -335,7 +299,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
         
         
         //======RUN ROUTINES SETUP======================================================
-        if( _ANALYSIS == "GEN" ){
+        if( _ANALYSIS_TYPE == "GEN" ){
             if( !GenRoutines() ) continue;
         }else{
             if( !RunRoutines() ) continue;
@@ -368,8 +332,7 @@ void HEPHero::RunEventLoop( int ControlEntries ) {
               
               
         //======RUN SYSTEMATIC PRODUCTION=================================================
-        //if( _ANALYSIS == "OPENDATA" ) VerticalSysOD();
-        if( _ANALYSIS != "GEN" ) VerticalSys();
+        if( _ANALYSIS_TYPE != "GEN" ) VerticalSys();
         
         AnaSystematic();
 
@@ -427,7 +390,7 @@ void HEPHero::FinishRun() {
 
     
     //======PRINT INFO ABOUT THE SELECTION PROCESS=================================================
-    if( _ANALYSIS == "GEN" ){
+    if( _ANALYSIS_TYPE == "GEN" ){
         WriteGenCutflowInfo();
     }else{
         WriteCutflowInfo();
@@ -436,7 +399,7 @@ void HEPHero::FinishRun() {
     
     //======CLOSE ASCII FILE=======================================================================
     // HEPHeroGEN
-    if( _ANALYSIS == "GEN" ) _ascii_file->close();
+    if( _ANALYSIS_TYPE == "GEN" ) _ascii_file->close();
     
     
     //======STORE HISTOGRAMS IN A ROOT FILE========================================================

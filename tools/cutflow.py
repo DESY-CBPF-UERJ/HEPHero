@@ -261,7 +261,7 @@ def __join_cutflows(analysis, periods, basedir, datasets_path, signal_ref=None):
 #======SETUP=======================================================================================
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--selection")
-parser.add_argument("-p", "--period")
+parser.add_argument("-p", "--period", default="0_00")
 parser.add_argument("-ps", "--periods")
 parser.set_defaults(periods=None)
 parser.add_argument("-r", "--signal_ref")
