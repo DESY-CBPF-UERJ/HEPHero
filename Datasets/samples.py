@@ -3,7 +3,7 @@ import sys
 
 files_dir = "../AP_Template_R3/Datasets"
 analysis_type = (files_dir.split("/")[1]).split("_")[-1]
-print(analysis_type)
+
 sys.path.insert(0, files_dir)
 if analysis_type != "GEN":
     from Data import *
