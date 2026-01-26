@@ -6,7 +6,7 @@ from sklearn import metrics
 
 class control:
     """
-    Produce control information to assist in the defition of cuts
+    Produce control information to assist in the definition of cuts
     """
     #==============================================================================================================
     def __init__(self, var, signal_list, others_list, weight=None, bins=np.linspace(0,100,5), above=True):
@@ -83,6 +83,7 @@ class control:
         self.eff_signal = self.hist_signal/self.full_signal
         self.eff_others = self.hist_others/self.full_others
         self.rej_others = 1 - self.eff_others
+        self.ams = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others + 1.E-7)
     
     #==============================================================================================================
     def purity_plot(self, label='Signal purity', color='blue', cuts=None):
@@ -178,8 +179,16 @@ class control:
             area = 0
             for i in range(len(self.bins)-1):
                 area += 0.5*(self.eff_signal[i+1] + self.eff_signal[i])*abs(self.rej_others[i+1] - self.rej_others[i])
-        return area    
-    
+        return area   
+
+    #==============================================================================================================
+    def ams_plot(self, label='Signal-bkg AMS', color='blue', linestyle="-"):
+        plt.plot(self.rej_others, self.ams, color=color, label=label, linestyle=linestyle)
+
+    #==============================================================================================================
+    def ams_max(self):
+        return np.max(self.ams)
+
     #==============================================================================================================
     def bkg_eff(self, cut, apx=False):
         eff_bkg = -999

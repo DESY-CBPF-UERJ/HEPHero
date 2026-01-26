@@ -123,7 +123,7 @@ else
     tgzdir=$(pwd)
     rm HEPHero.tgz
     rm AP.tgz
-    tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/.git*' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/AP_*' -zcf HEPHero.tgz HEPHero
+    tar --exclude='HEPHero/RunAnalysis' --exclude='HEPHero/.git*' --exclude='HEPHero/HTCondor/*.log' --exclude='HEPHero/HTCondor/jobs_log/run_*' --exclude='HEPHero/CMakeFiles' --exclude='HEPHero/AP_*' --exclude='HEPHero/ML' --exclude='HEPHero/PyLib' -zcf HEPHero.tgz HEPHero
     tar --exclude="HEPHero/${ANALYSIS}/.git*" --exclude="HEPHero/${ANALYSIS}/Datasets/*.hepmc" --exclude="HEPHero/${ANALYSIS}/Datasets/*.root" --exclude="HEPHero/${ANALYSIS}/ana/local_output" -zcf AP.tgz HEPHero/${ANALYSIS}
     cd HEPHero
     cp HTCondor/condor_ref.sub HTCondor/condor.sub

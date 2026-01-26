@@ -8,12 +8,12 @@ from matplotlib.ticker import AutoMinorLocator
 from tqdm import tqdm 
 import statsmodels.stats.proportion as prop
 
-
+"""
 from .statistic import (
     #pdf_efficiency,
     get_interval
 )
-
+"""
 
 #======================================================================================================================
 def stacked_plot( ax, var, dataframes, labels, colors, weight=None, bins=np.linspace(0,100,5), plot=True ):

@@ -1,0 +1,12 @@
+executable            = train.sh
+arguments             = $(ProcId) UERJ train_NN_new.py
+transfer_input_files  = /home/gcorreia/work/HEPHero/ML.tgz
+should_transfer_files = YES
+output                = condor/train_$(ClusterId)_$(ProcId).out
+error                 = condor/train_$(ClusterId)_$(ProcId).err
+log                   = condor/train_$(ClusterId).log
++JobFlavour = 
+queue 4
+
+
+
