@@ -1,22 +1,13 @@
-**HEPHeroLib - Library used to process data from the HEPHero framework**
+**HEPHeroLib - Python Library used to process data from the HEPHero Framework**
 
-# Installation
+# Installation and update
 
-Download from Git
-
+You must be inside the HEPHeroLib directory: **HEPHero/PyLib**. Then, type:
 ```bash
-git clone https://github.com/DESY-CBPF-UERJ/HEPHeroLib.git
-```
-
-Update package
-
-```bash
-cd HEPHeroLib/
 bash update.sh
 ```
 
-See the version
-
+To check the version:
 ```bash
 cat src/__init__.py
 ```

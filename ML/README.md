@@ -3,67 +3,50 @@
 General information
 -----------
 
-* This code is meant to be used in association with the HEPHero framework.
-
-* The training setup is made in the python scripts inside the directory **setups**.
+* This code is part of the HEPHero project.
 
 * The input data consists of h5 files created by the tool **grouper.py** of the HEPHero framework.
-
-* The training results and files are stored in the smae directory of the h5 files.
-
-
-Starting
------------
-
-Inside your private area (NOT in the eos or dust area and NOT inside a CMSSW release), download the code.  
-```bash
-git clone https://github.com/DESY-CBPF-UERJ/HEPHeroML.git
-```
-
-Source the hepenv environment before work with the HEPHeroML:
-```
-hepenv
-```
-
-Enter in the HEPHeroML directory:  
-```bash
-cd HEPHeroML
-```
 
 
 Generating the trainer
 -----------
 
-After setup the model and training in one of the python scripts inside **setups**, generate the trainer using the **generate_trainer.py** script. Example: Generate the trainer for the analysis **OPENDATA** with the tag **Class** (defined inside **setups/OPENDATA.py**):
+To generate the machine learning trainer using the **generate_trainer.py** script, you must be inside the HEPHero directory and follow the example below. 
+Example: Your analysis project is called **AP_Test_OD** and you will generate a trainer using the model **NN** with the tag **Test**:
 ```bash
-python generate_trainer.py -a OPENDATA
+python ML/generate_trainer.py -m NN -t Test
 ```
-It will create the trainer script **train_OPENDATA_Class.py**.
+It will create the trainer script **train_NN_Test.py** inside the directory **AP_Test_OD/ML**. The files **condor.py** and **submit_jobs.sh** will be created inside the same directory.
 
 
 
 Running the trainer
 -----------
-Know how many jobs the code is setted to train (information needed to submit jobs):
+To run the trainer, go to the ML directory of your project.
 ```bash
-python train_OPENDATA_Class.py -j -1
+cd AP_Test_OD/ML
 ```
 
-List the jobs the code is setted to train:
+Know how many jobs the code is set to train (information needed to submit jobs):
 ```bash
-python train_OPENDATA_Class.py -j -2
+python train_NN_Test.py -j -1
+```
+
+List the jobs the code is set to train:
+```bash
+python train_NN_Test.py -j -2
 ```
 
 Train the model in the position **n** of the list:
 ```bash
-python train_OPENDATA_Class.py -j n
+python train_NN_Test.py -j n
 ```
 Ex.:
 ```bash
-python train_OPENDATA_Class.py -j 2
+python train_NN_Test.py -j 2
 ```
 
-Submit condor jobs
+Submit Condor jobs
 -----------
 1. Make **submit_jobs.sh** an executable:  
 ```bash
@@ -79,14 +62,14 @@ chmod +x submit_jobs.sh
 ```  
 Ex.:
 ```bash
-./submit_jobs.sh -f workday -n 32 -t train_OPENDATA_Class.py
+./submit_jobs.sh -f workday -n 32 -t train_NN_Test.py
 ```
 
 Evaluate the results
 -----------
 After the jobs have finished, evaluate the training results:
 ```bash
-python train_OPENDATA_Class.py --evaluate
+python train_NN_Test.py --evaluate
 ```
 
 

@@ -1,4 +1,4 @@
-# ![HEPHERO](logoframe.svg)
+# ![HEPHERO](logohero.svg)
 
 **HEPHero - Framework for analysis of flat ntuples in the CMS collaboration**
 
