@@ -65,6 +65,14 @@ if [ "$local" != "yes" ]; then
   fi
 fi
 
+# Check if HEP_OUTPATH variable exists then read
+if [[ -z "${HEP_OUTPATH}" ]]; then
+  echo "HEP_OUTPATH environment varibale is undefined. Aborting script execution..."
+  exit 1
+else
+  outpath=${HEP_OUTPATH}
+fi
+
 echo " "
 if [ $storage ] && [ "$storage" == "yes" ]; then
   echo "The output will be stored in the user storage."
@@ -81,16 +89,6 @@ else
   storage_user=None
   storage_dir=None
 fi
-
-
-# Check if HEP_OUTPATH variable exists then read
-if [[ -z "${HEP_OUTPATH}" ]]; then
-  echo "HEP_OUTPATH environment varibale is undefined. Aborting script execution..."
-  exit 1
-else
-  outpath=${HEP_OUTPATH}
-fi
-
 
 # Check if REDIRECTOR variable exists then read
 if [[ -z "${REDIRECTOR}" ]]; then

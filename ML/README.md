@@ -56,7 +56,16 @@ chmod +x submit_jobs.sh
 ```bash
 ./submit_jobs.sh -h
 ```  
-3. Submit all the **N** jobs the code is set to train:  
+3. Submit locally all the **N** jobs the code is set to train:  
+```bash
+./submit_jobs.sh -l -f flavour -n N -t trainer
+```  
+Ex.:
+```bash
+./submit_jobs.sh -l -f workday -n 32 -t train_NN_Test.py
+```
+
+3. Submit condor jobs for all the **N** jobs the code is set to train:  
 ```bash
 ./submit_jobs.sh -f flavour -n N -t trainer
 ```  
@@ -67,9 +76,14 @@ Ex.:
 
 Evaluate the results
 -----------
-After the jobs have finished, evaluate the training results:
+After the local jobs have finished, evaluate the training results:
 ```bash
 python train_NN_Test.py --evaluate
+```
+
+After the condor jobs have finished, evaluate the training results:
+```bash
+python train_NN_Test.py --evaluate --condor
 ```
 
 

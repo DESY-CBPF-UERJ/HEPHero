@@ -45,6 +45,7 @@ while getopts ":hlk:f:n:t:" option; do
    esac
 done
 
+voms-proxy-init --voms cms
 
 # Check if MACHINES variable exists then read
 if [[ -z "${MACHINES}" ]]; then
@@ -52,6 +53,16 @@ if [[ -z "${MACHINES}" ]]; then
   exit 1
 else
   machines=${MACHINES}
+fi
+
+if [ $local ] && [ "$local" == "yes" ]; then
+  echo "The output will be stored at ${HEP_OUTPATH}."
+  storage_redirector=None
+  storage_user=None
+else
+  echo "The output will be stored in the user storage."
+  storage_redirector=${STORAGE_REDIRECTOR}
+  storage_user=${STORAGE_USER}
 fi
 
 
@@ -64,30 +75,30 @@ if [ $local ] && [ "$local" == "yes" ]; then
       ijob=$(( ijob+1 ))
     done
 else
-    cd ..
+    cp ${trainer} ../../ML
+    cd ../..
     tgzdir=$(pwd)
-    rm HEPHeroML.tgz
-    tar --exclude='HEPHeroML/.git*' --exclude='HEPHeroML/condor' --exclude='HEPHeroML/history' --exclude='HEPHeroML/Example' -zcf HEPHeroML.tgz HEPHeroML
-    cd HEPHeroML
+    tar --exclude='ML/condor' --exclude='ML/examples' -zcf ML.tgz ML
+    cd ML
 
+    Proxy_filename=x509up_u$(id -u)
+    sed -i "s/.*Universe.*/Universe              = grid/" train.sub
+    sed -i "s~.*x509userproxy = /tmp.*~x509userproxy = /tmp/${Proxy_filename}~" train.sub
+    sed -i "s/.*use_x509userproxy.*/use_x509userproxy = true/" train.sub
+    sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" train.sub
+    sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" train.sub
+    sed -i "s/.*grid_resource.*/grid_resource         = condor condor-manager2.hepgrid.uerj.br condor-manager2.hepgrid.uerj.br/" train.sub
     sed -i "s/.*queue.*/queue ${N_models}/" train.sub
-    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${machines} ${trainer}~" train.sub
+    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${machines} ${storage_redirector} ${storage_user} ${trainer}~" train.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour = ${flavor}/" train.sub
-    sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHeroML.tgz~" train.sub
+    sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/ML.tgz~" train.sub
     sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" train.sub
 
     python $trainer --clean
     condor_submit train.sub
+
+    rm ${trainer}
+    cd ..
+    rm ML.tgz
 fi
-
-
-
-
-
-
-
-
-
-
-
 

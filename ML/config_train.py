@@ -9,6 +9,8 @@ parser.add_argument("--clean", dest='clean_flag', action='store_true')
 parser.set_defaults(clean_flag=False)
 parser.add_argument("--evaluate", dest='evaluate_flag', action='store_true')
 parser.set_defaults(evaluate_flag=False)
+parser.add_argument("--condor", dest='condor_flag', action='store_true')
+parser.set_defaults(condor_flag=False)
 
 args = parser.parse_args()
 
@@ -64,20 +66,6 @@ for i_signal in range(N_signal_points):
 
 
 #===============================================================================
-# EVALUATE MODELS
-#===============================================================================
-if args.evaluate_flag:
-    for i_period in periods:
-        print("==================================")
-        print(i_period)
-        print("==================================")
-        print(" ")
-        print(" ")
-        tools.evaluate_models(i_period, library, tag, output_path, modelName, model)
-    sys.exit()
-
-
-#===============================================================================
 # CHECK ARGUMENT
 #===============================================================================
 N = int(args.job)
@@ -102,13 +90,30 @@ else:
 
 
 #===============================================================================
-# Output setup
+# SETUP ENVIRONMENT VARIABLES
 #===============================================================================
+user = os.environ.get("USER")
+machines = os.environ.get("MACHINES")
+hep_outpath = os.environ.get("HEP_OUTPATH")
+redirector = os.environ.get("REDIRECTOR")
+storage_redirector = os.environ.get("STORAGE_REDIRECTOR")
+storage_user = os.environ.get("STORAGE_USER")
+
+
+#===============================================================================
+# Input e output setup
+#===============================================================================
+input_path = os.path.join('/cms/store/user/', storage_user, 'output', analysis, selection, 'datasets')
+
+output_path = os.path.join(hep_outpath, analysis, selection, 'ML_output')
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+
 if args.clean_flag:
-    os.system("rm -rf " + os.path.join(output_path, model[N][1], "ML_output", library, tag, signal_tag))
+    os.system("rm -rf " + os.path.join(output_path, model[N][1], library, tag, signal_tag))
     sys.exit()
 
-ml_outpath = os.path.join(output_path, model[N][1], "ML_output")
+ml_outpath = os.path.join(output_path, model[N][1])
 if not os.path.exists(ml_outpath):
     os.makedirs(ml_outpath)
 
@@ -131,6 +136,20 @@ print('Results will be stored in ' + ml_outpath)
 
 
 #===============================================================================
+# EVALUATE MODELS
+#===============================================================================
+if args.evaluate_flag:
+    for i_period in periods:
+        print("==================================")
+        print(i_period)
+        print("==================================")
+        print(" ")
+        print(" ")
+        tools.evaluate_models(i_period, library, tag, output_path, modelName, model, args.condor_flag)
+    sys.exit()
+
+
+#===============================================================================
 import torch
 
 
@@ -147,6 +166,8 @@ vec_var_use = [vector_variables[i][2] for i in range(len(vector_variables))]
 #===============================================================================
 # Preprocessing input data (modify and stay)
 #===============================================================================
+if args.condor_flag:
+    device = 'cpu'
 if device == "cpu":
     print("Training will run on CPU.")
 elif device == "cuda":

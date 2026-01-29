@@ -1194,16 +1194,21 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
 
 
 #==================================================================================================
-def evaluate_models(period, library, tag, outpath_base, modelNames_submitted, models_submitted):
+def evaluate_models(period, library, tag, outpath_base, modelNames_submitted, models_submitted, condor):
 
     models_submitted = [model[3:] for model in models_submitted]
     models_dict = dict(zip(modelNames_submitted, models_submitted))
-
-    best_models_path = os.path.join(outpath_base, period, "ML_output", "best_models")
+    
+    best_models_path = os.path.join(outpath_base, period, "best_models")
     if not os.path.exists(best_models_path):
         os.makedirs(best_models_path)
+    
+    if condor:
+        storage_user = os.environ.get("STORAGE_USER")
+        outpath_info = outpath_base.split("/")
+        outpath_base = os.path.join("/cms/store/user/", storage_user, outpath_info[-4], outpath_info[-3], outpath_info[-2], outpath_info[-1])
 
-    list_signals = os.listdir(os.path.join(outpath_base, period, "ML_output", library, tag))
+    list_signals = os.listdir(os.path.join(outpath_base, period, library, tag))
     if 'best_models.csv' in list_signals:
         list_signals.remove('best_models.csv')
 
@@ -1211,7 +1216,7 @@ def evaluate_models(period, library, tag, outpath_base, modelNames_submitted, mo
     print(library)
     print("#########################################################################################")
 
-    ml_outpath = os.path.join(outpath_base, period, "ML_output", library, tag)
+    ml_outpath = os.path.join(outpath_base, period, library, tag)
     os.system("rm -rf " + os.path.join(best_models_path, library, tag))
     print("outpath = ", ml_outpath)
 

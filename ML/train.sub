@@ -1,5 +1,11 @@
 executable            = train.sh
-arguments             = $(ProcId) UERJ train_NN_new.py
+Universe              = grid
+accounting_group_user = gcorreia
+accounting_group      = group_uerj
+x509userproxy = /tmp/x509up_u10030
+use_x509userproxy = true
+grid_resource         = condor condor-manager2.hepgrid.uerj.br condor-manager2.hepgrid.uerj.br
+arguments             = $(ProcId) UERJ xrootd2.hepgrid.uerj.br:1094 gcorreia train_NN_Test.py
 transfer_input_files  = /home/gcorreia/work/HEPHero/ML.tgz
 should_transfer_files = YES
 output                = condor/train_$(ClusterId)_$(ProcId).out
