@@ -12,9 +12,9 @@ Generating the trainer
 -----------
 
 To generate the machine learning trainer using the **generate_trainer.py** script, you must be inside the HEPHero directory and follow the example below. 
-Example: Your analysis project is called **AP_Test_OD** and you will generate a trainer using the model **NN** with the tag **Test**:
+Example: Your analysis project is called **AP_Test_OD** and you will generate a trainer for the selection **ML** using the model **NN** with the tag **Test**:
 ```bash
-python ML/generate_trainer.py -m NN -t Test
+python ML/generate_trainer.py -s ML -m NN -t Test
 ```
 It will create the trainer script **train_NN_Test.py** inside the directory **AP_Test_OD/ML**. The files **condor.py** and **submit_jobs.sh** will be created inside the same directory.
 
