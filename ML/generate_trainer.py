@@ -7,6 +7,7 @@ from shutil import copyfile
 
 #======GET SETUP FILE==============================================================================
 parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--selection", type=str, default="ML")
 parser.add_argument("-m", "--model", type=str, default="NN")
 parser.add_argument("-t", "--tag", type=str, default="template")
 args = parser.parse_args()
@@ -67,8 +68,8 @@ with open(trainer_file, "w") as newfile:
     newfile.write("#-------------------------------------------------------------------------------------\n")
     newfile.write("# General Setup\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")
-    newfile.write("input_path = '" + sm.input_path +"'\n")
-    newfile.write("output_path = '" + sm.output_path +"'\n")
+    newfile.write("selection = '" + args.selection +"'\n")
+    newfile.write("analysis = '" + analysis +"'\n")
     newfile.write("periods = " + str(sm.periods) +"\n")
     newfile.write("tag = '" + args.tag +"'\n")
     newfile.write("\n")
