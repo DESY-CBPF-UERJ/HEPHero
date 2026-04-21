@@ -211,7 +211,7 @@ def features_stat_APNN(train_data, test_data, variables, var_names, var_use, cla
             param_array = np.array(random.choices(par_points, k=train_bkg_len))
             train_data.loc[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
             train_data.loc[(train_data['class'] != var_use[idx2][0]) & (train_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx1][0]])
+            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1])])
             param_array = np.array(random.choices(par_points, k=test_bkg_len))
             test_data.loc[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
             test_data.loc[(test_data['class'] != var_use[idx2][0]) & (test_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
