@@ -31,6 +31,7 @@ from custom_opts.ranger import Ranger
 from models.NN.model import *
 from models.PNN.model import *
 from models.APNN.model import *
+from models.EFTNN.model import *
 #from models.APSNN import *
 #from models.PNET import *
 #from models.M2CNN import *
@@ -1294,12 +1295,6 @@ def evaluate_models(period, library, tag, outpath_base, modelNames_submitted, mo
 
 
 
-
-
-
-
-
-
 #==================================================================================================
 def build_model(model_type, parameters, n_classes, stat_values, variables, var_use, vec_variables, vec_var_use, device):
 
@@ -1309,6 +1304,8 @@ def build_model(model_type, parameters, n_classes, stat_values, variables, var_u
         model = build_PNN(parameters, variables, n_classes, stat_values, device)
     elif model_type == "APNN":
         model = build_APNN(parameters, variables, n_classes, stat_values, device)
+    elif model_type == "EFTNN":
+        model = build_EFTNN(parameters, variables, n_classes, stat_values, device)
     elif model_type == "APSNN":
         model = build_APSNN(parameters, variables, n_classes, stat_values, device)
     elif model_type == "PNET":
@@ -1330,6 +1327,8 @@ def model_parameters(model_type, param_dict):
         model_parameters = model_parameters_PNN(param_dict)
     elif model_type == "APNN":
         model_parameters = model_parameters_APNN(param_dict)
+    elif model_type == "EFTNN":
+        model_parameters = model_parameters_EFTNN(param_dict)
     elif model_type == "APSNN":
         model_parameters = model_parameters_APSNN(param_dict)
     elif model_type == "PNET":
@@ -1351,6 +1350,8 @@ def features_stat(model_type, train_data, test_data, vec_train_data, vec_test_da
         stat_values = features_stat_PNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
     elif model_type == "APNN":
         stat_values = features_stat_APNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
+    elif model_type == "EFTNN":
+        stat_values = features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
     elif model_type == "APSNN":
         stat_values = features_stat_APSNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, parameters, load_it=load_it)
     elif model_type == "PNET":
@@ -1372,6 +1373,8 @@ def update_model(model_type, model, criterion, parameters, batch_data, domain_ba
         model = update_PNN(model, criterion, parameters, batch_data, stat_values, var_use, device)
     elif model_type == "APNN":
         model = update_APNN(model, criterion, parameters, batch_data, stat_values, var_use, device)
+    elif model_type == "EFTNN":
+        model = update_EFTNN(model, criterion, parameters, batch_data, stat_values, var_use, device)
     elif model_type == "APSNN":
         model = update_APSNN(model, criterion, parameters, batch_data, var_use, device)
     elif model_type == "PNET":
@@ -1393,6 +1396,8 @@ def process_data(model_type, scalar_var, vector_var, variables, vec_variables, v
         input_data = process_data_PNN(scalar_var, variables)
     elif model_type == "APNN":
         input_data = process_data_APNN(scalar_var, variables)
+    elif model_type == "EFTNN":
+        input_data = process_data_EFTNN(scalar_var, variables)
     elif model_type == "APSNN":
         input_data = process_data_APSNN(scalar_var, variables, var_use, vector_var, stat_values, device)
     elif model_type == "PNET":
@@ -1414,6 +1419,8 @@ def evaluate_model(model_type, input_data, model, i_eval, eval_step_size, criter
         i_eval_output = evaluate_PNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
     elif model_type == "APNN":
         i_eval_output = evaluate_APNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
+    elif model_type == "EFTNN":
+        i_eval_output = evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
     elif model_type == "APSNN":
         i_eval_output = evaluate_APSNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
     elif model_type == "PNET":
@@ -1435,6 +1442,8 @@ def feature_score(model_type, input_data, model, min_loss, eval_step_size, crite
         feature_score_info = feature_score_PNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
     elif model_type == "APNN":
         feature_score_info = feature_score_APNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
+    elif model_type == "EFTNN":
+        feature_score_info = feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
     elif model_type == "APSNN":
         feature_score_info = feature_score_APSNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
     elif model_type == "PNET":
@@ -1456,6 +1465,8 @@ def save_model(model_type, model, model_outpath, dim, device):
         save_PNN(model, model_outpath, dim, device)
     elif model_type == "APNN":
         save_APNN(model, model_outpath, dim, device)
+    elif model_type == "EFTNN":
+        save_EFTNN(model, model_outpath, dim, device)
     elif model_type == "APSNN":
         save_APSNN(model, model_outpath, dim, device)
     elif model_type == "PNET":
