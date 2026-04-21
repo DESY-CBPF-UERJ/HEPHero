@@ -70,7 +70,7 @@ with open(trainer_file, "w") as newfile:
     newfile.write("#-------------------------------------------------------------------------------------\n")
     newfile.write("selection = '" + args.selection +"'\n")
     newfile.write("analysis = '" + analysis +"'\n")
-    newfile.write("periods = " + str(sm.periods) +"\n")
+    newfile.write("periods = []\n")
     newfile.write("tag = '" + args.tag +"'\n")
     newfile.write("\n")
     newfile.write("#-------------------------------------------------------------------------------------\n")

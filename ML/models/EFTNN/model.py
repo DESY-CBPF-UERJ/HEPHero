@@ -161,11 +161,7 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
     par_idx = []
     par_dim = 0
     for i in range(len(variables)):
-        if len(var_use[i]) > 2:
-            sys.exit("Code does not support more than 2 signal classes!")
-            # It can be extended for more than 2 classes
-
-        if var_use[i] != "F":
+        if var_use[i] == "P":
             par_dim += 1
             par_idx.append(i)
 
@@ -176,45 +172,29 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
     par_points = []
     if par_dim == 1:
         idx = par_idx[0]
-        var1 = train_data[variables[idx]][train_data["class"] == var_use[idx][0]] # use info only from the first signal class
+        var1 = train_data[variables[idx]][train_data["class"] == 0] # use info only from the first signal class
         par_points = list(set(var1))
 
-        if len(var_use[idx]) == 1:
-            train_bkg_len = len(train_data[train_data['class'] != var_use[idx][0]])
-            train_data.loc[train_data['class'] != var_use[idx][0], variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx][0]])
-            test_data.loc[test_data['class'] != var_use[idx][0], variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
-        elif len(var_use[idx]) == 2:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1])])
-            train_data.loc[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1]), variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1])])
-            test_data.loc[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1]), variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
+        train_bkg_len = len(train_data[train_data['class'] != 0])
+        train_data.loc[train_data['class'] != 0, variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
+        test_bkg_len = len(test_data[test_data['class'] != 0])
+        test_data.loc[test_data['class'] != 0, variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
 
     elif par_dim == 2:
         idx1 = par_idx[0]
         idx2 = par_idx[1]
-        var1 = train_data[variables[idx1]][train_data["class"] == var_use[idx1][0]]
-        var2 = train_data[variables[idx2]][train_data["class"] == var_use[idx2][0]]
+        var1 = train_data[variables[idx1]][train_data["class"] == 0]
+        var2 = train_data[variables[idx2]][train_data["class"] == 0]
         par_points = list(set(zip(var1,var2)))
 
-        if len(var_use[idx1]) == 1:
-            train_bkg_len = len(train_data[train_data['class'] != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=train_bkg_len))
-            train_data.loc[(train_data['class'] != var_use[idx1][0]), variables[idx1]] = param_array[:,0]
-            train_data.loc[(train_data['class'] != var_use[idx2][0]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=test_bkg_len))
-            test_data.loc[(test_data['class'] != var_use[idx1][0]), variables[idx1]] = param_array[:,0]
-            test_data.loc[(test_data['class'] != var_use[idx2][0]), variables[idx2]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=train_bkg_len))
-            train_data.loc[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
-            train_data.loc[(train_data['class'] != var_use[idx2][0]) & (train_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=test_bkg_len))
-            test_data.loc[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
-            test_data.loc[(test_data['class'] != var_use[idx2][0]) & (test_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
+        train_bkg_len = len(train_data[train_data['class'] != 0])
+        param_array = np.array(random.choices(par_points, k=train_bkg_len))
+        train_data.loc[(train_data['class'] != 0), variables[idx1]] = param_array[:,0]
+        train_data.loc[(train_data['class'] != 0), variables[idx2]] = param_array[:,1]
+        test_bkg_len = len(test_data[test_data['class'] != 0])
+        param_array = np.array(random.choices(par_points, k=test_bkg_len))
+        test_data.loc[(test_data['class'] != 0), variables[idx1]] = param_array[:,0]
+        test_data.loc[(test_data['class'] != 0), variables[idx2]] = param_array[:,1]
 
 
     mean = []
@@ -273,7 +253,7 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
 
 
 #==================================================================================================
-def update_EFTNN(model, criterion, parameters, batch_data, stat_values, var_use, device):
+def update_EFTNN(model, criterion, parameters, batch_data, stat_values, device):
 
     if parameters[3] == "adam":
         optimizer = torch.optim.Adam(model.parameters(), lr=parameters[6], eps=1e-07)
@@ -295,38 +275,15 @@ def update_EFTNN(model, criterion, parameters, batch_data, stat_values, var_use,
 
     if par_dim == 1:
         idx = stat_values["par_idx"][0]
-        if len(var_use[idx]) == 1:
-            bkg_len = len(data_y_b[data_y_b != var_use[idx][0]])
-            data_x_b[:,idx][data_y_b != var_use[idx][0]] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 2:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1])])
-            data_x_b[:,idx][(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1])] = np.array(random.choices(par_points, k=bkg_len))
+        bkg_len = len(data_y_b[data_y_b != 0])
+        data_x_b[:,idx][data_y_b != 0] = np.array(random.choices(par_points, k=bkg_len))
     elif par_dim == 2:
         idx1 = stat_values["par_idx"][0]
         idx2 = stat_values["par_idx"][1]
-        if len(var_use[idx1]) == 1:
-            bkg_len = len(data_y_b[data_y_b != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x_b[:,idx1][data_y_b != var_use[idx1][0]] = param_array[:,0]
-            data_x_b[:,idx2][data_y_b != var_use[idx2][0]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x_b[:,idx1][(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1])] = param_array[:,0]
-            data_x_b[:,idx2][(data_y_b != var_use[idx2][0]) & (data_y_b != var_use[idx2][1])] = param_array[:,1]
-
-    """
-    mean = []
-    std = []
-    for i in range(stat_values["par_dim"]):
-        idx = stat_values["par_idx"][i]
-        weighted_stats = DescrStatsW(data_x_b[:,idx], weights=data_w_b, ddof=0)
-        mean.append(weighted_stats.mean)
-        std.append(weighted_stats.std)
-
-    print("mean_b: " + str(mean))
-    print("std_b: " + str(std))
-    """
+        bkg_len = len(data_y_b[data_y_b != 0])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        data_x_b[:,idx1][data_y_b != 0] = param_array[:,0]
+        data_x_b[:,idx2][data_y_b != 0] = param_array[:,1]
 
     if device == "cuda":
         w = torch.FloatTensor(data_w_b).view(-1,1).to("cuda")
@@ -366,7 +323,7 @@ def process_data_EFTNN(scalar_var, variables):
 
 
 #==================================================================================================
-def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode):
+def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, device, mode):
 
     data_x, data_y, data_w = input_data
 
@@ -377,25 +334,15 @@ def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, paramet
 
     if par_dim == 1:
         idx = stat_values["par_idx"][0]
-        if len(var_use[idx]) == 1:
-            bkg_len = len(data_y[data_y != var_use[idx][0]])
-            data_x[:,idx][data_y != var_use[idx][0]] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 2:
-            bkg_len = len(data_y[(data_y != var_use[idx][0]) & (data_y != var_use[idx][1])])
-            data_x[:,idx][(data_y != var_use[idx][0]) & (data_y != var_use[idx][1])] = np.array(random.choices(par_points, k=bkg_len))
+        bkg_len = len(data_y[data_y != 0])
+        data_x[:,idx][data_y != 0] = np.array(random.choices(par_points, k=bkg_len))
     elif par_dim == 2:
         idx1 = stat_values["par_idx"][0]
         idx2 = stat_values["par_idx"][1]
-        if len(var_use[idx1]) == 1:
-            bkg_len = len(data_y[data_y != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x[:,idx1][data_y != var_use[idx1][0]] = param_array[:,0]
-            data_x[:,idx2][data_y != var_use[idx2][0]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            bkg_len = len(data_y[(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x[:,idx1][(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1])] = param_array[:,0]
-            data_x[:,idx2][(data_y != var_use[idx2][0]) & (data_y != var_use[idx2][1])] = param_array[:,1]
+        bkg_len = len(data_y[data_y != 0])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        data_x[:,idx1][data_y != 0] = param_array[:,0]
+        data_x[:,idx2][data_y != 0] = param_array[:,1]
 
 
     n_eval_steps = int(len(data_w)/eval_step_size) + 1
@@ -434,7 +381,7 @@ def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, paramet
 
 
 #==================================================================================================
-def feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device):
+def feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, stat_values, device):
 
     n_eval_steps = int(len(input_data[-1])/eval_step_size) + 1
     data_w_sum = input_data[-1].sum()
@@ -453,7 +400,7 @@ def feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, 
 
             data_loss_i = 0
             for i_eval in range(n_eval_steps):
-                i_eval_output = evaluate_EFTNN(shuffled_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode="metric")
+                i_eval_output = evaluate_EFTNN(shuffled_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, device, mode="metric")
                 if i_eval_output is None:
                     continue
                 else:
@@ -477,14 +424,6 @@ def feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, 
 
 #==================================================================================================
 def save_EFTNN(model, model_outpath, dim, device):
-
-    #torch.save(model, os.path.join(model_outpath, "model.pt"))
-    #model_scripted = torch.jit.script(model) # Export to TorchScript
-    #model_scripted.save(os.path.join(model_outpath, "model_scripted.pt"))
-    #To evaluate model_state_dict.pt
-    #model = TheModelClass(*args, **kwargs)
-    #model.load_state_dict(torch.load(PATH, weights_only=True))
-    #model.eval()
 
     #ONNX
     input_names = ['features']

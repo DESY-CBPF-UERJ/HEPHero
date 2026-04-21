@@ -1,12 +1,4 @@
 #--------------------------------------------------------------------------------------------------
-# General Setup
-#--------------------------------------------------------------------------------------------------
-input_path = ""
-output_path = ""
-periods = ['0_22']
-
-
-#--------------------------------------------------------------------------------------------------
 # ML setup
 #--------------------------------------------------------------------------------------------------
 device = 'cuda' # 'cpu'
@@ -51,7 +43,7 @@ feature_info = False
 scalar_variables = [
     ['jet_pt',      'Jet_pt',       'F'],
     ['jet_mass',    'Jet_mass',     'F'],
-    ['Z_pt',        'Z_pt',         [0]],
+    ['Z_pt',        'Z_pt',         'P'],
     ]
 
 vector_variables = []
@@ -73,7 +65,7 @@ pca_custom_classes = {}
 #--------------------------------------------------------------------------------------------------
 classes = {
 #<class_name>: [[<list_of_processes>], <mode>, <combination>, <label>, <color>]
-"Signal_EFT": [[
+"Signal_EFT": [[  # Force EFT class in the first position
     "Zto2Q_PTQQ-100to200",
     "Zto2Q_PTQQ-200to400"
     ], "scalars", 'equal', "Signal EFT", "blue"],

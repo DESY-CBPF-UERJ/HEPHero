@@ -1374,7 +1374,7 @@ def update_model(model_type, model, criterion, parameters, batch_data, domain_ba
     elif model_type == "APNN":
         model = update_APNN(model, criterion, parameters, batch_data, stat_values, var_use, device)
     elif model_type == "EFTNN":
-        model = update_EFTNN(model, criterion, parameters, batch_data, stat_values, var_use, device)
+        model = update_EFTNN(model, criterion, parameters, batch_data, stat_values, device)
     elif model_type == "APSNN":
         model = update_APSNN(model, criterion, parameters, batch_data, var_use, device)
     elif model_type == "PNET":
@@ -1420,7 +1420,7 @@ def evaluate_model(model_type, input_data, model, i_eval, eval_step_size, criter
     elif model_type == "APNN":
         i_eval_output = evaluate_APNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
     elif model_type == "EFTNN":
-        i_eval_output = evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
+        i_eval_output = evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, device, mode)
     elif model_type == "APSNN":
         i_eval_output = evaluate_APSNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
     elif model_type == "PNET":
@@ -1443,7 +1443,7 @@ def feature_score(model_type, input_data, model, min_loss, eval_step_size, crite
     elif model_type == "APNN":
         feature_score_info = feature_score_APNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
     elif model_type == "EFTNN":
-        feature_score_info = feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
+        feature_score_info = feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, stat_values, device)
     elif model_type == "APSNN":
         feature_score_info = feature_score_APSNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
     elif model_type == "PNET":
