@@ -165,10 +165,11 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
             par_dim += 1
             par_idx.append(i)
 
-    if par_dim > 2:
-        sys.exit("Code does not support more than 2 signal parameters!")
-        # It can be extended for more than 2 variables
+    #if par_dim > 2:
+    #    sys.exit("Code does not support more than 2 signal parameters!")
+    #    # It can be extended for more than 2 variables
 
+    """
     par_points = []
     if par_dim == 1:
         idx = par_idx[0]
@@ -195,6 +196,17 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
         param_array = np.array(random.choices(par_points, k=test_bkg_len))
         test_data.loc[(test_data['class'] != 0), variables[idx1]] = param_array[:,0]
         test_data.loc[(test_data['class'] != 0), variables[idx2]] = param_array[:,1]
+    """
+    
+    var_list = [ train_data[variables[par_idx[i]]][train_data["class"] == 0] for i in range(par_dim) ]
+    par_points = list(set(zip(*var_list)))
+    train_bkg_len = len(train_data[train_data['class'] != 0])
+    train_param_array = np.array(random.choices(par_points, k=train_bkg_len))
+    test_bkg_len = len(test_data[test_data['class'] != 0])
+    test_param_array = np.array(random.choices(par_points, k=test_bkg_len))
+    for i in range(par_dim):
+        train_data.loc[(train_data['class'] != 0), variables[par_idx[i]]] = train_param_array[:,i]
+        test_data.loc[(test_data['class'] != 0), variables[par_idx[i]]] = test_param_array[:,i]
 
 
     mean = []
@@ -272,7 +284,8 @@ def update_EFTNN(model, criterion, parameters, batch_data, stat_values, device):
     # Produce random values for signal parameters in background events
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
-
+    
+    """
     if par_dim == 1:
         idx = stat_values["par_idx"][0]
         bkg_len = len(data_y_b[data_y_b != 0])
@@ -284,6 +297,12 @@ def update_EFTNN(model, criterion, parameters, batch_data, stat_values, device):
         param_array = np.array(random.choices(par_points, k=bkg_len))
         data_x_b[:,idx1][data_y_b != 0] = param_array[:,0]
         data_x_b[:,idx2][data_y_b != 0] = param_array[:,1]
+    """
+    
+    bkg_len = len(data_y_b[data_y_b != 0])
+    param_array = np.array(random.choices(par_points, k=bkg_len))
+    for i in range(par_dim):
+        data_x_b[:,stat_values["par_idx"][i]][data_y_b != 0] = param_array[:,i]
 
     if device == "cuda":
         w = torch.FloatTensor(data_w_b).view(-1,1).to("cuda")
@@ -332,6 +351,7 @@ def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, paramet
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
 
+    """
     if par_dim == 1:
         idx = stat_values["par_idx"][0]
         bkg_len = len(data_y[data_y != 0])
@@ -343,6 +363,12 @@ def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, paramet
         param_array = np.array(random.choices(par_points, k=bkg_len))
         data_x[:,idx1][data_y != 0] = param_array[:,0]
         data_x[:,idx2][data_y != 0] = param_array[:,1]
+    """
+    
+    bkg_len = len(data_y[data_y != 0])
+    param_array = np.array(random.choices(par_points, k=bkg_len))
+    for i in range(par_dim):
+        data_x[:,stat_values["par_idx"][i]][data_y != 0] = param_array[:,i]
 
 
     n_eval_steps = int(len(data_w)/eval_step_size) + 1
