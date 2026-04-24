@@ -169,68 +169,38 @@ def features_stat_APNN(train_data, test_data, variables, var_names, var_use, cla
         if var_use[i] != "F":
             par_dim += 1
             par_idx.append(i)
-
-    if par_dim > 2:
-        sys.exit("Code does not support more than 2 signal parameters!")
-        # It can be extended for more than 2 variables
-
-    par_points = []
-    if par_dim == 1:
-        idx = par_idx[0]
-        var1 = train_data[variables[idx]][train_data["class"] == var_use[idx][0]] # use info only from the first signal class
-        par_points = list(set(var1))
-
-        if len(var_use[idx]) == 1:
-            train_bkg_len = len(train_data[train_data['class'] != var_use[idx][0]])
-            train_data.loc[train_data['class'] != var_use[idx][0], variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx][0]])
-            test_data.loc[test_data['class'] != var_use[idx][0], variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
-        elif len(var_use[idx]) == 2:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1])])
-            train_data.loc[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1]), variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1])])
-            test_data.loc[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1]), variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
-        elif len(var_use[idx]) == 3:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1]) & (train_data['class'] != var_use[idx][2])])
-            train_data.loc[(train_data['class'] != var_use[idx][0]) & (train_data['class'] != var_use[idx][1]) & (train_data['class'] != var_use[idx][2]), variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1]) & (test_data['class'] != var_use[idx][2])])
-            test_data.loc[(test_data['class'] != var_use[idx][0]) & (test_data['class'] != var_use[idx][1]) & (test_data['class'] != var_use[idx][2]), variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))  
-
-    elif par_dim == 2:
-        idx1 = par_idx[0]
-        idx2 = par_idx[1]
-        var1 = train_data[variables[idx1]][train_data["class"] == var_use[idx1][0]]
-        var2 = train_data[variables[idx2]][train_data["class"] == var_use[idx2][0]]
-        par_points = list(set(zip(var1,var2)))
-
-        if len(var_use[idx1]) == 1:
-            train_bkg_len = len(train_data[train_data['class'] != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=train_bkg_len))
-            train_data.loc[(train_data['class'] != var_use[idx1][0]), variables[idx1]] = param_array[:,0]
-            train_data.loc[(train_data['class'] != var_use[idx2][0]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[test_data['class'] != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=test_bkg_len))
-            test_data.loc[(test_data['class'] != var_use[idx1][0]), variables[idx1]] = param_array[:,0]
-            test_data.loc[(test_data['class'] != var_use[idx2][0]), variables[idx2]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=train_bkg_len))
-            train_data.loc[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
-            train_data.loc[(train_data['class'] != var_use[idx2][0]) & (train_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=test_bkg_len))
-            test_data.loc[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1]), variables[idx1]] = param_array[:,0]
-            test_data.loc[(test_data['class'] != var_use[idx2][0]) & (test_data['class'] != var_use[idx2][1]), variables[idx2]] = param_array[:,1]
-        elif len(var_use[idx1]) == 3:
-            train_bkg_len = len(train_data[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1]) & (train_data['class'] != var_use[idx1][2])])
-            param_array = np.array(random.choices(par_points, k=train_bkg_len))
-            train_data.loc[(train_data['class'] != var_use[idx1][0]) & (train_data['class'] != var_use[idx1][1]) & (train_data['class'] != var_use[idx1][2]), variables[idx1]] = param_array[:,0]
-            train_data.loc[(train_data['class'] != var_use[idx2][0]) & (train_data['class'] != var_use[idx2][1]) & (train_data['class'] != var_use[idx2][2]), variables[idx2]] = param_array[:,1]
-            test_bkg_len = len(test_data[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1]) & (test_data['class'] != var_use[idx1][2])])
-            param_array = np.array(random.choices(par_points, k=test_bkg_len))
-            test_data.loc[(test_data['class'] != var_use[idx1][0]) & (test_data['class'] != var_use[idx1][1]) & (test_data['class'] != var_use[idx1][2]), variables[idx1]] = param_array[:,0]
-            test_data.loc[(test_data['class'] != var_use[idx2][0]) & (test_data['class'] != var_use[idx2][1]) & (test_data['class'] != var_use[idx2][2]), variables[idx2]] = param_array[:,1]
-
+    
+    var_list = [ train_data[variables[par_idx[i]]][train_data["class"] == var_use[par_idx[i]][0]] for i in range(par_dim) ]
+    par_points = list(set(zip(*var_list)))
+    idx_ref = par_idx[0]
+    if len(var_use[idx_ref]) == 1:
+        train_bkg_len = len(train_data[train_data['class'] != var_use[idx_ref][0]])
+        train_param_array = np.array(random.choices(par_points, k=train_bkg_len))
+        test_bkg_len = len(test_data[test_data['class'] != var_use[idx_ref][0]])
+        test_param_array = np.array(random.choices(par_points, k=test_bkg_len))
+        for i in range(par_dim):
+            idx_i = par_idx[i]
+            train_data.loc[(train_data['class'] != var_use[idx_i][0]), variables[idx_i]] = train_param_array[:,i]
+            test_data.loc[(test_data['class'] != var_use[idx_i][0]), variables[idx_i]] = test_param_array[:,i]
+    elif len(var_use[idx_ref]) == 2:
+        train_bkg_len = len(train_data[(train_data['class'] != var_use[idx_ref][0]) & (train_data['class'] != var_use[idx_ref][1])])
+        train_param_array = np.array(random.choices(par_points, k=train_bkg_len))
+        test_bkg_len = len(test_data[(test_data['class'] != var_use[idx_ref][0]) & (test_data['class'] != var_use[idx_ref][1])])
+        test_param_array = np.array(random.choices(par_points, k=test_bkg_len))
+        for i in range(par_dim):
+            idx_i = par_idx[i]
+            train_data.loc[(train_data['class'] != var_use[idx_i][0]) & (train_data['class'] != var_use[idx_i][1]), variables[idx_i]] = train_param_array[:,i]
+            test_data.loc[(test_data['class'] != var_use[idx_i][0]) & (test_data['class'] != var_use[idx_i][1]), variables[idx_i]] = test_param_array[:,i] 
+    elif len(var_use[idx_ref]) == 3:
+        train_bkg_len = len(train_data[(train_data['class'] != var_use[idx_ref][0]) & (train_data['class'] != var_use[idx_ref][1]) & (train_data['class'] != var_use[idx_ref][2])])
+        train_param_array = np.array(random.choices(par_points, k=train_bkg_len))
+        test_bkg_len = len(test_data[(test_data['class'] != var_use[idx_ref][0]) & (test_data['class'] != var_use[idx_ref][1]) & (test_data['class'] != var_use[idx_ref][2])])
+        test_param_array = np.array(random.choices(par_points, k=test_bkg_len))
+        for i in range(par_dim):
+            idx_i = par_idx[i]
+            train_data.loc[(train_data['class'] != var_use[idx_i][0]) & (train_data['class'] != var_use[idx_i][1]) & (train_data['class'] != var_use[idx_i][2]), variables[idx_i]] = train_param_array[:,i]
+            test_data.loc[(test_data['class'] != var_use[idx_i][0]) & (test_data['class'] != var_use[idx_i][1]) & (test_data['class'] != var_use[idx_i][2]), variables[idx_i]] = test_param_array[:,i] 
+    
 
     mean = []
     std = []
@@ -308,36 +278,27 @@ def update_APNN(model, criterion, parameters, batch_data, stat_values, var_use, 
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
 
-    if par_dim == 1:
-        idx = stat_values["par_idx"][0]
-        if len(var_use[idx]) == 1:
-            bkg_len = len(data_y_b[data_y_b != var_use[idx][0]])
-            data_x_b[:,idx][data_y_b != var_use[idx][0]] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 2:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1])])
-            data_x_b[:,idx][(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1])] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 3:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1]) & (data_y_b != var_use[idx][2])])
-            data_x_b[:,idx][(data_y_b != var_use[idx][0]) & (data_y_b != var_use[idx][1]) & (data_y_b != var_use[idx][2])] = np.array(random.choices(par_points, k=bkg_len))
-    elif par_dim == 2:
-        idx1 = stat_values["par_idx"][0]
-        idx2 = stat_values["par_idx"][1]
-        if len(var_use[idx1]) == 1:
-            bkg_len = len(data_y_b[data_y_b != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x_b[:,idx1][data_y_b != var_use[idx1][0]] = param_array[:,0]
-            data_x_b[:,idx2][data_y_b != var_use[idx2][0]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x_b[:,idx1][(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1])] = param_array[:,0]
-            data_x_b[:,idx2][(data_y_b != var_use[idx2][0]) & (data_y_b != var_use[idx2][1])] = param_array[:,1]
-        elif len(var_use[idx1]) == 3:
-            bkg_len = len(data_y_b[(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1]) & (data_y_b != var_use[idx1][2])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x_b[:,idx1][(data_y_b != var_use[idx1][0]) & (data_y_b != var_use[idx1][1]) & (data_y_b != var_use[idx1][2])] = param_array[:,0]
-            data_x_b[:,idx2][(data_y_b != var_use[idx2][0]) & (data_y_b != var_use[idx2][1]) & (data_y_b != var_use[idx2][2])] = param_array[:,1]
-
+    idx_ref = stat_values["par_idx"][0]
+    if len(var_use[idx_ref]) == 1:
+        bkg_len = len(data_y_b[data_y_b != var_use[idx_ref][0]])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x_b[:,idx_i][data_y_b != var_use[idx_i][0]] = param_array[:,i]
+    elif len(var_use[idx_ref]) == 2:
+        bkg_len = len(data_y_b[(data_y_b != var_use[idx_ref][0]) & (data_y_b != var_use[idx_ref][1])])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x_b[:,idx_i][(data_y_b != var_use[idx_i][0]) & (data_y_b != var_use[idx_i][1])] = param_array[:,i]
+    elif len(var_use[idx_ref]) == 3:
+        bkg_len = len(data_y_b[(data_y_b != var_use[idx_ref][0]) & (data_y_b != var_use[idx_ref][1]) & (data_y_b != var_use[idx_ref][2])])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x_b[:,idx_i][(data_y_b != var_use[idx_i][0]) & (data_y_b != var_use[idx_i][1]) & (data_y_b != var_use[idx_i][2])] = param_array[:,i]
+    
+    
     """
     mean = []
     std = []
@@ -397,38 +358,28 @@ def evaluate_APNN(input_data, model, i_eval, eval_step_size, criterion, paramete
     # Produce random values for signal parameters in background events
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
-
-    if par_dim == 1:
-        idx = stat_values["par_idx"][0]
-        if len(var_use[idx]) == 1:
-            bkg_len = len(data_y[data_y != var_use[idx][0]])
-            data_x[:,idx][data_y != var_use[idx][0]] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 2:
-            bkg_len = len(data_y[(data_y != var_use[idx][0]) & (data_y != var_use[idx][1])])
-            data_x[:,idx][(data_y != var_use[idx][0]) & (data_y != var_use[idx][1])] = np.array(random.choices(par_points, k=bkg_len))
-        elif len(var_use[idx]) == 3:
-            bkg_len = len(data_y[(data_y != var_use[idx][0]) & (data_y != var_use[idx][1]) & (data_y != var_use[idx][2])])
-            data_x[:,idx][(data_y != var_use[idx][0]) & (data_y != var_use[idx][1]) & (data_y != var_use[idx][2])] = np.array(random.choices(par_points, k=bkg_len))
-    elif par_dim == 2:
-        idx1 = stat_values["par_idx"][0]
-        idx2 = stat_values["par_idx"][1]
-        if len(var_use[idx1]) == 1:
-            bkg_len = len(data_y[data_y != var_use[idx1][0]])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x[:,idx1][data_y != var_use[idx1][0]] = param_array[:,0]
-            data_x[:,idx2][data_y != var_use[idx2][0]] = param_array[:,1]
-        elif len(var_use[idx1]) == 2:
-            bkg_len = len(data_y[(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x[:,idx1][(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1])] = param_array[:,0]
-            data_x[:,idx2][(data_y != var_use[idx2][0]) & (data_y != var_use[idx2][1])] = param_array[:,1]
-        elif len(var_use[idx1]) == 3:
-            bkg_len = len(data_y[(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1]) & (data_y != var_use[idx1][2])])
-            param_array = np.array(random.choices(par_points, k=bkg_len))
-            data_x[:,idx1][(data_y != var_use[idx1][0]) & (data_y != var_use[idx1][1]) & (data_y != var_use[idx1][2])] = param_array[:,0]
-            data_x[:,idx2][(data_y != var_use[idx2][0]) & (data_y != var_use[idx2][1]) & (data_y != var_use[idx2][2])] = param_array[:,1]
-
-
+    
+    idx_ref = stat_values["par_idx"][0]
+    if len(var_use[idx_ref]) == 1:
+        bkg_len = len(data_y[data_y != var_use[idx_ref][0]])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x[:,idx_i][data_y != var_use[idx_i][0]] = param_array[:,i]
+    elif len(var_use[idx_ref]) == 2:
+        bkg_len = len(data_y[(data_y != var_use[idx_ref][0]) & (data_y != var_use[idx_ref][1])])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x[:,idx_i][(data_y != var_use[idx_i][0]) & (data_y != var_use[idx_i][1])] = param_array[:,i]
+    elif len(var_use[idx_ref]) == 3:
+        bkg_len = len(data_y[(data_y != var_use[idx_ref][0]) & (data_y != var_use[idx_ref][1]) & (data_y != var_use[idx_ref][2])])
+        param_array = np.array(random.choices(par_points, k=bkg_len))
+        for i in range(par_dim):
+            idx_i = stat_values["par_idx"][i]
+            data_x[:,idx_i][(data_y != var_use[idx_i][0]) & (data_y != var_use[idx_i][1]) & (data_y != var_use[idx_i][2])] = param_array[:,i]
+            
+    
     n_eval_steps = int(len(data_w)/eval_step_size) + 1
     last_eval_step = len(data_w)%eval_step_size
 
