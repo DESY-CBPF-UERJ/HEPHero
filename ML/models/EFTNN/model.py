@@ -165,38 +165,6 @@ def features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, cl
             par_dim += 1
             par_idx.append(i)
 
-    #if par_dim > 2:
-    #    sys.exit("Code does not support more than 2 signal parameters!")
-    #    # It can be extended for more than 2 variables
-
-    """
-    par_points = []
-    if par_dim == 1:
-        idx = par_idx[0]
-        var1 = train_data[variables[idx]][train_data["class"] == 0] # use info only from the first signal class
-        par_points = list(set(var1))
-
-        train_bkg_len = len(train_data[train_data['class'] != 0])
-        train_data.loc[train_data['class'] != 0, variables[idx]] = np.array(random.choices(par_points, k=train_bkg_len))
-        test_bkg_len = len(test_data[test_data['class'] != 0])
-        test_data.loc[test_data['class'] != 0, variables[idx]] = np.array(random.choices(par_points, k=test_bkg_len))
-
-    elif par_dim == 2:
-        idx1 = par_idx[0]
-        idx2 = par_idx[1]
-        var1 = train_data[variables[idx1]][train_data["class"] == 0]
-        var2 = train_data[variables[idx2]][train_data["class"] == 0]
-        par_points = list(set(zip(var1,var2)))
-
-        train_bkg_len = len(train_data[train_data['class'] != 0])
-        param_array = np.array(random.choices(par_points, k=train_bkg_len))
-        train_data.loc[(train_data['class'] != 0), variables[idx1]] = param_array[:,0]
-        train_data.loc[(train_data['class'] != 0), variables[idx2]] = param_array[:,1]
-        test_bkg_len = len(test_data[test_data['class'] != 0])
-        param_array = np.array(random.choices(par_points, k=test_bkg_len))
-        test_data.loc[(test_data['class'] != 0), variables[idx1]] = param_array[:,0]
-        test_data.loc[(test_data['class'] != 0), variables[idx2]] = param_array[:,1]
-    """
     
     var_list = [ train_data[variables[par_idx[i]]][train_data["class"] == 0] for i in range(par_dim) ]
     par_points = list(set(zip(*var_list)))
@@ -285,20 +253,6 @@ def update_EFTNN(model, criterion, parameters, batch_data, stat_values, device):
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
     
-    """
-    if par_dim == 1:
-        idx = stat_values["par_idx"][0]
-        bkg_len = len(data_y_b[data_y_b != 0])
-        data_x_b[:,idx][data_y_b != 0] = np.array(random.choices(par_points, k=bkg_len))
-    elif par_dim == 2:
-        idx1 = stat_values["par_idx"][0]
-        idx2 = stat_values["par_idx"][1]
-        bkg_len = len(data_y_b[data_y_b != 0])
-        param_array = np.array(random.choices(par_points, k=bkg_len))
-        data_x_b[:,idx1][data_y_b != 0] = param_array[:,0]
-        data_x_b[:,idx2][data_y_b != 0] = param_array[:,1]
-    """
-    
     bkg_len = len(data_y_b[data_y_b != 0])
     param_array = np.array(random.choices(par_points, k=bkg_len))
     for i in range(par_dim):
@@ -350,20 +304,6 @@ def evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, paramet
     # Produce random values for signal parameters in background events
     par_dim = stat_values["par_dim"]
     par_points = stat_values["par_points"]
-
-    """
-    if par_dim == 1:
-        idx = stat_values["par_idx"][0]
-        bkg_len = len(data_y[data_y != 0])
-        data_x[:,idx][data_y != 0] = np.array(random.choices(par_points, k=bkg_len))
-    elif par_dim == 2:
-        idx1 = stat_values["par_idx"][0]
-        idx2 = stat_values["par_idx"][1]
-        bkg_len = len(data_y[data_y != 0])
-        param_array = np.array(random.choices(par_points, k=bkg_len))
-        data_x[:,idx1][data_y != 0] = param_array[:,0]
-        data_x[:,idx2][data_y != 0] = param_array[:,1]
-    """
     
     bkg_len = len(data_y[data_y != 0])
     param_array = np.array(random.choices(par_points, k=bkg_len))
