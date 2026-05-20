@@ -11,6 +11,9 @@ CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
 tools/resubmit_*.txt
 tools/selection.txt
+CMakeDoxyfile.tpl.bak
+HTCondor/gcorreia.cc
+HTCondor/x509up
 HTCondor/condor.sub
 include/HighFive/CMakeFiles/CMakeDirectoryInformation.cmake
 include/HighFive/CMakeFiles/Export/3b04e8d7dfee8082e1db69ea70817037/HighFiveTargets.cmake
