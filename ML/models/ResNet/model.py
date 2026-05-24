@@ -18,8 +18,10 @@ numpy_random = np.random.RandomState(16)
 
 #==================================================================================================
 def build_ResNet(vec_variables, n_classes, parameters, stat_values, device):
+    
+    n_kin_features = parameters[7][5]
     n_obj_types = len(vec_variables)
-    n_channels = 3*n_obj_types
+    n_channels = n_obj_types*n_kin_features
 
     resnet_arch = parameters[7][0]      
     if resnet_arch == 50:
@@ -41,6 +43,7 @@ def model_parameters_ResNet(param_dict):
     n_pixels_phi = param_dict["n_pixels_phi"]
     eta_cut = param_dict["eta_cut"]
     phi_cut = param_dict["phi_cut"]
+    n_kin_features = param_dict["n_kin_features"]
 
     model_parameters = []
     for i_resnet_arch in resnet_arch:
@@ -48,7 +51,7 @@ def model_parameters_ResNet(param_dict):
             for i_n_pixels_phi in n_pixels_phi:
                 for i_eta_cut in eta_cut:
                     for i_phi_cut in phi_cut:
-                        model_parameters.append([i_resnet_arch] + [i_n_pixels_eta] + [i_n_pixels_phi] + [i_eta_cut] + [i_phi_cut])
+                        model_parameters.append([i_resnet_arch] + [i_n_pixels_eta] + [i_n_pixels_phi] + [i_eta_cut] + [i_phi_cut] + [n_kin_features])
 
     return model_parameters
 
@@ -56,8 +59,9 @@ def model_parameters_ResNet(param_dict):
 #==================================================================================================
 def features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, vec_variables, vec_var_names, class_names, class_labels, class_colors, plots_outpath, parameters, load_it=None):
 
+    n_kin_features = parameters[7][5]
     n_obj_types = len(vec_variables)
-    n_channels = 3*n_obj_types
+    n_channels = n_obj_types*n_kin_features
     padding = 3
     n_pixels_eta = parameters[7][1]
     n_pixels_phi = parameters[7][2]
@@ -72,15 +76,16 @@ def features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, v
     sum_entry_values = 0
     for vecvar in vec_variables:
         dim1, dim2 = vec_train_data[vecvar].shape
-        n_obj = int(dim2/6)
-        vec_train_data[vecvar] = vec_train_data[vecvar].reshape(-1, n_obj, 6)
-        vec_test_data[vecvar] = vec_test_data[vecvar].reshape(-1, n_obj, 6)
+        entry_size = 2 + n_kin_features 
+        n_obj = int(dim2/entry_size)
+        vec_train_data[vecvar] = vec_train_data[vecvar].reshape(-1, n_obj, entry_size)
+        vec_test_data[vecvar] = vec_test_data[vecvar].reshape(-1, n_obj, entry_size)
 
         position_train_data[vecvar] = vec_train_data[vecvar][:,:,0:2]
-        tlorentz_train_data[vecvar] = vec_train_data[vecvar][:,:,2:6]
+        tlorentz_train_data[vecvar] = vec_train_data[vecvar][:,:,2:entry_size]
         del vec_train_data[vecvar]
         position_test_data[vecvar] = vec_test_data[vecvar][:,:,0:2]
-        tlorentz_test_data[vecvar] = vec_test_data[vecvar][:,:,2:6]
+        tlorentz_test_data[vecvar] = vec_test_data[vecvar][:,:,2:entry_size]
         del vec_test_data[vecvar]
 
         tlorentz_train_data[vecvar][tlorentz_train_data[vecvar] == 0.] = 1
@@ -144,7 +149,7 @@ def features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, v
 
     image_train_data = []
     for vecvar in vec_variables:
-        for itl in range(4):
+        for itl in range(n_kin_features):
             dim1, dim2, dim3 = tlorentz_train_data[vecvar].shape
             image_train_data.append(np.zeros((dim1,n_pixels_eta,n_pixels_phi)))
             for ievt in range(dim1): # paralell processing
@@ -161,7 +166,7 @@ def features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, v
 
     image_test_data = []
     for vecvar in vec_variables:
-        for itl in range(4):
+        for itl in range(n_kin_features):
             dim1, dim2, dim3 = tlorentz_test_data[vecvar].shape
             image_test_data.append(np.zeros((dim1,n_pixels_eta,n_pixels_phi)))
             for ievt in range(dim1): # paralell processing
@@ -188,15 +193,14 @@ def features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, v
     #print("image_train_data", image_train_data[0:1,:,:,:])
 
     for vecvar in vec_variables:
-        itl_name = ["logE", "logPx", "logPy", "logPz"]
-        for itl in range(4):
+        for itl in range(n_kin_features):
             
             fig1 = plt.figure(figsize=(9,5))
             gs1 = gs.GridSpec(1, 1)
             #==================================================
             ax1 = plt.subplot(gs1[0])
             #==================================================
-            tlvar = itl_name[itl]
+            tlvar = "logF"+str(itl)
             bins = np.linspace(0,log_mean*2.5,101)
             for ikey in range(len(class_names)):
 
@@ -283,8 +287,9 @@ def update_ResNet(model, criterion, parameters, batch_data, device):
 #==================================================================================================
 def process_data_ResNet(scalar_var, vector_var, vec_variables, parameters):
 
+    n_kin_features = parameters[7][5]
     n_obj_types = len(vec_variables)
-    n_channels = 3*n_obj_types
+    n_channels = n_obj_types*n_kin_features
     n_pixels_eta = parameters[7][1]
     n_pixels_phi = parameters[7][2]
     eta_cut = parameters[7][3]
@@ -298,11 +303,12 @@ def process_data_ResNet(scalar_var, vector_var, vec_variables, parameters):
     tlorentz_data = {}
     for vecvar in vec_variables:
         dim1, dim2 = vector_var[vecvar].shape
-        n_obj = int(dim2/6)
-        vector_var[vecvar] = vector_var[vecvar].reshape(-1, n_obj, 6)
+        entry_size = 2 + n_kin_features
+        n_obj = int(dim2/entry_size)
+        vector_var[vecvar] = vector_var[vecvar].reshape(-1, n_obj, entry_size)
 
         position_data[vecvar] = vector_var[vecvar][:,:,0:2]
-        tlorentz_data[vecvar] = vector_var[vecvar][:,:,2:6]
+        tlorentz_data[vecvar] = vector_var[vecvar][:,:,2:entry_size]
         del vector_var[vecvar]
 
         tlorentz_data[vecvar][tlorentz_data[vecvar] == 0.] = 1
@@ -331,7 +337,7 @@ def process_data_ResNet(scalar_var, vector_var, vec_variables, parameters):
     
     image_data = []
     for vecvar in vec_variables:
-        for itl in range(4):        
+        for itl in range(n_kin_features):        
             dim1, dim2, dim3 = tlorentz_data[vecvar].shape
             image_data.append(np.zeros((dim1,n_pixels_eta,n_pixels_phi)))
             for iobj in range(dim2):
@@ -350,7 +356,7 @@ def process_data_ResNet(scalar_var, vector_var, vec_variables, parameters):
 
     image_data = np.array(image_data, dtype=np.float16)
     image_data = np.transpose(image_data, axes=[1, 0, 2, 3])
-    print("image_data", image_data.dtype)
+    #print("image_data", image_data.dtype)
     #----------------------------------------------------------------------------------------------
     padding = 3
     
@@ -422,17 +428,18 @@ def evaluate_ResNet(input_data, model, i_eval, eval_step_size, criterion, parame
 #==================================================================================================
 def feature_score_ResNet(input_data, model, min_loss, eval_step_size, criterion, parameters, vec_variables, vec_var_names, device):
 
+    n_kin_features = parameters[7][5]
+
     n_eval_steps = int(len(input_data[-1])/eval_step_size) + 1
     data_w_sum = input_data[-1].sum()
 
-    tl_name = ["logE", "logPx", "logPy", "logPz"]
     np.set_printoptions(threshold=sys.maxsize)
     
     features_score = []
     features_score_unc = []
     features_names = []
     for ivar in tqdm(range(len(vec_variables))):
-        for itl in range(4):
+        for itl in range(n_kin_features):
 
             
             losses = []
@@ -444,7 +451,7 @@ def feature_score_ResNet(input_data, model, min_loss, eval_step_size, criterion,
                 #    print("data_x_shuffled.shape", data_x_shuffled.shape)
                 #    print("data_x_shuffled[0,4*ivar+itl,:,:]", data_x_shuffled[0,4*ivar+itl,:,:])
                 #    print("data_x_shuffled[0,4*ivar+(itl+1),:,:]", data_x_shuffled[0,4*ivar+(itl+1),:,:])
-                numpy_random.shuffle(data_x_shuffled[:,4*ivar+itl,:,:])
+                numpy_random.shuffle(data_x_shuffled[:,n_kin_features*ivar+itl,:,:])
                 #if irep == 0:
                 #    print("data_x_shuffled.shape", data_x_shuffled.shape)
                 #    print("data_x_shuffled[0,4*ivar+itl,:,:]", data_x_shuffled[0,4*ivar+itl,:,:])
@@ -469,7 +476,7 @@ def feature_score_ResNet(input_data, model, min_loss, eval_step_size, criterion,
     
             features_score.append(np.around((mean_loss - min_loss)/np.abs(min_loss), decimals=3))
             features_score_unc.append(np.around(std_loss/np.abs(min_loss), decimals=3))
-            features_names.append(vec_var_names[ivar]+"_"+tl_name[itl])
+            features_names.append(vec_var_names[ivar]+"_logF"+str(itl))
 
     feature_score_info = features_score, features_score_unc, features_names
 
@@ -506,11 +513,12 @@ def save_ResNet(model, model_outpath, dim, device):
                         dynamic_axes=dynamic_axes,
                         opset_version=15)
 
-    
+"""    
 #==================================================================================================
 def get_image_data(ivecvar, vec_variables, tlorentz_data, position_data, phi_cut, n_pixels_phi, eta_cut, n_pixels_eta):
+    n_kin_features = 3
     image_ivecvar_data = []
-    for itl in range(4):
+    for itl in range(n_kin_features):
         dim1, dim2, dim3 = tlorentz_data[vec_variables[ivecvar]].shape
         image_ivecvar_data.append(np.zeros((dim1,n_pixels_eta,n_pixels_phi)))
         for ievt in range(dim1): # paralell processing
@@ -526,3 +534,4 @@ def get_image_data(ivecvar, vec_variables, tlorentz_data, position_data, phi_cut
                     image_ivecvar_data[-1][ievt,ieta,iphi] = value
 
     return image_ivecvar_data
+"""

@@ -13,7 +13,7 @@ device = 'cuda' # 'cpu'
 library = 'torch'
 optimizer = ['ranger', 'adam', 'sgd']
 loss_func = ['bce', 'cce']
-learning_rate = [[0.01]]
+learning_rate = [0.01]
 
 
 #--------------------------------------------------------------------------------------------------
@@ -25,7 +25,8 @@ model_parameters = {
     'n_pixels_eta': [4, 25],
     'n_pixels_phi': [6, 30],
     'eta_cut': [2.5],
-    'phi_cut': [np.pi],
+    'phi_cut': [3.14159265359],
+    'n_kin_features': 3,
     }
 
 
