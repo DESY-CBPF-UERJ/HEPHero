@@ -866,6 +866,46 @@ class MSE_loss(nn.Module): # use it for regression
         return mean_mse_loss
 
 
+class ASIMOV_loss(nn.Module): # use with sigmoid
+    def __init__(self):
+        super(ASIMOV_loss, self).__init__()
+
+    def forward(self, y_true, y_pred, weight, device="cpu"):
+
+        epsilon = 1e-7
+        y_pred = (1-2*epsilon)*y_pred + epsilon
+
+        # Expected signal and background yields
+        s = torch.sum(torch.abs(weight) * y_true * y_pred)
+        b = torch.sum(torch.abs(weight) * (1.0 - y_true) * y_pred)
+
+        # Asimov significance
+        term = (s + b) * torch.log1p(s / (b + epsilon)) - s
+        ZA = torch.sqrt(torch.clamp(2.0 * term, min=epsilon))
+        loss = 1.0 / (ZA + epsilon)
+
+        return loss
+
+
+class AMS_loss(nn.Module): # use with sigmoid
+    def __init__(self):
+        super(AMS_loss, self).__init__()
+
+    def forward(self, y_true, y_pred, weight, device="cpu"):
+
+        epsilon = 1e-7
+        y_pred = (1-2*epsilon)*y_pred + epsilon
+
+        # Expected signal and background yields
+        s = torch.sum(torch.abs(weight) * y_true * y_pred)
+        b = torch.sum(torch.abs(weight) * (1.0 - y_true) * y_pred)
+
+        # AMS
+        loss = torch.sqrt(s + b + epsilon) / (s + epsilon)
+
+        return loss
+
+
 class BCE_loss(nn.Module): # use with sigmoid
     def __init__(self):
         super(BCE_loss, self).__init__()
@@ -874,7 +914,6 @@ class BCE_loss(nn.Module): # use with sigmoid
 
         epsilon = 1e-7
         y_pred = (1-2*epsilon)*y_pred + epsilon
-
 
         total_bce_loss = torch.sum((-y_true * torch.log(y_pred) - (1 - y_true) * torch.log(1 - y_pred))*torch.abs(weight))
         num_of_samples = torch.sum(torch.abs(weight))
@@ -954,6 +993,10 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
             criterion = CCE_loss(num_classes=n_classes)
         elif parameters[4] == 'bce':
             criterion = BCE_loss()
+        elif parameters[4] == 'asimov':
+            criterion = ASIMOV_loss()
+        elif parameters[4] == 'ams':
+            criterion = AMS_loss()
         elif parameters[4] == 'mse':
             criterion = MSE_loss()
 
