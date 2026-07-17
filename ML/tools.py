@@ -604,7 +604,7 @@ class control:
         self.eff_signal = self.hist_signal/self.full_signal
         self.eff_others = self.hist_others/self.full_others
         self.rej_others = 1 - self.eff_others
-        self.ams = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others + 1.E-7)
+        self.sepp = (self.eff_signal**2)/(self.eff_signal + self.eff_others + 1.E-7)
 
     #--------------------------------------------------------------------------------------
     def roc_plot(self, label='Signal-bkg ROC', color='blue', linestyle="-", version=1):
@@ -624,12 +624,12 @@ class control:
         return area  
             
     #--------------------------------------------------------------------------------------
-    def ams_plot(self, label='Signal-bkg AMS', color='blue', linestyle="-"):
-        plt.plot(self.rej_others, self.ams, color=color, label=label, linestyle=linestyle)
+    def sepp_plot(self, label='SEPP', color='blue', linestyle="-"):
+        plt.plot(self.rej_others, self.sepp, color=color, label=label, linestyle=linestyle)
 
     #--------------------------------------------------------------------------------------
-    def ams_max(self):
-        return np.max(self.ams)
+    def ams_sepp(self):
+        return np.max(self.sepp)
 
 
 #===================================================================================================
