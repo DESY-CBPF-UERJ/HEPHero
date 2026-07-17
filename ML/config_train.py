@@ -483,7 +483,7 @@ for i_load in tqdm(range(num_load_for_check)):
             pred_name = 'score_C'+str(i)
             ds_full_test[pred_name] = test_class_pred[:,i]
             ds_full_train[pred_name] = train_class_pred[:,i]
-    elif model[N][4] == "bce":
+    elif model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
         n_outputs = 1
         pred_name = 'score_C0'
         ds_full_test[pred_name] = 1 - test_class_pred[:,0]
@@ -527,7 +527,7 @@ for i in range(n_outputs):
         yTest.append(yH)
         errTest.append(errH)
     ax1.set_ylabel("Normalized to unity", size=14, horizontalalignment='right', y=1.0)
-    if model[N][4] == "cce" or model[N][4] == "bce":
+    if model[N][4] == "cce" or model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
         ax1.set_xlabel(class_names[i] + " score", size=14, horizontalalignment='right', x=1.0)
     else:
         ax1.set_xlabel("Score " + str(i), size=14, horizontalalignment='right', x=1.0)
@@ -550,7 +550,7 @@ for i in range(n_outputs):
     plt.savefig(os.path.join(model_outpath, var + "_hist.pdf"))
 
 
-    if model[N][4] == "cce" or model[N][4] == "bce":
+    if model[N][4] == "cce" or model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
         #----------------------------------------------------------------------
         # ROC
         #----------------------------------------------------------------------

@@ -880,9 +880,8 @@ class ASIMOV_loss(nn.Module): # use with sigmoid
         b = torch.sum(torch.abs(weight) * (1.0 - y_true) * y_pred)
 
         # Asimov significance
-        term = (s + b) * torch.log1p(s / (b + epsilon)) - s
-        ZA = torch.sqrt(torch.clamp(2.0 * term, min=epsilon))
-        loss = 1.0 / (ZA + epsilon)
+        ZA = torch.sqrt(2*((s + b) * torch.log(1 + s / (b + epsilon)) - s) + epsilon)
+        loss = 1.0 / ZA
 
         return loss
 
@@ -897,13 +896,19 @@ class AMS_loss(nn.Module): # use with sigmoid
         y_pred = (1-2*epsilon)*y_pred + epsilon
 
         # Expected signal and background yields
-        s = torch.sum(torch.abs(weight) * y_true * y_pred)
+        s = torch.sum(torch.abs(weight) * y_true * y_pred)*0.001
         b = torch.sum(torch.abs(weight) * (1.0 - y_true) * y_pred)
 
+        
+        
         # AMS
-        loss = torch.sqrt(s + b + epsilon) / (s + epsilon)
+        loss = -torch.log(s+epsilon) + 0.5*torch.log(s + b + epsilon)
 
-        return loss
+        total_bce_loss = torch.sum((-y_true * torch.log(y_pred) - (1 - y_true) * torch.log(1 - y_pred))*torch.abs(weight))
+        num_of_samples = torch.sum(torch.abs(weight))
+        mean_bce_loss = total_bce_loss / num_of_samples
+
+        return loss + mean_bce_loss
 
 
 class BCE_loss(nn.Module): # use with sigmoid
@@ -984,7 +989,7 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
         domains_train_loss = []
         domains_test_loss = []
         position = 0
-        min_loss = 99999
+        min_loss = 99999999999999999
         
         torch.set_num_threads(6)
 

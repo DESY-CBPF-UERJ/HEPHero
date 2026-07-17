@@ -68,7 +68,7 @@ class build_NN(nn.Module):
         if parameters[4] == 'cce':
             self.activation_last = nn.Softmax(dim=1)
             n_output = n_classes
-        elif parameters[4] == 'bce' and n_classes == 2:
+        elif (parameters[4] == 'bce' or parameters[4] == 'asimov' or parameters[4] == 'ams') and n_classes == 2:
             self.activation_last = nn.Sigmoid()
             n_output = 1
         else:
@@ -279,7 +279,7 @@ def evaluate_NN(input_data, model, i_eval, eval_step_size, criterion, parameters
         data_loss_i = eval_data_w_sum*criterion(torch.IntTensor(eval_data_y).view(-1,1), eval_data_yhat, torch.FloatTensor(eval_data_w).view(-1,1)).item()
         if parameters[4] == 'cce':
             data_acc_i = eval_data_w_sum*np.average(eval_data_y == eval_data_yhat.max(1)[1].numpy(), weights=eval_data_w)
-        elif parameters[4] == 'bce':
+        elif parameters[4] == 'bce' or parameters[4] == 'asimov' or parameters[4] == 'ams':
             data_acc_i = eval_data_w_sum*np.average(eval_data_y == (eval_data_yhat[:, 0] > 0.5).numpy(), weights=eval_data_w)
         del eval_data_yhat
 
