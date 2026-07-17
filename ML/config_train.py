@@ -604,7 +604,7 @@ for i in range(n_outputs):
 
 
         #----------------------------------------------------------------------
-        # AMS
+        # Signal Efficiency-Purity Product (SEPP)
         #----------------------------------------------------------------------
         fig1 = plt.figure(figsize=(9,5))
         grid = [1, 1]
@@ -626,13 +626,13 @@ for i in range(n_outputs):
                 bkg_test_roc.append(ds_full_test[ds_full_test["class"] == ikey])
     
         ctr_train = tools.control( var, signal_train_roc, bkg_train_roc, weight="evtWeight", bins=np.linspace(0,1,1001) )
-        ctr_train.ams_plot(label='AMS (train)', color='blue', linestyle="--")
+        ctr_train.sepp_plot(label='SEPP (train)', color='blue', linestyle="--")
         ctr_test = tools.control( var, signal_test_roc, bkg_test_roc, weight="evtWeight", bins=np.linspace(0,1,1001) )
-        ctr_test.ams_plot(label='AMS (test)', color='blue', linestyle="-")
-        plt.text(0.05, 0.55, r'$\mathrm{AMS}_\mathrm{max}\ (\mathrm{test})$ = '+str(format(ctr_test.ams_max(), '.3f')))
+        ctr_test.sepp_plot(label='SEPP (test)', color='blue', linestyle="-")
+        plt.text(0.05, 0.55, r'$\mathrm{SEPP}_\mathrm{max}\ (\mathrm{test})$ = '+str(format(ctr_test.sepp_max(), '.3f')))
     
         ax1.set_xlabel(r"Background rejection $(1-\epsilon_b)$", size=14, horizontalalignment='right', x=1.0)
-        ax1.set_ylabel(r"AMS $(\epsilon_s/\sqrt{\epsilon_s+\epsilon_b})$", size=14, horizontalalignment='right', y=1.0)
+        ax1.set_ylabel(r"Signal Efficiency-Purity Product (SEPP)$", size=14, horizontalalignment='right', y=1.0)
         #plt.xscale('log')
         ax1.set_ylim([0.5,1])
         ax1.set_xlim([0,1])
@@ -651,8 +651,8 @@ for i in range(n_outputs):
         ax1.legend(numpoints=1, ncol=1, prop={'size': 10.5}, frameon=False, loc='lower center')
     
         plt.subplots_adjust(left=0.09, bottom=0.115, right=0.97, top=0.95, wspace=0.18, hspace=0.165)
-        plt.savefig(os.path.join(model_outpath, var + "_ams.png"), dpi=400)
-        plt.savefig(os.path.join(model_outpath, var + "_ams.pdf"))
+        plt.savefig(os.path.join(model_outpath, var + "_sepp.png"), dpi=400)
+        plt.savefig(os.path.join(model_outpath, var + "_sepp.pdf"))
 
 
 #--------------------------------------------------------------------------------------------------

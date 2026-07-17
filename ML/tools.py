@@ -899,16 +899,10 @@ class AMS_loss(nn.Module): # use with sigmoid
         s = torch.sum(torch.abs(weight) * y_true * y_pred)*0.001
         b = torch.sum(torch.abs(weight) * (1.0 - y_true) * y_pred)
 
-        
-        
         # AMS
         loss = -torch.log(s+epsilon) + 0.5*torch.log(s + b + epsilon)
 
-        total_bce_loss = torch.sum((-y_true * torch.log(y_pred) - (1 - y_true) * torch.log(1 - y_pred))*torch.abs(weight))
-        num_of_samples = torch.sum(torch.abs(weight))
-        mean_bce_loss = total_bce_loss / num_of_samples
-
-        return loss + mean_bce_loss
+        return loss
 
 
 class BCE_loss(nn.Module): # use with sigmoid

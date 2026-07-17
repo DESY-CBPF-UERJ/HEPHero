@@ -8,7 +8,7 @@ class control:
     """
     Produce control information to assist in the definition of cuts
     """
-    #==============================================================================================================
+    #================================================================================================
     def __init__(self, var, signal_list, others_list, weight=None, bins=np.linspace(0,100,5), above=True):
         self.bins = bins
         self.var = var
@@ -83,9 +83,14 @@ class control:
         self.eff_signal = self.hist_signal/self.full_signal
         self.eff_others = self.hist_others/self.full_others
         self.rej_others = 1 - self.eff_others
-        self.ams = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others + 1.E-7)
-    
-    #==============================================================================================================
+        self.ams = self.hist_signal/np.sqrt(self.hist_signal + self.hist_others)
+        self.ams_balanced = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others)
+        self.ams_ratio = (self.hist_signal/np.sqrt(self.hist_signal + self.hist_others))*(1/np.sqrt(self.full_signal))
+        self.sepp = self.eff_signal*self.purity
+        self.sepp_balanced = self.ams_balanced**2
+
+
+    #================================================================================================
     def purity_plot(self, label='Signal purity', color='blue', cuts=None):
         plt.plot(self.bins, self.purity, color=color, label=label)
         if cuts is None:
@@ -98,7 +103,7 @@ class control:
                 pur_values.append(pur)
             return pur_values
 
-    #==============================================================================================================
+    #================================================================================================
     def signal_eff_plot(self, label='Signal eff.', color='green', cuts=None):
         plt.plot(self.bins, self.eff_signal, color=color, label=label)
         if cuts is None:
@@ -111,7 +116,7 @@ class control:
                 eff_sig_values.append(eff_sig)
             return eff_sig_values
      
-    #============================================================================================================== 
+    #================================================================================================
     def bkg_eff_plot(self, label='Bkg. eff.', color='red', cuts=None):
         plt.plot(self.bins, self.eff_others, color=color, label=label)    
         if cuts is None:
@@ -124,7 +129,7 @@ class control:
                 eff_others_values.append(eff_others)
             return eff_others_values
         
-    #==============================================================================================================    
+    #================================================================================================
     def bin_purity_plot(self, label='Signal purity per bin', color='blue', bins=None):
         
         if bins is None:
@@ -164,14 +169,14 @@ class control:
         plt.step(bincentres, hist_signal_purity, where='mid', color=color, label=label)    
         
         
-    #==============================================================================================================
+    #================================================================================================
     def roc_plot(self, label='Signal-bkg ROC', color='blue', linestyle="-", version=1):
         if version == 1:
             plt.plot(self.rej_others, self.eff_signal, color=color, label=label, linestyle=linestyle)
         elif version == 2:
             plt.plot(self.eff_signal, self.eff_others, color=color, label=label, linestyle=linestyle)
     
-    #==============================================================================================================
+    #================================================================================================
     def auc(self, method="trapezoidal"):
         if method == "sklearn":
             area = metrics.auc(self.rej_others, self.eff_signal)
@@ -181,15 +186,39 @@ class control:
                 area += 0.5*(self.eff_signal[i+1] + self.eff_signal[i])*abs(self.rej_others[i+1] - self.rej_others[i])
         return area   
 
-    #==============================================================================================================
-    def ams_plot(self, label='Signal-bkg AMS', color='blue', linestyle="-"):
-        plt.plot(self.rej_others, self.ams, color=color, label=label, linestyle=linestyle)
+    #================================================================================================
+    def ams_plot(self, label='AMS', color='blue', linestyle="-", mode="normal"):
+        if mode == "normal":
+            plt.plot(self.rej_others, self.ams, color=color, label=label, linestyle=linestyle)
+        elif mode == "balanced":
+            plt.plot(self.rej_others, self.ams_balanced, color=color, label=label, linestyle=linestyle)
+        elif mode == "ratio":
+            plt.plot(self.rej_others, self.ams_ratio, color=color, label=label, linestyle=linestyle)
 
-    #==============================================================================================================
+    #================================================================================================
     def ams_max(self):
-        return np.max(self.ams)
+        if mode == "normal":
+            return np.max(self.ams)
+        elif mode == "balanced":
+            return np.max(self.ams_balanced)
+        elif mode == "ratio":
+            return np.max(self.ams_ratio)
 
-    #==============================================================================================================
+    #================================================================================================
+    def sepp_plot(self, label='SEPP', color='blue', linestyle="-", mode="normal"):
+        if mode == "normal":
+            plt.plot(self.rej_others, self.sepp, color=color, label=label, linestyle=linestyle)
+        elif mode == "balanced":
+            plt.plot(self.rej_others, self.sepp_balanced, color=color, label=label, linestyle=linestyle)
+
+    #================================================================================================
+    def sepp_max(self):
+        if mode == "normal":
+            return np.max(self.sepp)
+        elif mode == "balanced":
+            return np.max(self.sepp_balanced)
+
+    #================================================================================================
     def bkg_eff(self, cut, apx=False):
         eff_bkg = -999
         if apx is True:
@@ -205,7 +234,7 @@ class control:
                 print("Enter a value that exists in bins")
         return eff_bkg
     
-    #==============================================================================================================
+    #================================================================================================
     def effpur_plot(self, label='Eff*Pur', color='orchid', cuts=None, normalize=True):
         effpur_vec = self.eff_signal*self.purity
         if normalize:
@@ -225,7 +254,7 @@ class control:
                 effpur_values.append(effpur)
             return effpur_values
     
-    #==============================================================================================================
+    #================================================================================================
     def prc_plot(self, label='Signal-bkg PRC', color='blue', linestyle="-", normalize=True, cut_eff_signal=None):
         effpur_vec = self.eff_signal*self.purity
 
@@ -243,7 +272,7 @@ class control:
         if cut_eff_signal:
             plt.axvline(x=cut_eff_signal, color='grey', linestyle='--')
         
-    #==============================================================================================================
+    #================================================================================================
     def best_cut(self, cut_eff_signal=None):
         effpur_vec = self.eff_signal*self.purity
 
