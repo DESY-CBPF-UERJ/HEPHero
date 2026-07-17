@@ -628,7 +628,7 @@ class control:
         plt.plot(self.rej_others, self.sepp, color=color, label=label, linestyle=linestyle)
 
     #--------------------------------------------------------------------------------------
-    def ams_sepp(self):
+    def sepp_max(self):
         return np.max(self.sepp)
 
 
