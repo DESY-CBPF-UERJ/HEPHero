@@ -82,12 +82,11 @@ else
     cd ML
 
     Proxy_filename=x509up_u$(id -u)
-    sed -i "s/.*Universe.*/Universe              = grid/" train.sub
+    sed -i "s/.*Universe.*/Universe              = vanilla/" train.sub
     sed -i "s~.*x509userproxy = /tmp.*~x509userproxy = /tmp/${Proxy_filename}~" train.sub
     sed -i "s/.*use_x509userproxy.*/use_x509userproxy = true/" train.sub
     sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" train.sub
     sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" train.sub
-    sed -i "s/.*grid_resource.*/grid_resource         = condor condor-manager2.hepgrid.uerj.br condor-manager2.hepgrid.uerj.br/" train.sub
     sed -i "s/.*queue.*/queue ${N_models}/" train.sub
     sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${machines} ${storage_redirector} ${storage_user} ${trainer}~" train.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour = ${flavor}/" train.sub

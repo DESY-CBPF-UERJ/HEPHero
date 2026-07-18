@@ -629,10 +629,10 @@ for i in range(n_outputs):
         ctr_train.sepp_plot(label='SEPP (train)', color='blue', linestyle="--")
         ctr_test = tools.control( var, signal_test_roc, bkg_test_roc, weight="evtWeight", bins=np.linspace(0,1,1001) )
         ctr_test.sepp_plot(label='SEPP (test)', color='blue', linestyle="-")
-        plt.text(0.05, 0.55, r'$\mathrm{SEPP}_\mathrm{max}\ (\mathrm{test})$ = '+str(format(ctr_test.sepp_max(), '.3f')))
+        plt.text(0.05, 0.93, r'$\mathrm{SEPP}_\mathrm{max}\ (\mathrm{test})$ = '+str(format(ctr_test.sepp_max(), '.3f')))
     
         ax1.set_xlabel(r"Background rejection $(1-\epsilon_b)$", size=14, horizontalalignment='right', x=1.0)
-        ax1.set_ylabel(r"Signal Efficiency-Purity Product (SEPP)$", size=14, horizontalalignment='right', y=1.0)
+        ax1.set_ylabel(r"Signal Efficiency-Purity Product (SEPP)", size=14, horizontalalignment='right', y=1.0)
         #plt.xscale('log')
         ax1.set_ylim([0.5,1])
         ax1.set_xlim([0,1])

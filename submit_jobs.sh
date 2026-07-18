@@ -136,7 +136,6 @@ else
         sed -i "s~.*request_cpus.*~#request_cpus           =~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/#accounting_group_user =/" HTCondor/condor.sub
         sed -i "s/.*accounting_group      =.*/#accounting_group      =/" HTCondor/condor.sub
-        sed -i "s/.*grid_resource.*/#grid_resource         =/" HTCondor/condor.sub
     elif [ "${machines}" == "CMSC" ]; then
         Proxy_filename=x509up_u$(id -u)
         sed -i "s/.*Universe.*/Universe              = vanilla/" HTCondor/condor.sub
@@ -146,17 +145,15 @@ else
         sed -i "s~.*request_cpus.*~request_cpus           = 2~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/#accounting_group_user =/" HTCondor/condor.sub
         sed -i "s/.*accounting_group      =.*/#accounting_group      =/" HTCondor/condor.sub
-        sed -i "s/.*grid_resource.*/#grid_resource         =/" HTCondor/condor.sub
     elif [ "${machines}" == "UERJ" ]; then
         Proxy_filename=x509up_u$(id -u)
-        sed -i "s/.*Universe.*/Universe              = grid/" HTCondor/condor.sub
+        sed -i "s/.*Universe.*/Universe              = vanilla/" HTCondor/condor.sub
         sed -i "s~.*x509userproxy = /tmp.*~x509userproxy = /tmp/${Proxy_filename}~" HTCondor/condor.sub
         sed -i "s/.*use_x509userproxy.*/use_x509userproxy = true/" HTCondor/condor.sub
         sed -i "s~.*+REQUIRED_OS.*~#+REQUIRED_OS           =~" HTCondor/condor.sub
         sed -i "s~.*request_cpus.*~#request_cpus           =~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" HTCondor/condor.sub
         sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" HTCondor/condor.sub
-        sed -i "s/.*grid_resource.*/grid_resource         = condor condor-manager2.hepgrid.uerj.br condor-manager2.hepgrid.uerj.br/" HTCondor/condor.sub
     fi
 
     sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/HEPHero.tgz,${tgzdir}/AP.tgz~" HTCondor/condor.sub
