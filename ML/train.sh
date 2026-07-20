@@ -37,8 +37,8 @@ mkdir output
 export HEP_OUTPATH=$(pwd)/output
 fi
 
-export X509_USER_PROXY=/cms/store/user/${USER}/$6
-cp /cms/store/user/${USER}/$6 .
+export X509_USER_PROXY=/cms/store/user/${STORAGE_USER}/$6
+cp /cms/store/user/${STORAGE_USER}/$6 .
 voms-proxy-info -all -file ${X509_USER_PROXY}
 
 tar -zxf ML.tgz
