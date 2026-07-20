@@ -59,6 +59,8 @@ echo "ls"
 ls
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 elif [ "$6" == "UERJ" ]; then
+export X509_USER_PROXY=/cms/store/user/${USER}/$2
+cp /cms/store/user/${USER}/$2 .
 #export MY_TORCH_PATH=/cms/store/user/${USER}/libtorch
 export MY_ONNX_PATH=/cms/store/user/${USER}/onnxruntime-linux-x64-1.20.1
 echo "ls"

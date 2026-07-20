@@ -10,6 +10,8 @@ echo "STORAGE_USER"
 echo $4
 echo "TRAINER"
 echo $5
+echo "Proxy_filename"
+echo $6
 
 export MACHINES=$2
 export STORAGE_REDIRECTOR=$3
@@ -35,6 +37,8 @@ mkdir output
 export HEP_OUTPATH=$(pwd)/output
 fi
 
+export X509_USER_PROXY=/cms/store/user/${USER}/$6
+cp /cms/store/user/${USER}/$6 .
 voms-proxy-info -all -file ${X509_USER_PROXY}
 
 tar -zxf ML.tgz

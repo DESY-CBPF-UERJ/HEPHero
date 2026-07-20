@@ -130,8 +130,6 @@ else
         Proxy_filename=x509up
         cp /tmp/x509up_u$(id -u) /afs/cern.ch/user/${USER:0:1}/${USER}/private/x509up
         sed -i "s/.*Universe.*/#Universe              =/" HTCondor/condor.sub
-        sed -i "s~.*x509userproxy = /tmp.*~#x509userproxy = /tmp/${Proxy_filename}~" HTCondor/condor.sub
-        sed -i "s/.*use_x509userproxy.*/#use_x509userproxy = true/" HTCondor/condor.sub
         sed -i "s~.*+REQUIRED_OS.*~#+REQUIRED_OS           =~" HTCondor/condor.sub
         sed -i "s~.*request_cpus.*~#request_cpus           =~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/#accounting_group_user =/" HTCondor/condor.sub
@@ -139,17 +137,14 @@ else
     elif [ "${machines}" == "CMSC" ]; then
         Proxy_filename=x509up_u$(id -u)
         sed -i "s/.*Universe.*/Universe              = vanilla/" HTCondor/condor.sub
-        sed -i "s~.*x509userproxy = /tmp.*~#x509userproxy = /tmp/${Proxy_filename}~" HTCondor/condor.sub
-        sed -i "s/.*use_x509userproxy.*/#use_x509userproxy = true/" HTCondor/condor.sub
         sed -i "s~.*+REQUIRED_OS.*~+REQUIRED_OS           = \"rhel9\"~" HTCondor/condor.sub
         sed -i "s~.*request_cpus.*~request_cpus           = 2~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/#accounting_group_user =/" HTCondor/condor.sub
         sed -i "s/.*accounting_group      =.*/#accounting_group      =/" HTCondor/condor.sub
     elif [ "${machines}" == "UERJ" ]; then
         Proxy_filename=x509up_u$(id -u)
+        xrdcp -rf /tmp/x509up_u$(id -u) root://${storage_redirector}//${storage_dir}
         sed -i "s/.*Universe.*/Universe              = vanilla/" HTCondor/condor.sub
-        sed -i "s~.*x509userproxy = /tmp.*~x509userproxy = /tmp/${Proxy_filename}~" HTCondor/condor.sub
-        sed -i "s/.*use_x509userproxy.*/use_x509userproxy = true/" HTCondor/condor.sub
         sed -i "s~.*+REQUIRED_OS.*~#+REQUIRED_OS           =~" HTCondor/condor.sub
         sed -i "s~.*request_cpus.*~#request_cpus           =~" HTCondor/condor.sub
         sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" HTCondor/condor.sub

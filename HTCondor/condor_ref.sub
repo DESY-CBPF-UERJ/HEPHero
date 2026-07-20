@@ -2,8 +2,6 @@ executable            = condor.sh
 #Universe              = vanilla
 #accounting_group_user = gcorea
 #accounting_group      = group_uerj
-#x509userproxy = /tmp
-#use_x509userproxy     = true
 #Requirements          = (HAS_SINGULARITY == True)
 #+SingularityImage     = "/cvmfs/singularity.opensciencegrid.org/opensciencegrid/osgvo-el8:latest"
 #transfer_input_files  = HEPHero.tgz
