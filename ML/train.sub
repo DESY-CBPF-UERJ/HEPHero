@@ -2,14 +2,14 @@ executable            = train.sh
 Universe              = vanilla
 accounting_group_user = gcorreia
 accounting_group      = group_uerj
-arguments             = $(ProcId) UERJ xrootd2.hepgrid.uerj.br:1094 gcorreia train_NN_Test.py
-transfer_input_files  = /home/gcorreia/work/HEPHero/ML.tgz
+arguments             = $(ProcId) UERJ xrootd2.hepgrid.uerj.br:1094 gcorreia train_NN_Significance.py x509up_u1038
+transfer_input_files  = /home/gcorreia/work/ML.tgz
 should_transfer_files = YES
 output                = condor/train_$(ClusterId)_$(ProcId).out
 error                 = condor/train_$(ClusterId)_$(ProcId).err
 log                   = condor/train_$(ClusterId).log
 +JobFlavour = 
-queue 4
+queue 1
 
 
 

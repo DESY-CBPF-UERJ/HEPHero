@@ -42,9 +42,10 @@ cp /cms/store/user/${STORAGE_USER}/$6 .
 voms-proxy-info -all -file ${X509_USER_PROXY}
 
 tar -zxf ML.tgz
-cd ML 
+ls
+cd HEPHero/ML 
 python $5 -j $1 --condor
-cd ..
+cd ../..
 
 if [ "$STORAGE_REDIRECTOR" != "None" ]; then
 echo root://$STORAGE_REDIRECTOR//${STORAGE_DIR}

@@ -49,7 +49,7 @@ voms-proxy-init --voms cms
 
 # Check if MACHINES variable exists then read
 if [[ -z "${MACHINES}" ]]; then
-  echo "MACHINES environment varibale is undefined. Aborting script execution..."
+  echo "MACHINES environment variable is undefined. Aborting script execution..."
   exit 1
 else
   machines=${MACHINES}
@@ -77,10 +77,11 @@ if [ $local ] && [ "$local" == "yes" ]; then
     done
 else
     cp ${trainer} ../../ML
-    cd ../..
+    cd ../../..
     tgzdir=$(pwd)
-    tar --exclude='ML/condor' --exclude='ML/examples' -zcf ML.tgz ML
-    cd ML
+    rm ML.tgz
+    tar --exclude='HEPHero/ML/condor' --exclude='HEPHero/ML/examples' -zcf ML.tgz HEPHero/ML
+    cd HEPHero/ML
 
     Proxy_filename=x509up_u$(id -u)
     xrdcp -rf /tmp/x509up_u$(id -u) root://${storage_redirector}//${storage_dir}
@@ -99,6 +100,5 @@ else
 
     rm ${trainer}
     cd ..
-    rm ML.tgz
 fi
 

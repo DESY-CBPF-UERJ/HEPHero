@@ -15,6 +15,8 @@ CMakeDoxyfile.tpl.bak
 HTCondor/gcorreia.cc
 HTCondor/x509up
 HTCondor/condor.sub
+HTCondor/x509up_u*
+ML/x509up_u*
 include/HighFive/CMakeFiles/CMakeDirectoryInformation.cmake
 include/HighFive/CMakeFiles/Export/3b04e8d7dfee8082e1db69ea70817037/HighFiveTargets.cmake
 include/HighFive/HighFiveConfigVersion.cmake
