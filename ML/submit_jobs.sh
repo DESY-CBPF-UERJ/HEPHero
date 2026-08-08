@@ -90,7 +90,7 @@ else
     sed -i "s/.*accounting_group_user.*/accounting_group_user = ${USER}/" train.sub
     sed -i "s/.*accounting_group      =.*/accounting_group      = group_uerj/" train.sub
     sed -i "s/.*queue.*/queue ${N_models}/" train.sub
-    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${machines} ${storage_redirector} ${storage_user} ${trainer} ${Proxy_filename}~" train.sub
+    sed -i "s~.*arguments.*~arguments             = \$(ProcId) ${machines} ${storage_redirector} ${storage_user} ${trainer} ${Proxy_filename} ${USER}~" train.sub
     sed -i "s/.*+JobFlavour.*/+JobFlavour = ${flavor}/" train.sub
     sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/ML.tgz~" train.sub
     sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" train.sub

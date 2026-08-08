@@ -12,10 +12,13 @@ echo "TRAINER"
 echo $5
 echo "Proxy_filename"
 echo $6
+echo "USER"
+echo $7
 
 export MACHINES=$2
 export STORAGE_REDIRECTOR=$3
 export STORAGE_USER=$4
+export USER=$7
 ls
 
 source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el8-gcc11-opt/setup.sh
@@ -37,12 +40,11 @@ mkdir output
 export HEP_OUTPATH=$(pwd)/output
 fi
 
-export X509_USER_PROXY=/cms/store/user/${STORAGE_USER}/$6
-cp /cms/store/user/${STORAGE_USER}/$6 .
+export X509_USER_PROXY=/cms/store/user/${USER}/$6
+cp /cms/store/user/${USER}/$6 .
 voms-proxy-info -all -file ${X509_USER_PROXY}
 
 tar -zxf ML.tgz
-ls
 cd HEPHero/ML 
 python $5 -j $1 --condor
 cd ../..
