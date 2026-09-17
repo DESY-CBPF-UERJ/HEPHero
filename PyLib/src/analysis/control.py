@@ -79,16 +79,16 @@ class control:
             full_others = full_others + others_sum_list[i+1]
         self.full_others = full_others
         
-        self.purity = self.hist_signal/(self.hist_signal + self.hist_others)
-        self.eff_signal = self.hist_signal/self.full_signal
-        self.eff_others = self.hist_others/self.full_others
+        self.purity = self.hist_signal/(self.hist_signal + self.hist_others + 1.E-7)
+        self.eff_signal = self.hist_signal/self.full_signal  
+        self.eff_others = self.hist_others/self.full_others   
         self.rej_others = 1 - self.eff_others
-        self.ams = self.hist_signal/np.sqrt(self.hist_signal + self.hist_others)
-        self.ams_balanced = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others)
-        self.ams_ratio = (self.hist_signal/np.sqrt(self.hist_signal + self.hist_others))*(1/np.sqrt(self.full_signal))
+        
+        self.ams = self.hist_signal/np.sqrt(self.hist_signal + self.hist_others + 1.E-7)
+        self.ams_balanced = self.eff_signal/np.sqrt(self.eff_signal + self.eff_others + 1.E-7)
+        self.ams_ratio = (self.hist_signal/np.sqrt(self.hist_signal + self.hist_others + 1.E-7))*(1/np.sqrt(self.full_signal))
         self.sepp = self.eff_signal*self.purity
         self.sepp_balanced = self.ams_balanced**2
-
 
     #================================================================================================
     def purity_plot(self, label='Signal purity', color='blue', cuts=None):
@@ -196,7 +196,7 @@ class control:
             plt.plot(self.rej_others, self.ams_ratio, color=color, label=label, linestyle=linestyle)
 
     #================================================================================================
-    def ams_max(self):
+    def ams_max(self, mode="normal"):
         if mode == "normal":
             return np.max(self.ams)
         elif mode == "balanced":
@@ -212,7 +212,7 @@ class control:
             plt.plot(self.rej_others, self.sepp_balanced, color=color, label=label, linestyle=linestyle)
 
     #================================================================================================
-    def sepp_max(self):
+    def sepp_max(self, mode="normal"):
         if mode == "normal":
             return np.max(self.sepp)
         elif mode == "balanced":
