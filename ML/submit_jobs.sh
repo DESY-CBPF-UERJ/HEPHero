@@ -95,7 +95,9 @@ else
     sed -i "s~.*transfer_input_files.*~transfer_input_files  = ${tgzdir}/ML.tgz~" train.sub
     sed -i "s/.*should_transfer_files.*/should_transfer_files = YES/" train.sub
 
-    python $trainer --clean
+    xrdfs root://${storage_redirector}/ mkdir /${storage_dir}/output
+
+    python $trainer --clean_storage
     condor_submit train.sub
 
     rm ${trainer}

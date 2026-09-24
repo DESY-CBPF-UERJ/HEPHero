@@ -950,6 +950,79 @@ class CCE_loss(nn.Module): # use with softmax
         return mean_ce_loss
 
 
+class L1_regularization(nn.Module):
+    def __init__(self):
+        super(L1_regularization, self).__init__()
+
+    def forward(self, model, device="cpu"):
+
+        l1_lambda = 1e-5
+        l1_penalty = sum(
+            torch.sum(torch.abs(param))
+            for name, param in model.named_parameters()
+            if "weight" in name
+        )
+
+        n_params = sum(
+            param.numel()
+            for name, param in model.named_parameters()
+            if "weight" in name
+        )
+
+        return l1_lambda*(l1_penalty/n_params)
+
+
+class L2_regularization(nn.Module):
+    def __init__(self):
+        super(L2_regularization, self).__init__()
+
+    def forward(self, model, device="cpu"):
+
+        l2_lambda = 1e-4
+        l2_penalty = sum(
+            torch.sum(param ** 2)
+            for name, param in model.named_parameters()
+            if "weight" in name
+        )
+
+        n_params = sum(
+            param.numel()
+            for name, param in model.named_parameters()
+            if "weight" in name
+        )
+
+        return l2_lambda*(l2_penalty/n_params)
+
+
+class BCE_L1_loss(nn.Module):
+    def __init__(self):
+        super(BCE_L1_loss, self).__init__()
+
+        self.bce = BCE_loss()
+        self.l1 = L1_regularization()
+
+    def forward(self, y_true, y_pred, weight, model, device="cpu"):
+
+        bce = self.bce(y_true, y_pred, weight, device)
+        l1 = self.l1(model, device)
+
+        return bce + l1
+
+
+class BCE_L2_loss(nn.Module):
+    def __init__(self):
+        super(BCE_L2_loss, self).__init__()
+
+        self.bce = BCE_loss()
+        self.l2 = L2_regularization()
+
+    def forward(self, y_true, y_pred, weight, model, device="cpu"):
+
+        bce = self.bce(y_true, y_pred, weight, device)
+        l2 = self.l2(model, device)
+
+        return bce + l2
+
 
 #==================================================================================================
 def batch_generator(data, batch_size):
@@ -991,18 +1064,6 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
         
         torch.set_num_threads(6)
 
-        # Criterion
-        if parameters[4] == 'cce':
-            criterion = CCE_loss(num_classes=n_classes)
-        elif parameters[4] == 'bce':
-            criterion = BCE_loss()
-        elif parameters[4] == 'asimov':
-            criterion = ASIMOV_loss()
-        elif parameters[4] == 'ams':
-            criterion = AMS_loss()
-        elif parameters[4] == 'mse':
-            criterion = MSE_loss()
-
         # Model
         full_model = build_model(model_type, parameters, n_classes, stat_values, variables, var_use, vec_variables, vec_var_use, device)
         if device == "cuda":
@@ -1015,6 +1076,18 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
 
         #checkpoint_path='checkpoint_model.pt'
         checkpoint={'iteration':None, 'model_state_dict':None, 'optimizer_state_dict':None, 'loss': None}
+
+        # Criterion
+        if parameters[4] == 'cce':
+            criterion = CCE_loss(num_classes=n_classes)
+        elif parameters[4] == 'bce':
+            criterion = BCE_loss()
+        elif parameters[4] == 'asimov':
+            criterion = ASIMOV_loss()
+        elif parameters[4] == 'ams':
+            criterion = AMS_loss()
+        elif parameters[4] == 'mse':
+            criterion = MSE_loss()
 
         if "DANN" in model_type:
             encoder = build_encoder(parameters, variables, stat_values, device)

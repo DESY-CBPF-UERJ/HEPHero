@@ -7,6 +7,8 @@ parser.add_argument("--check", dest='check_flag', action='store_true')
 parser.set_defaults(check_flag=False)
 parser.add_argument("--clean", dest='clean_flag', action='store_true')
 parser.set_defaults(clean_flag=False)
+parser.add_argument("--clean_storage", dest='clean_storage_flag', action='store_true')
+parser.set_defaults(clean_storage_flag=False)
 parser.add_argument("--evaluate", dest='evaluate_flag', action='store_true')
 parser.set_defaults(evaluate_flag=False)
 parser.add_argument("--condor", dest='condor_flag', action='store_true')
@@ -111,6 +113,14 @@ if not os.path.exists(output_path):
 
 if args.clean_flag:
     os.system("rm -rf " + os.path.join(output_path, model[N][1], library, tag, signal_tag))
+    sys.exit()
+
+if args.clean_storage_flag:
+    if storage_redirector == "eosuser.cern.ch":
+        storage_dir = "eos/user/" + storage_user[0] + "/" + storage_user + "/output"
+    elif storage_redirector == "xrootd2.hepgrid.uerj.br:1094":
+        storage_dir = "store/user/" + storage_user + "/output"
+    os.system("env -i gfal-rm -r davs://"+storage_redirector+"/"+storage_dir+"/"+analysis+"/"+selection+"/ML_output/"+model[N][1]+"/"+library+"/"+tag+"/"+signal_tag)
     sys.exit()
 
 ml_outpath = os.path.join(output_path, model[N][1])
