@@ -4,8 +4,7 @@ import os
 import concurrent.futures as cf
 from operator import itemgetter
 import time
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
+from sklearn import metrics
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
 import matplotlib.patches as pat
@@ -33,8 +32,8 @@ from models.PNN.model import *
 from models.APNN.model import *
 from models.EFTNN.model import *
 from models.ResNet.model import *
+from models.PartNet import *
 #from models.APSNN import *
-#from models.PNET import *
 #from models.DANN import *
 
 """
@@ -600,10 +599,15 @@ class control:
             full_others = full_others + others_sum_list[i+1]
         self.full_others = full_others
 
-        self.purity = self.hist_signal/(self.hist_signal + self.hist_others)
-        self.eff_signal = self.hist_signal/self.full_signal
-        self.eff_others = self.hist_others/self.full_others
+        self.purity = self.hist_signal/(self.hist_signal + self.hist_others + 1.E-7)
+        if above:
+            self.eff_signal = np.minimum.accumulate(self.hist_signal/self.full_signal)
+            self.eff_others = np.minimum.accumulate(self.hist_others/self.full_others)
+        else:
+            self.eff_signal = np.maximum.accumulate(self.hist_signal/self.full_signal)
+            self.eff_others = np.maximum.accumulate(self.hist_others/self.full_others)
         self.rej_others = 1 - self.eff_others
+        
         self.sepp = (self.eff_signal**2)/(self.eff_signal + self.eff_others + 1.E-7)
 
     #--------------------------------------------------------------------------------------
@@ -799,7 +803,7 @@ def confusion_matrix_plot(ax, y_true, y_pred, weights, classes, normalize='row',
         title = 'Confusion matrix - column normalized'
 
     # Compute confusion matrix
-    cm = confusion_matrix(y_true, y_pred, sample_weight=weights)
+    cm = metrics.confusion_matrix(y_true, y_pred, sample_weight=weights)
     # Only use the labels that appear in the data
     #classes = classes[unique_labels(y_true, y_pred)]
     
@@ -1350,8 +1354,8 @@ def build_model(model_type, parameters, n_classes, stat_values, variables, var_u
         model = build_EFTNN(parameters, variables, n_classes, stat_values, device)
     elif model_type == "APSNN":
         model = build_APSNN(parameters, variables, n_classes, stat_values, device)
-    elif model_type == "PNET":
-        model = build_PNET(vec_variables, vec_var_use, n_classes, parameters, stat_values, device)
+    elif model_type == "PartNet":
+        model = build_PartNet(vec_variables, vec_var_use, n_classes, parameters, stat_values, device)
     elif model_type == "ResNet":
         model = build_ResNet(vec_variables, n_classes, parameters, stat_values, device)
     elif model_type == "DANN":
@@ -1373,8 +1377,8 @@ def model_parameters(model_type, param_dict):
         model_parameters = model_parameters_EFTNN(param_dict)
     elif model_type == "APSNN":
         model_parameters = model_parameters_APSNN(param_dict)
-    elif model_type == "PNET":
-        model_parameters = model_parameters_PNET(param_dict)
+    elif model_type == "PartNet":
+        model_parameters = model_parameters_PartNet(param_dict)
     elif model_type == "ResNet":
         model_parameters = model_parameters_ResNet(param_dict)
     elif model_type == "DANN":
@@ -1396,8 +1400,8 @@ def features_stat(model_type, train_data, test_data, vec_train_data, vec_test_da
         stat_values = features_stat_EFTNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
     elif model_type == "APSNN":
         stat_values = features_stat_APSNN(train_data, test_data, variables, var_names, var_use, class_names, class_labels, class_colors, plots_outpath, parameters, load_it=load_it)
-    elif model_type == "PNET":
-        stat_values = features_stat_PNET(train_data, test_data, vec_train_data, vec_test_data, vec_variables, vec_var_names, vec_var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
+    elif model_type == "PartNet":
+        stat_values = features_stat_PartNet(train_data, test_data, vec_train_data, vec_test_data, vec_variables, vec_var_names, vec_var_use, class_names, class_labels, class_colors, plots_outpath, load_it=load_it)
     elif model_type == "ResNet":
         stat_values = features_stat_ResNet(train_data, test_data, vec_train_data, vec_test_data, vec_variables, vec_var_names, class_names, class_labels, class_colors, plots_outpath, parameters, load_it=load_it)
     elif model_type == "DANN":
@@ -1419,8 +1423,8 @@ def update_model(model_type, model, criterion, parameters, batch_data, domain_ba
         model = update_EFTNN(model, criterion, parameters, batch_data, stat_values, device)
     elif model_type == "APSNN":
         model = update_APSNN(model, criterion, parameters, batch_data, var_use, device)
-    elif model_type == "PNET":
-        model = update_PNET(model, criterion, parameters, batch_data, device)
+    elif model_type == "PartNet":
+        model = update_PartNet(model, criterion, parameters, batch_data, device)
     elif model_type == "ResNet":
         model = update_ResNet(model, criterion, parameters, batch_data, device)
     elif model_type == "DANN":
@@ -1442,8 +1446,8 @@ def process_data(model_type, scalar_var, vector_var, variables, vec_variables, v
         input_data = process_data_EFTNN(scalar_var, variables)
     elif model_type == "APSNN":
         input_data = process_data_APSNN(scalar_var, variables, var_use, vector_var, stat_values, device)
-    elif model_type == "PNET":
-        input_data = process_data_PNET(scalar_var, vector_var, vec_variables, vec_var_use)
+    elif model_type == "PartNet":
+        input_data = process_data_PartNet(scalar_var, vector_var, vec_variables, vec_var_use)
     elif model_type == "ResNet":
         input_data = process_data_ResNet(scalar_var, vector_var, vec_variables, parameters)
     elif model_type == "DANN":
@@ -1465,8 +1469,8 @@ def evaluate_model(model_type, input_data, model, i_eval, eval_step_size, criter
         i_eval_output = evaluate_EFTNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, device, mode)
     elif model_type == "APSNN":
         i_eval_output = evaluate_APSNN(input_data, model, i_eval, eval_step_size, criterion, parameters, stat_values, var_use, device, mode)
-    elif model_type == "PNET":
-        i_eval_output = evaluate_PNET(input_data, model, i_eval, eval_step_size, criterion, parameters, device, mode)
+    elif model_type == "PartNet":
+        i_eval_output = evaluate_PartNet(input_data, model, i_eval, eval_step_size, criterion, parameters, device, mode)
     elif model_type == "ResNet":
         i_eval_output = evaluate_ResNet(input_data, model, i_eval, eval_step_size, criterion, parameters, device, mode)
     elif model_type == "DANN":
@@ -1488,8 +1492,8 @@ def feature_score(model_type, input_data, model, min_loss, eval_step_size, crite
         feature_score_info = feature_score_EFTNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, stat_values, device)
     elif model_type == "APSNN":
         feature_score_info = feature_score_APSNN(input_data, model, min_loss, eval_step_size, criterion, parameters, variables, var_names, var_use, stat_values, device)
-    elif model_type == "PNET":
-        feature_score_info = feature_score_PNET(input_data, model, min_loss, eval_step_size, criterion, parameters, vec_variables, vec_var_use, vec_var_names, device)
+    elif model_type == "PartNet":
+        feature_score_info = feature_score_PartNet(input_data, model, min_loss, eval_step_size, criterion, parameters, vec_variables, vec_var_use, vec_var_names, device)
     elif model_type == "ResNet":
         feature_score_info = feature_score_ResNet(input_data, model, min_loss, eval_step_size, criterion, parameters, vec_variables, vec_var_names, device)
     elif model_type == "DANN":
@@ -1511,8 +1515,8 @@ def save_model(model_type, model, model_outpath, dim, device):
         save_EFTNN(model, model_outpath, dim, device)
     elif model_type == "APSNN":
         save_APSNN(model, model_outpath, dim, device)
-    elif model_type == "PNET":
-        save_PNET(model, model_outpath, dim, device)
+    elif model_type == "PartNet":
+        save_PartNet(model, model_outpath, dim, device)
     elif model_type == "ResNet":
         save_ResNet(model, model_outpath, dim, device)
     elif model_type == "DANN":

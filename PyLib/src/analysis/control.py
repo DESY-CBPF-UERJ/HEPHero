@@ -80,8 +80,12 @@ class control:
         self.full_others = full_others
         
         self.purity = self.hist_signal/(self.hist_signal + self.hist_others + 1.E-7)
-        self.eff_signal = self.hist_signal/self.full_signal  
-        self.eff_others = self.hist_others/self.full_others   
+        if above:
+            self.eff_signal = np.minimum.accumulate(self.hist_signal/self.full_signal)
+            self.eff_others = np.minimum.accumulate(self.hist_others/self.full_others)
+        else:
+            self.eff_signal = np.maximum.accumulate(self.hist_signal/self.full_signal)
+            self.eff_others = np.maximum.accumulate(self.hist_others/self.full_others)   
         self.rej_others = 1 - self.eff_others
         
         self.ams = self.hist_signal/np.sqrt(self.hist_signal + self.hist_others + 1.E-7)
