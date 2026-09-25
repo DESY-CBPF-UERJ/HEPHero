@@ -1363,7 +1363,7 @@ def evaluate_models(period, library, tag, outpath_base, modelNames_submitted, mo
                         models_name.append(model)
                         models_hyperparameters.append(models_dict[model])
         df_training = pd.DataFrame({"Model": models_name, "Loss": models_loss, "Accuracy": models_accuracy, "Iterations": models_iterations, "Hyperparameters": models_hyperparameters})
-        df_training = df_training.sort_values("Loss")
+        df_training = df_training.sort_values(by="Loss", key=lambda x: x.where(x >= 0, float("inf")))
         df_training = df_training.reset_index(drop=True)
 
         #best_model_dir = os.path.join(ml_outpath, signal, "models", df_training.loc[0]["Model"])

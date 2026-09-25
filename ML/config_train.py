@@ -447,73 +447,65 @@ print("")
 print("------------------------------------------------------------------------")
 print("Preparing overtraining plots")
 print("------------------------------------------------------------------------")
-for i_load in tqdm(range(num_load_for_check)):
+i_load = 0
+ds_full_train, ds_full_test, vec_full_train, vec_full_test, class_names, class_labels, class_colors, reweight_info = tools.get_sample(input_path, model[N][1], classes, N_signal, train_frac, load_size_check, i_load, reweight_info, features=variables+["evtWeight"], vec_features=vec_variables)
 
-    ds_full_train, ds_full_test, vec_full_train, vec_full_test, class_names, class_labels, class_colors, reweight_info = tools.get_sample(input_path, model[N][1], classes, N_signal, train_frac, load_size_training, i_load, reweight_info, features=variables+["evtWeight"], vec_features=vec_variables)
+train_data = tools.process_data(model_type, ds_full_train, vec_full_train, variables, vec_variables, var_use, vec_var_use, stat_values, device, model[N])
+test_data = tools.process_data(model_type, ds_full_test, vec_full_test, variables, vec_variables, var_use, vec_var_use, stat_values, device, model[N])
 
-    train_data = tools.process_data(model_type, ds_full_train, vec_full_train, variables, vec_variables, var_use, vec_var_use, stat_values, device, model[N])
-    test_data = tools.process_data(model_type, ds_full_test, vec_full_test, variables, vec_variables, var_use, vec_var_use, stat_values, device, model[N])
+ds_full_train = pd.DataFrame.from_dict(ds_full_train)
+ds_full_test = pd.DataFrame.from_dict(ds_full_test)
 
-    ds_full_train = pd.DataFrame.from_dict(ds_full_train)
-    ds_full_test = pd.DataFrame.from_dict(ds_full_test)
+n_eval_train_steps = int(len(train_data[-1])/eval_step_size) + 1
+n_eval_test_steps = int(len(test_data[-1])/eval_step_size) + 1
 
-    n_eval_train_steps = int(len(train_data[-1])/eval_step_size) + 1
-    n_eval_test_steps = int(len(test_data[-1])/eval_step_size) + 1
+domain_batch_data_empty = []
 
-    domain_batch_data_empty = []
+class_model.eval()
 
-    class_model.eval()
-
-    train_class_pred = []
-    alpha = None
-    for i_eval in range(n_eval_train_steps):
-        i_eval_output = tools.evaluate_model(model_type, train_data, class_model, i_eval, eval_step_size, None, None, stat_values, var_use, domain_batch_data_empty, alpha, device, mode="predict")
-        if i_eval_output is None:
-            continue
-        else:
-            i_train_class_pred = i_eval_output
-        train_class_pred = train_class_pred + i_train_class_pred.tolist()
-    train_class_pred = np.array(train_class_pred)
-
-
-    test_class_pred = []
-    for i_eval in range(n_eval_test_steps):
-        i_eval_output = tools.evaluate_model(model_type, test_data, class_model, i_eval, eval_step_size, None, None, stat_values, var_use, domain_batch_data_empty, alpha, device, mode="predict")
-        if i_eval_output is None:
-            continue
-        else:
-            i_test_class_pred = i_eval_output
-        test_class_pred = test_class_pred + i_test_class_pred.tolist()
-    test_class_pred = np.array(test_class_pred)
-
-
-    if model[N][4] == "cce":
-        n_outputs = len(classes)
-        for i in range(n_outputs):
-            pred_name = 'score_C'+str(i)
-            ds_full_test[pred_name] = test_class_pred[:,i]
-            ds_full_train[pred_name] = train_class_pred[:,i]
-    elif model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
-        n_outputs = 1
-        pred_name = 'score_C0'
-        ds_full_test[pred_name] = 1 - test_class_pred[:,0]
-        ds_full_train[pred_name] = 1 - train_class_pred[:,0]
-    elif model[N][4] == "mse":
-        n_outputs = 0
-        for i in range(len(variables)):
-            if var_use[i] != "F":
-                n_outputs += 1
-        for i in range(n_outputs):
-            pred_name = 'score_C'+str(i)
-            ds_full_test[pred_name] = test_class_pred[:,i]
-            ds_full_train[pred_name] = train_class_pred[:,i]
-
-    if i_load == 0:
-        ds_check_test = ds_full_test.copy()
-        ds_check_train = ds_full_train.copy()
+train_class_pred = []
+alpha = None
+for i_eval in range(n_eval_train_steps):
+    i_eval_output = tools.evaluate_model(model_type, train_data, class_model, i_eval, eval_step_size, None, None, stat_values, var_use, domain_batch_data_empty, alpha, device, mode="predict")
+    if i_eval_output is None:
+        continue
     else:
-        ds_check_test = pd.concat([ds_check_test, ds_full_test])
-        ds_check_train = pd.concat([ds_check_train, ds_full_train])
+        i_train_class_pred = i_eval_output
+    train_class_pred = train_class_pred + i_train_class_pred.tolist()
+train_class_pred = np.array(train_class_pred)
+
+
+test_class_pred = []
+for i_eval in range(n_eval_test_steps):
+    i_eval_output = tools.evaluate_model(model_type, test_data, class_model, i_eval, eval_step_size, None, None, stat_values, var_use, domain_batch_data_empty, alpha, device, mode="predict")
+    if i_eval_output is None:
+        continue
+    else:
+        i_test_class_pred = i_eval_output
+    test_class_pred = test_class_pred + i_test_class_pred.tolist()
+test_class_pred = np.array(test_class_pred)
+
+
+if model[N][4] == "cce":
+    n_outputs = len(classes)
+    for i in range(n_outputs):
+        pred_name = 'score_C'+str(i)
+        ds_full_test[pred_name] = test_class_pred[:,i]
+        ds_full_train[pred_name] = train_class_pred[:,i]
+elif model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
+    n_outputs = 1
+    pred_name = 'score_C0'
+    ds_full_test[pred_name] = 1 - test_class_pred[:,0]
+    ds_full_train[pred_name] = 1 - train_class_pred[:,0]
+elif model[N][4] == "mse":
+    n_outputs = 0
+    for i in range(len(variables)):
+        if var_use[i] != "F":
+            n_outputs += 1
+    for i in range(n_outputs):
+        pred_name = 'score_C'+str(i)
+        ds_full_test[pred_name] = test_class_pred[:,i]
+        ds_full_train[pred_name] = train_class_pred[:,i]
 
 
 for i in range(n_outputs):

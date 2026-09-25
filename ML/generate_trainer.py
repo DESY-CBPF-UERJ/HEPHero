@@ -94,7 +94,7 @@ with open(trainer_file, "w") as newfile:
     newfile.write("batch_size = " + str(sm.batch_size) +"\n")
     newfile.write("load_size_stat = " + str(sm.load_size_stat) +"\n")
     newfile.write("load_size_training = " + str(sm.load_size_training) +"\n")
-    newfile.write("num_load_for_check = " + str(sm.num_load_for_check) +"\n")
+    newfile.write("load_size_check = " + str(sm.load_size_check) +"\n")
     newfile.write("train_frac = " + str(sm.train_frac) +"\n")
     newfile.write("eval_step_size = " + str(sm.eval_step_size) +"\n")
     newfile.write("eval_interval = " + str(sm.eval_interval) +"\n")
