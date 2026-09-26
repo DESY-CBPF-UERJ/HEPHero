@@ -956,7 +956,6 @@ class L1_regularization(nn.Module):
 
     def forward(self, model, device="cpu"):
 
-        l1_lambda = 1e-5
         l1_penalty = sum(
             torch.sum(torch.abs(param))
             for name, param in model.named_parameters()
@@ -969,7 +968,7 @@ class L1_regularization(nn.Module):
             if "weight" in name
         )
 
-        return l1_lambda*(l1_penalty/n_params)
+        return l1_penalty/n_params
 
 
 class L2_regularization(nn.Module):
@@ -978,7 +977,6 @@ class L2_regularization(nn.Module):
 
     def forward(self, model, device="cpu"):
 
-        l2_lambda = 1e-4
         l2_penalty = sum(
             torch.sum(param ** 2)
             for name, param in model.named_parameters()
@@ -991,37 +989,47 @@ class L2_regularization(nn.Module):
             if "weight" in name
         )
 
-        return l2_lambda*(l2_penalty/n_params)
+        return l2_penalty/n_params
 
 
-class BCE_L1_loss(nn.Module):
-    def __init__(self):
+class BCE_L1_loss(nn.Module): # not sure if it works for other models different of NN
+    def __init__(self, l1_lambda):
         super(BCE_L1_loss, self).__init__()
 
+        self.l1_lambda = l1_lambda
         self.bce = BCE_loss()
         self.l1 = L1_regularization()
 
-    def forward(self, y_true, y_pred, weight, model, device="cpu"):
+    def forward(self, y_true, y_pred, weight, model=None, device="cpu"):
 
         bce = self.bce(y_true, y_pred, weight, device)
-        l1 = self.l1(model, device)
+        if model is None:
+            loss = bce
+        else:
+            l1 = self.l1(model, device)
+            loss = bce + self.l1_lambda*l1
 
-        return bce + l1
+        return loss
 
 
-class BCE_L2_loss(nn.Module):
-    def __init__(self):
+class BCE_L2_loss(nn.Module): # not sure if it works for other models different of NN
+    def __init__(self, l2_lambda):
         super(BCE_L2_loss, self).__init__()
 
+        self.l2_lambda = l2_lambda
         self.bce = BCE_loss()
         self.l2 = L2_regularization()
 
-    def forward(self, y_true, y_pred, weight, model, device="cpu"):
+    def forward(self, y_true, y_pred, weight, model=None, device="cpu"):
 
         bce = self.bce(y_true, y_pred, weight, device)
-        l2 = self.l2(model, device)
+        if model is None:
+            loss = bce
+        else:
+            l2 = self.l2(model, device)
+            loss = bce + self.l2_lambda*l2
 
-        return bce + l2
+        return loss
 
 
 #==================================================================================================
@@ -1078,7 +1086,13 @@ def train_model(input_path, N_signal, train_frac, load_size, parameters, variabl
         checkpoint={'iteration':None, 'model_state_dict':None, 'optimizer_state_dict':None, 'loss': None}
 
         # Criterion
-        if parameters[4] == 'cce':
+        if 'bce_l1' in parameters[4]:
+            lambda1 = float(parameters[4].split("bce_l1_")[1])
+            criterion = BCE_L1_loss(lambda1)
+        elif 'bce_l2' in parameters[4]:
+            lambda2 = float(parameters[4].split("bce_l2_")[1])
+            criterion = BCE_L2_loss(lambda2)
+        elif parameters[4] == 'cce':
             criterion = CCE_loss(num_classes=n_classes)
         elif parameters[4] == 'bce':
             criterion = BCE_loss()
