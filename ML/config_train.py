@@ -48,13 +48,24 @@ for key in classes:
 
 model_parameters_list = tools.model_parameters(model_type, model_parameters)
 
+loss_func_list = []
+for loss in loss_func:
+    if isinstance(loss,list):
+        for il in range(len(loss)):
+            if il == 0:
+                loss_name = loss[il]
+            else:
+                loss_func_list.append(loss_name+"_"+str(loss[il]))
+    else:
+        loss_func_list.append(loss) 
+
 modelName = []
 model = []
 i_job = 0
 for i_signal in range(N_signal_points):
     for i_period in periods:
         for i_optimizer in optimizer:
-            for i_loss_func in loss_func:
+            for i_loss_func in loss_func_list:
                 for i_batch_size in batch_size:
                     for i_lr in learning_rate:
                         for i_model_param in model_parameters_list:
@@ -492,7 +503,7 @@ if model[N][4] == "cce":
         pred_name = 'score_C'+str(i)
         ds_full_test[pred_name] = test_class_pred[:,i]
         ds_full_train[pred_name] = train_class_pred[:,i]
-elif model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
+elif 'bce' in  model[N][4] or model[N][4] == "asimov" or model[N][4] == "ams":
     n_outputs = 1
     pred_name = 'score_C0'
     ds_full_test[pred_name] = 1 - test_class_pred[:,0]
@@ -529,7 +540,7 @@ for i in range(n_outputs):
         yTest.append(yH)
         errTest.append(errH)
     ax1.set_ylabel("Normalized to unity", size=14, horizontalalignment='right', y=1.0)
-    if model[N][4] == "cce" or model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
+    if model[N][4] == "cce" or 'bce' in  model[N][4] or model[N][4] == "asimov" or model[N][4] == "ams":
         ax1.set_xlabel(class_names[i] + " score", size=14, horizontalalignment='right', x=1.0)
     else:
         ax1.set_xlabel("Score " + str(i), size=14, horizontalalignment='right', x=1.0)
@@ -552,7 +563,7 @@ for i in range(n_outputs):
     plt.savefig(os.path.join(model_outpath, var + "_hist.pdf"))
 
 
-    if model[N][4] == "cce" or model[N][4] == "bce" or model[N][4] == "asimov" or model[N][4] == "ams":
+    if model[N][4] == "cce" or 'bce' in  model[N][4] or model[N][4] == "asimov" or model[N][4] == "ams":
         #----------------------------------------------------------------------
         # ROC
         #----------------------------------------------------------------------
